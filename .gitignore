@@ -1,0 +1,44 @@
+# Python
+*.pyc
+__pycache__/
+.Python
+env/
+venv/
+ENV/
+.venv
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Django
+*.log
+*.pot
+local_settings.py
+db.sqlite3
+media/
+static/
+
+# IDE-specific files (optional)
+.vscode/
+.idea/
+
+# OS-specific
+.DS_Store
