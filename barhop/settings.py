@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'user_management',
     'reservations',
     'reviews',
+    'bars',
 ]
 
 MIDDLEWARE = [
