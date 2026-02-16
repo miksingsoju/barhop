@@ -35,7 +35,7 @@ def register(request):
             )
 
             login(request, user)
-            return redirect('/')  # or your actual profile/homepage
+            return redirect('/accounts/login/')  # or your actual profile/homepage
     else:
         form = UserCreationForm()
 
