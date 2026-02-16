@@ -5,7 +5,7 @@ class Profile(models.Model):
 
     class UserType(models.TextChoices):
         BAR_OWNER = "OWNER", "Bar Owner"
-        BARHOPPER = "HOPPER", "Barhopper"
+        BARHOPPER = "HOPPER", "Bar Hopper"
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=63)
