@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Sign In {% endblock %}
+
+{% block content %}
+<style>
+    .sign_in-container {
+        max-width: 400px;
+        margin: 10vh auto;
+        padding: 2rem;
+        border: 2px solid black;
+        text-align: center;
+        font-size: 1.2rem;
+    }
+
+    .sign_in-container input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 1rem;
+    }
+
+    .sign_in-container button {
+        padding: 10px 20px;
+        font-size: 1rem;
+        border: 2px solid black;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+
+    .sign_in-container button:hover {
+        background-color: black;
+        color: white;
+    }
+</style>
+
+<div class="sign_in-container">
+    <h1>Welcome to Barhop</h1>
+    <p>Please choose an option to continue:</p>
+    <a href="{% url 'user_management:register' %}" class="btn btn-primary">Register</a>
+    <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+
+</div>
+{% endblock %}
