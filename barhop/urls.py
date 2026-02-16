@@ -21,6 +21,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('user_management.urls', namespace="register")),
     path('profile/', include('user_management.urls', namespace="user_management")),
     path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
@@ -29,9 +30,6 @@ urlpatterns = [
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-
-
-    path('profile/', include('user_management.urls', namespace="user_management")),
     path('bars/', include('bars.urls', namespace="bars")),
     path('reviews/', include('reviews.urls', namespace="reviews")),
     path('reservations/', include('reservations.urls', namespace="reservations")),
