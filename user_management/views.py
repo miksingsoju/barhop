@@ -40,3 +40,6 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, 'register.html', {'form': form})
+
+def sign_in(request):            
+    return render(request, 'sign_in.html')
