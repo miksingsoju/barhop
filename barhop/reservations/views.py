@@ -35,8 +35,11 @@ def register(request):
             )
 
             login(request, user)
-            return redirect('/')  # or your actual profile/homepage
+            return redirect('/accounts/login/')  # or your actual profile/homepage
     else:
         form = UserCreationForm()
 
     return render(request, 'register.html', {'form': form})
+
+def sign_in(request):            
+    return render(request, 'sign_in.html')
