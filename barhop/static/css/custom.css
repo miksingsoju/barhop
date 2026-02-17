@@ -27,6 +27,7 @@
 
 nav { bottom: -1; }
 
+.w-fit { width: fit-content !important; }
 .text-main { color: var(--main)}
 .text-poppins {
   font-family: 'Poppins', 'Inter', sans-serif;
