@@ -15,10 +15,10 @@ def update_profile(request):
         form = ProfileForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('homepage')
+            return redirect('bars:bar-list')
     else:
         form = ProfileForm(instance=profile)
-    return render(request, "update_profile.html", {'form': form})
+    return render(request, "registration/update_profile.html", {'form': form})
 
 
 def register(request):
@@ -33,15 +33,15 @@ def register(request):
                 first_name=user.username,  # default name, can be edited later,
                 last_name=user.username,
                 email=user.email if user.email else f"{user.username}@example.com",
-            )
+            ) 
 
             login(request, user)
             return redirect('/')  # or your actual profile/homepage
     else:
         form = UserCreationForm()
 
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'registration/register.html', {'form': form})
 
 
-def sign_in(request):
-    return render(request, 'sign_in.html')
+def login(request):
+    return render(request, 'login.html')

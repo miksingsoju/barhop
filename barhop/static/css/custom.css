@@ -1,0 +1,74 @@
+:root {
+  --main: #AC6DFF;
+  --bs-menu-dropdown-bg-color: var(--bs-gray-200);
+  --bs-menu-link-bg-color-hover: var(--bs-info-light);
+}
+
+/* overwrite */
+.menu-hover-primary .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) .menu-icon i,
+.menu-hover-primary .menu-item.hover:not(.here)>.menu-link:not(.disabled):not(.active):not(.here), .menu-hover-primary .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here),
+.menu-hover-primary .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) .menu-icon,
+.menu-hover-primary .menu-item.hover:not(.here)> .menu-link:not(.disabled):not(.active):not(.here) .menu-title, .menu-hover-primary .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) .menu-title 
+{ color: var(--bs-info); }
+
+.form-control.form-control-solid {
+    background-color: var(--bs-gray-200);
+    border-color: var(--bs-gray-200);
+}
+
+/* custom css */
+
+@media (min-width: 576px) {
+  justify-content-sm-between { justify-content: space-between !important; }
+  .justify-content-sm-around { justify-content: space-around !important; }
+  .w-sm-fit { width: fit-content !important; }
+  nav { top: 0; }
+}
+
+nav { bottom: -1; }
+
+.w-fit { width: fit-content !important; }
+.text-main { color: var(--main)}
+.text-poppins {
+  font-family: 'Poppins', 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--bs-gray-100);
+}
+
+button {
+  -webkit-appearance: none;
+  border-radius: 0;
+  text-align: inherit;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  cursor: pointer;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+span.nav-hover-pill {
+  transition: transform 0.2s cubic-bezier(.4, 0, .2, 1), width 0.2s ease, opacity 0.2s ease;
+}
+
+a.nav-link i {
+  color: var(--bs-gray-800);
+}
+
+a.nav-link.active, a.nav-link.active i {
+  color: var(--bs-info);
+}
+
+.breadcrumb-arrow .breadcrumb-item::after {
+  font-family: FontAwesome;
+  padding-left: .5rem;
+  content: "\f105";
+  font-size: 0.75rem;
+}
+
+.activity-card {
+  flex-basis: 30%;
+}

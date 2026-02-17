@@ -16,18 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth import views as auth_views
-
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
-    path('', include('user_management.urls', namespace="register")),
-    path('admin/', admin.site.urls),
+    path('', RedirectView.as_view(url='/bars/', permanent=False)),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('profile/', include('user_management.urls', namespace="user_management")),
-    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
-    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path('accounts/', include('user_management.urls', namespace="auth")),
+    path('admin/', admin.site.urls),
     path('bars/', include('bars.urls', namespace="bars")),
     path('reviews/', include('reviews.urls', namespace="reviews")),
     path('reservations/', include('reservations.urls', namespace="reservations")),

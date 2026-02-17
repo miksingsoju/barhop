@@ -1,0 +1,44 @@
+{% load static %}
+
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
+
+    <link href="{% static 'plugins/global/plugins.bundle.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/x-icon" href="{% static 'media/favicon.ico' %}" />
+    <script src="{% static 'js/custom.js' %}"></script>
+
+    <!-- Additional Stylesheets -->
+    {% block styles %}{% endblock %}
+    <style>
+      aside.auth-img {
+        background-size: cover;
+        background-image: linear-gradient(90deg,rgba(27, 27, 41, 1) 0%, rgba(27, 27, 41, 0.3) 100%), url("{% static 'media/drinks.webp' %}");
+      }
+    </style>
+
+    <title>BarHop - {% block title %}{% endblock %}</title>
+  </head>
+
+  <body class="d-flex flex-row">
+    <main class="w-50">
+      {% block content %}
+
+      {% endblock %}
+    </main>
+    <aside class="auth-img h-100 w-50"></aside>
+
+    <!-- Global Javascript Bundles -->
+    <script src="{% static 'plugins/global/plugins.bundle.js' %}"></script>
+    <script src="{% static 'js/scripts.bundle.js' %}"></script>
+
+    <!-- Additional Javascript -->
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
