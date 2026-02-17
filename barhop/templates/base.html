@@ -20,7 +20,7 @@
     <title>BarHop - {% block title %}{% endblock %}</title>
   </head>
 
-  <body>
+  <body style="margin-top: 75px;">
     <nav class="d-flex bg-gray-100 border-bottom border-top border-gray-200 px-5 px-sm-12 align-items-center justify-content-between w-100 z-index-2 position-fixed h-sm-75px h-fit py-sm-0 py-5">
       <!-- Left of Nav -->
       <a class="d-sm-flex d-none gap-3 h-40px align-items-center" href="/">
@@ -29,7 +29,7 @@
 
       <!-- Links -->
       <div class="d-flex flex-row justify-content-around w-100 w-sm-fit fs-6 fw-semibold position-relative">
-        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit {% if request.path == "/" or request.path == "" %} active{% endif %}" href="/">
+        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit {% if request.path == '/bars/' %} active{% endif %}" href="/">
           <i class="ki-outline ki-home fs-2 d-sm-none"></i>
           <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Home</span>
         </a>
@@ -61,7 +61,7 @@
           </div>
           <div class="menu menu-sub menu-sub-dropdown menu-gray-700 menu-hover-primary menu-hover-bg menu-rounded fw-semibold p-3 w-150px" data-kt-menu="true">
             <div class="menu-item">
-              <form method="POST" action="{% url 'auth:logout' %}" class="d-flex m-0">
+              <form method="POST" action="{% url 'logout' %}" class="d-flex m-0">
                 {% csrf_token %}
                 <button class="menu-link" type="submit">
                   <span class="menu-icon">

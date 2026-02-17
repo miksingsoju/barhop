@@ -15,7 +15,7 @@ def update_profile(request):
         form = ProfileForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('homepage')
+            return redirect('bars:bar-list')
     else:
         form = ProfileForm(instance=profile)
     return render(request, "registration/update_profile.html", {'form': form})

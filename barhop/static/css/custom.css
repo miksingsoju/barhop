@@ -1,4 +1,5 @@
 :root {
+  --main: #AC6DFF;
   --bs-menu-dropdown-bg-color: var(--bs-gray-200);
   --bs-menu-link-bg-color-hover: var(--bs-info-light);
 }
@@ -10,6 +11,13 @@
 .menu-hover-primary .menu-item.hover:not(.here)> .menu-link:not(.disabled):not(.active):not(.here) .menu-title, .menu-hover-primary .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) .menu-title 
 { color: var(--bs-info); }
 
+.form-control.form-control-solid {
+    background-color: var(--bs-gray-200);
+    border-color: var(--bs-gray-200);
+}
+
+/* custom css */
+
 @media (min-width: 576px) {
   justify-content-sm-between { justify-content: space-between !important; }
   .justify-content-sm-around { justify-content: space-around !important; }
@@ -19,6 +27,7 @@
 
 nav { bottom: -1; }
 
+.text-main { color: var(--main)}
 .text-poppins {
   font-family: 'Poppins', 'Inter', sans-serif;
 }
@@ -50,10 +59,6 @@ a.nav-link i {
 
 a.nav-link.active, a.nav-link.active i {
   color: var(--bs-info);
-}
-
-main {
-  margin-top: 72px;
 }
 
 .breadcrumb-arrow .breadcrumb-item::after {

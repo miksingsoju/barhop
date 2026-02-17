@@ -16,16 +16,24 @@
 
     <!-- Additional Stylesheets -->
     {% block styles %}{% endblock %}
+    <style>
+      aside.auth-img {
+        background-size: cover;
+        background-image: linear-gradient(90deg,rgba(27, 27, 41, 1) 0%, rgba(27, 27, 41, 0.3) 100%), url("{% static 'media/drinks.webp' %}");
+      }
+    </style>
 
     <title>BarHop - {% block title %}{% endblock %}</title>
   </head>
 
-  <body>
+  <body class="d-flex flex-row">
+    <main class="w-50">
+      {% block content %}
 
-    {% block content %}
+      {% endblock %}
+    </main>
+    <aside class="auth-img h-100 w-50"></aside>
 
-    {% endblock %}
-    
     <!-- Global Javascript Bundles -->
     <script src="{% static 'plugins/global/plugins.bundle.js' %}"></script>
     <script src="{% static 'js/scripts.bundle.js' %}"></script>

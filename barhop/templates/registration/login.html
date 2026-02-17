@@ -4,50 +4,33 @@
 {% block title %} Login {% endblock %}
 
 {% block content %}
-<style>
-    .login-container {
-        max-width: 400px;
-        margin: 10vh auto;
-        padding: 2rem;
-        border: 2px solid black;
-        text-align: center;
-        font-size: 1.2rem;
-    }
-
-    .login-container input {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-        font-size: 1rem;
-    }
-
-    .login-container button {
-        padding: 10px 20px;
-        font-size: 1rem;
-        border: 2px solid black;
-        background-color: white;
-        cursor: pointer;
-        margin-top: 1rem;
-    }
-
-    .login-container button:hover {
-        background-color: black;
-        color: white;
-    }
-</style>
-
-<div class="login-container">
-    <h2>Login</h2>
-    <form method="post">
+<div class="d-flex flex-column w-100 h-100 justify-content-center align-items-center">
+    <form method="post" class="d-flex flex-column gap-6 m-0 w-sm-400px">
         {% csrf_token %}
-        {{ form.as_p }}
+        <h1 class="text-poppins fw-bolder fs-3x text-center mb-6">BarHop</h1>
 
-        <button type="submit">Log In</button>
+        <div class="fv-row fv-plugins-icon-container">
+          <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text" placeholder="Username" autocomplete="off" class="form-control form-control-solid" required />
+          <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+        </div>
+
+        <div class="fv-row fv-plugins-icon-container">
+          <input id="{{ form.password.id_for_label }}" name="{{ form.password.html_name }}" type="password" placeholder="Password" class="form-control form-control-solid" required />
+          <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+        </div>
+
+        <a class="fw-semibold text-main text-end" href="{% url 'auth:password_reset' %}">Forgot password?</a>
+        <button class="btn btn-info w-100" type="submit">Login</button>
+        <span class="fs-semibold text-gray-600 text-center">
+          Don't have an account? <a class="text-main" href="{% url 'auth:register' %}">Sign up</a>
+        </span>
+        <span class="fs-semibold text-gray-600 text-center mt-6">
+          or <a class="text-main" href="/">Continue as Guest</a>
+        </span>
     </form>
 
     {% if form.errors %}
         <p style="color:red;">Invalid username or password</p>
     {% endif %}
-    <p><a href="{% url 'auth:password_reset' %}">Forgot password?</a></p>
 </div>
 {% endblock %}
