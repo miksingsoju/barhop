@@ -17,22 +17,28 @@
     <!-- Additional Stylesheets -->
     {% block styles %}{% endblock %}
     <style>
+      @media (min-width: 576px) {
+        aside.auth-img {
+          background-image: linear-gradient(90deg,rgba(27, 27, 41, 1) 0%, rgba(27, 27, 41, 0.6) 70%, rgba(27, 27, 41, 0.3) 100%), url("{% static 'media/drinks.webp' %}") !important;
+        }
+      }
+
       aside.auth-img {
         background-size: cover;
-        background-image: linear-gradient(90deg,rgba(27, 27, 41, 1) 0%, rgba(27, 27, 41, 0.3) 100%), url("{% static 'media/drinks.webp' %}");
+        background-image: linear-gradient(0deg,rgba(27, 27, 41, 1) 0%, rgba(27, 27, 41, 0.6) 70%, rgba(27, 27, 41, 0.3) 100%), url("{% static 'media/drinks.webp' %}");
       }
     </style>
 
     <title>BarHop - {% block title %}{% endblock %}</title>
   </head>
 
-  <body class="d-flex flex-row">
-    <main class="w-50">
+  <body class="d-flex flex-sm-row flex-column-reverse">
+    <main class="flex-grow-1 flex-lg-grow-0 w-lg-50">
       {% block content %}
 
       {% endblock %}
     </main>
-    <aside class="auth-img h-100 w-50"></aside>
+    <aside class="auth-img h-150px h-sm-100 flex-sm-grow-1"></aside>
 
     <!-- Global Javascript Bundles -->
     <script src="{% static 'plugins/global/plugins.bundle.js' %}"></script>
