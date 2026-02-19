@@ -1,4 +1,5 @@
 from django.contrib.auth import login
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
@@ -17,6 +18,15 @@ def update_profile(request):
     else:
         form = ProfileUpdateForm(instance=request.user)
     return render(request, "registration/update_profile.html", {'form': form})
+
+
+def check_existing_username(request):
+    username = request.GET.get("username")
+    user = Profile.objects.filter(username=username)
+    if user:
+        return HttpResponse(status=200)
+    return HttpResponse(status=404)
+
 
 def register_view(request):
     if request.GET.get('reset') == '1':

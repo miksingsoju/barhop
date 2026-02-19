@@ -3,6 +3,66 @@
 
 {% block title %} Register {% endblock %}
 
+{% block styles %}
+<style>
+  .input-group.input-group-solid .form-control, .input-group.input-group-solid .input-group-text {
+    background-color: var(--bs-gray-200);
+    border-color: var(--bs-gray-200);
+  }
+
+  .input-group.input-group-solid .input-group-text+.form-control {
+    border-left-color: var(--bs-gray-200);
+  }
+
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const blockedBtn = new KTBlockUI(document.querySelector("#register-btn"));
+  const loading = document.querySelector("#id_username + span span.spinner-border");
+  const success = document.querySelector("#id_username + span i.text-success");
+  const successMsg = document.querySelector("span.user-avail");
+  const fail = document.querySelector("#id_username + span i.text-danger");
+  const failMsg = document.querySelector("span.user-exists");
+
+  const checkUsername = debounce(async (e) => {
+    if (e.target.value == "") return;
+
+    try {
+      let res = await fetch("check-username?username="+ e.target.value);
+      console.log(res);
+
+      if (res.ok) {
+        fail.style.display = "block";
+        failMsg.style.display = "block";
+      } else {
+        success.style.display = "block";
+        successMsg.style.display = "block";
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    loading.style.display = "none";
+  }, 1000, { "trailing": true });
+
+  const startLoading = debounce((e) => {
+    loading.style.display = "none";
+    fail.style.display, success.style.display = "none";
+    failMsg.style.display, successMsg.style.display = "none";
+    
+    if (e.target.value == "") return;
+    loading.style.display = "block";
+    console.log("yu");
+  }, 1000, { "leading": true });
+
+  document.querySelector("#id_username").addEventListener("input", e => {
+    startLoading(e);
+    checkUsername(e);
+  });
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="d-flex flex-column w-100 h-100 mt-12 m-sm-0 justify-content-start justify-content-sm-center align-items-center">
     <h1 class="text-poppins fw-bolder fs-3x text-center mb-10">BarHop</h1>
@@ -39,28 +99,47 @@
 
         {% elif step == 2 %}
             <div class="fv-row fv-plugins-icon-container w-100">
-                <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text" placeholder="Username" autocomplete="off" class="form-control form-control-solid" required />
+                <div class="input-group input-group-solid">
+                  <span class="input-group-text" id="basic-addon1">@</span>
+                  <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text" placeholder="Username" autocomplete="off" class="form-control ps-0" required />
+                  <span class="input-group-text" id="basic-addon1">
+                    <span style="display:none;" class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    <i style="display:none;" class="ki-duotone ki-check-circle fs-2 text-success">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    <i style="display:none;" class="ki-duotone ki-information-2 fs-2 text-danger rotate-180">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                    </i>
+                  </span>
+                </div>
                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                  <span class="user-avail valid-feedback">Username is available!</span>
+                  <span style="display:none;" class="user-exists">An account with this username already exists.</span>
                     {% for error in form.username.errors %}
                         <span>{{ error }}</span>
                     {% endfor %}
                 </div>
             </div>
-            <div class="fv-row fv-plugins-icon-container w-100">
-                <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" type="text" placeholder="First Name" autocomplete="off" class="form-control form-control-solid" required />
-                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                    {% for error in form.first_name.errors %}
-                        <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="fv-row fv-plugins-icon-container w-100">
-                <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" type="text" placeholder="Last Name" autocomplete="off" class="form-control form-control-solid" required />
-                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                    {% for error in form.last_name.errors %}
-                        <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
+            <div class="d-flex flex-row gap-4">
+              <div class="fv-row fv-plugins-icon-container w-100">
+                  <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" type="text" placeholder="First Name" autocomplete="off" class="form-control form-control-solid" required />
+                  <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                      {% for error in form.first_name.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              </div>
+              <div class="fv-row fv-plugins-icon-container w-100">
+                  <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" type="text" placeholder="Last Name" autocomplete="off" class="form-control form-control-solid" required />
+                  <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                      {% for error in form.last_name.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              </div>
             </div>
             <div class="fv-row fv-plugins-icon-container w-100">
                 <input id="{{ form.date_of_birth.id_for_label }}" name="{{ form.date_of_birth.html_name }}" type="date" class="form-control form-control-solid" required />
@@ -70,13 +149,12 @@
                     {% endfor %}
                 </div>
             </div>
-
             <div class="fv-row w-100">
                 <input id="{{ form.accept_terms.id_for_label }}" name="{{ form.accept_terms.html_name }}" type="checkbox" class="form-check-input" required />
                 <label class="form-check-label" for="{{ form.accept_terms.id_for_label }}">
                 I accept the 
                 <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="link-primary fw-bold">
-                terms and conditions</a></label>
+                Terms and Conditions</a>.</label>
             </div>
             <div class="fv-plugins-message-container invalid-feedback">
                 {% for error in form.accept_terms.errors %}
@@ -94,7 +172,7 @@
 
             <div class="d-flex w-100 gap-3 mt-6">
             <a href="{% url 'user_management:register' %}?reset=1" class="btn btn-secondary w-25 mt-6">Back</a>
-            <button class="btn btn-info mt-6 w-75" type="submit">Create New Account</button>
+            <button class="btn btn-info mt-6 w-75" id="register-btn" type="submit">Create New Account</button>
             </div>
 
             {% if form.non_field_errors %}
