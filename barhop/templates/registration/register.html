@@ -10,48 +10,97 @@
       {% csrf_token %}
       <h1 class="text-center mb-5">Sign up for an account</h1>
 
-      <div class="fv-row fv-plugins-icon-container w-100">
-        <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text" placeholder="Username" autocomplete="off" class="form-control form-control-solid" required />
-        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-          <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-          {% if form.errors %}
-            {% for error in form.username.errors %}
-              <span>{{ error }}</span>
-            {% endfor %}
-          {% endif %}
-        </div>
-        </div>
-      </div>
+        {% if step == 1 %}
+            <div class="fv-row fv-plugins-icon-container w-100">
+                <input id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" type="email" placeholder="Email Address" autocomplete="off" class="form-control form-control-solid" value="{{ form.email.value|default:'' }}" required />
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    {% for error in form.email.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="fv-row fv-plugins-icon-container w-100">
+                <input id="{{ form.password_1.id_for_label }}" name="{{ form.password_1.html_name }}" type="password" placeholder="Password" class="form-control form-control-solid" required />
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    {% for error in form.password_1.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="fv-row fv-plugins-icon-container w-100">
+                <input id="{{ form.password_2.id_for_label }}" name="{{ form.password_2.html_name }}" type="password" placeholder="Confirm Password" class="form-control form-control-solid" required />
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    {% for error in form.password_2.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <button class="btn btn-info mt-6 w-100" type="submit">Continue</button>
 
-      <div class="fv-row fv-plugins-icon-container w-100">
-        <input id="{{ form.password.id_for_label }}" name="{{ form.password.html_name }}" type="password" placeholder="Password" class="form-control form-control-solid" required />
-        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-          {% if form.errors %}
-            {% for error in form.password.errors %}
-              <span>{{ error }}</span>
-            {% endfor %}
-          {% endif %}
-        </div>
-      </div>
+        {% elif step == 2 %}
+            <div class="fv-row fv-plugins-icon-container w-100">
+                <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text" placeholder="Username" autocomplete="off" class="form-control form-control-solid" required />
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    {% for error in form.username.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="fv-row fv-plugins-icon-container w-100">
+                <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" type="text" placeholder="First Name" autocomplete="off" class="form-control form-control-solid" required />
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    {% for error in form.first_name.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="fv-row fv-plugins-icon-container w-100">
+                <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" type="text" placeholder="Last Name" autocomplete="off" class="form-control form-control-solid" required />
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    {% for error in form.last_name.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="fv-row fv-plugins-icon-container w-100">
+                <input id="{{ form.date_of_birth.id_for_label }}" name="{{ form.date_of_birth.html_name }}" type="date" class="form-control form-control-solid" required />
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    {% for error in form.date_of_birth.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
 
-      <div class="fv-row fv-plugins-icon-container w-100">
-        <input id="{{ form.password2.id_for_label }}" name="{{ form.password2.html_name }}" type="password" placeholder="Confirm Password" class="form-control form-control-solid" required />
-        <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-          {% if form.errors %}
-            {% for error in form.password2.errors %}
-              <span>{{ error }}</span>
-            {% endfor %}
-          {% endif %}
-        </div>
-      </div>
+            <div class="fv-row w-100">
+                <input id="{{ form.accept_terms.id_for_label }}" name="{{ form.accept_terms.html_name }}" type="checkbox" class="form-check-input" required />
+                <label class="form-check-label" for="{{ form.accept_terms.id_for_label }}">
+                I accept the 
+                <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="link-primary fw-bold">
+                terms and conditions</a></label>
+            </div>
+            <div class="fv-plugins-message-container invalid-feedback">
+                {% for error in form.accept_terms.errors %}
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
 
-      <button class="btn btn-info mt-6 w-100" type="submit">Create New Account</button>
-      {% comment %} <div class="d-flex flex-column gap-2 mt-6">
+            
 
-      </div> {% endcomment %}
-      <span class="fs-semibold text-gray-600 text-center">Want to add your bars to BarHop?</span>
-      <a class="text-main w-fit" href="/">Register as Bar Owner</a>
+            <div class="d-flex w-100 gap-3 mt-6">
+            <a href="{% url 'user_management:register' %}?reset=1" class="btn btn-secondary w-25 mt-6">Back</a>
+            <button class="btn btn-info mt-6 w-75" type="submit">Create New Account</button>
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger w-100">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            
+
+        {% endif %}
+
     </form>
 </div>
-
 {% endblock %}

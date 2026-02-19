@@ -95,6 +95,10 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
+AUTH_USER_MODEL = 'user_management.Profile'
+
+AUTHENTICATION_BACKENDS = ['user_management.backends.EmailBackend'] # Custom authentication with email
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
