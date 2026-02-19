@@ -26,7 +26,7 @@ class RegistrationFormStep2(forms.Form):
     first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
     last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
     date_of_birth = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
-    user_type = forms.ChoiceField(choices=Profile.UserType.choices, required=False, initial=Profile.UserType.BARHOPPER)
+    user_type = forms.ChoiceField(required=True, widget=forms.RadioSelect, choices=Profile.UserType.choices, initial=Profile.UserType.BARHOPPER)
     accept_terms = forms.BooleanField(required=True)
     
 class ProfileUpdateForm(forms.ModelForm):

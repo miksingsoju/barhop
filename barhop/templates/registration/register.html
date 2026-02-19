@@ -84,7 +84,13 @@
                 {% endfor %}
             </div>
 
-            
+            <div class="fv-row w-100">
+                    <input id="user_type_hopper" name="{{ form.user_type.html_name }}" type="radio" value = "HOPPER" class="form-check-input" required />
+                    <label class="form-check-label" for="user_type_hopper">Bar Hopper</label>
+
+                    <input id="user_type_owner" name="{{ form.user_type.html_name }}" type="radio" value = "OWNER" class="form-check-input" required />
+                    <label class="form-check-label" for="user_type_owner">Bar Owner</label>
+
 
             <div class="d-flex w-100 gap-3 mt-6">
             <a href="{% url 'user_management:register' %}?reset=1" class="btn btn-secondary w-25 mt-6">Back</a>
