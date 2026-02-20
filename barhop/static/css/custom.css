@@ -2,6 +2,7 @@
   --main: #AC6DFF;
   --bs-menu-dropdown-bg-color: var(--bs-gray-200);
   --bs-menu-link-bg-color-hover: var(--bs-info-light);
+  --bs-body-bg: var(--bs-gray-200);
 }
 
 /* overwrite */
