@@ -48,3 +48,13 @@ class ProfileUpdateForm(forms.ModelForm):
         'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         'user_type': forms.Select(attrs={'class': 'form-control'}),
     }
+
+    class Meta:
+        model = Profile
+        fields = [
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'date_of_birth'
+        ]

@@ -34,7 +34,7 @@ coverage.xml
 *.pot
 local_settings.py
 db.sqlite3
-media/
+migrations/
 
 # IDE-specific files (optional)
 .vscode/

@@ -2,11 +2,11 @@ from django.contrib.auth import login
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
 from .forms import RegistrationFormStep1, RegistrationFormStep2, ProfileUpdateForm
 from .models import Profile
-
 
 @login_required
 def update_profile(request):
@@ -29,6 +29,9 @@ def check_existing_username(request):
 
 
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('bars:bar-list')
+
     if request.GET.get('reset') == '1':
         saved_email = request.session.get('registration_data', {}).get('email', '')
         request.session.pop('registration_data', None)
@@ -80,6 +83,3 @@ def register_view(request):
         'step': 2 if reg_data else 1,
     })
 
-
-def user_login(request):
-    return render(request, 'login.html')
