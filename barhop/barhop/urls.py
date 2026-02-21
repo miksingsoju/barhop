@@ -20,8 +20,8 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/bars/', permanent=False)),
-    path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('user_management.urls', namespace="auth")),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('bars/', include('bars.urls', namespace="bars")),
     path('reviews/', include('reviews.urls', namespace="reviews")),
