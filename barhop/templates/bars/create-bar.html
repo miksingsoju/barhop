@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Create Bar
+{% endblock %}
+
+{% block styles %}
+  {% include 'reservations/create-table.html#create_table_styles' %}
+{% endblock %}
+
+{% block scripts %}
+  {% include 'reservations/create-table.html#create_table_scripts' %}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      var stepper = new KTStepper(document.querySelector('#form-stepper'))
+    
+      stepper.on('kt.stepper.next', function (stepper) {
+        stepper.goNext()
+      })
+    
+      stepper.on('kt.stepper.previous', function (stepper) {
+        stepper.goPrevious()
+      })
+    })
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div class="stepper stepper-pills stepper-column d-flex flex-row justify-content-center gap-12" id="form-stepper">
+    <menu class="card p-12 m-0 w-lg-350px h-fit justify-content-center">
+      <div class="stepper-nav">
+        {% for step in stepper %}
+          <div class="stepper-item me-5{% if step.current and step.current.strip %} current{% endif %}" data-kt-stepper-element="nav">
+            <div class="stepper-wrapper d-flex align-items-center">
+              <div class="stepper-icon w-40px h-40px">
+                <i class="stepper-check fas fa-check"></i>
+                <span class="stepper-number">{{ step.num }}</span>
+              </div>
+              <div class="stepper-label">
+                <h3 class="stepper-title">{{ step.title }}</h3>
+                <div class="stepper-desc">{{ step.desc }}</div>
+              </div>
+            </div>
+            <div class="stepper-line h-40px"></div>
+          </div>
+        {% endfor %}
+      </div>
+    </menu>
+
+    <div class="d-flex flex-column gap-8">
+      <section class="flex-column w-lg-600px gap-8 current" id="details-form-list" data-kt-stepper-element="content">
+        <header class="flex-row justify-content-between align-items-center card p-8">
+          <h2 class="m-0">Bar Details</h2>
+        </header>
+      </section>
+
+      <section class="flex-column w-lg-600px gap-8" data-kt-stepper-element="content">
+        <header class="flex-row justify-content-between align-items-center card p-8">
+          <h2 class="m-0">Add Events</h2>
+        </header>
+      </section>
+
+      <section class="flex-column w-lg-600px gap-8" id="table-form-list" data-kt-stepper-element="content">
+        <header class="flex-row justify-content-between align-items-center card p-8">
+          <h2 class="m-0">Add Tables</h2>
+          <button type="button" class="btn btn-sm btn-info" data-repeater-create><span>Add Listing</span></button>
+        </header>
+        {% include 'reservations/create-table.html#create_table_form' %}
+      </section>
+
+      <section class="flex-column w-lg-600px gap-8" data-kt-stepper-element="content">
+        <header class="flex-row justify-content-between align-items-center card p-8">
+          <h2 class="m-0">Publish Your Bar</h2>
+        </header>
+      </section>
+
+      <footer class="flex-row justify-content-between align-items-center card p-8">
+        <button type="button" class="btn btn-light-info border border-info" data-kt-stepper-action="previous"><span>Back</span></button>
+        <button type="button" class="btn btn-info" data-kt-stepper-action="next">
+          <span>Continue</span>
+          <i class="ki-solid ki-arrow-right fs-2 p-0"></i>
+        </button>
+        <button type="button" class="btn btn-info" data-kt-stepper-action="submit">
+          <span class="indicator-label">Submit</span>
+          <span class="indicator-progress">Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+      </footer>
+    </div>
+
+    <div class="flex-column"></div>
+  </div>
+{% endblock %}

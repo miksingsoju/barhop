@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} Home {% endblock %}
+{% block title %} Bars {% endblock %}
 
 {% block content %}
-
+  {% if request.user.is_authenticated and user.username in request.path %}
+    <a href="{% url 'bars:create-bar' %}" class="btn btn-info">Create Bar</a>  
+  {% endif %}
 {% endblock %}
