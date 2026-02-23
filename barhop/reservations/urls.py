@@ -2,8 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # temporary url
-    path('seating/create', views.create_seating, name='create-seating'),
+    # temporary urls
+    # path('create/', views.create_seating_form, name='create-seating-form'),
 ]
 
 app_name = "reservations"

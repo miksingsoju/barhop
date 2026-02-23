@@ -1,0 +1,71 @@
+{% load static %}
+
+{% partialdef create_table_styles %}
+<style>
+  .btn.btn-outline:not(.btn-outline-dashed),
+  .input-group.input-group-solid .form-control,
+  .form-control.form-control-solid,
+  .form-control.form-control-solid:active,
+  .form-control.form-control-solid:focus {
+    background-color: var(--bs-gray-300);
+    border-color: var(--bs-gray-300);
+    color: var(--bs-gray-600);
+  }
+</style>
+{% endpartialdef %}
+
+{% partialdef create_table_scripts %}
+<script src="{% static 'plugins/custom/formrepeater/formrepeater.bundle.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    $('#table-form-list').repeater({
+      initEmpty: false,
+      isFirstItemUndeletable: true,
+      defaultValues: {
+        'text-input': 'foo',
+      },
+  
+      show: function () {
+        $(this).slideDown();
+        KTDialer.createInstances();
+      },
+  
+      hide: function (deleteElement) {
+        $(this).slideUp(deleteElement);
+      }
+    })
+  })
+</script>
+{% endpartialdef %}
+
+{% partialdef create_table_form %}
+<div class="d-flex flex-column gap-8" data-repeater-list="seating-form-list">
+  <article class="d-flex flex-column card p-8 gap-10" data-repeater-item>
+    <div class="flex-grow-1">
+      <label class="form-label">Table Type</label>
+      <input name="table_type" type="email" class="form-control form-control-solid" placeholder="What type of seating is it?" />
+    </div>
+    <div class="d-flex flex-row gap-8 align-items-end">
+      <div class="w-25">
+        <label class="form-label">Capacity</label>
+        <div class="input-group input-group-solid w-100" data-kt-dialer="true" data-kt-dialer-min="1" data-kt-dialer-max="100" data-kt-dialer-step="1">
+          <button class="btn btn-icon btn-outline btn-active-color-primary" type="button" data-kt-dialer-control="decrease"><i class="ki-duotone ki-minus fs-2"></i></button>
+          <input name="capacity" type="text" class="form-control text-center" value="1" data-kt-dialer-control="input" />
+          <button class="btn btn-icon btn-outline btn-active-color-primary" type="button" data-kt-dialer-control="increase"><i class="ki-duotone ki-plus fs-2"></i></button>
+        </div>
+      </div>
+
+      <div class="w-25">
+        <label class="form-label">Quantity</label>
+        <div class="input-group input-group-solid w-100" data-kt-dialer="true" data-kt-dialer-min="1" data-kt-dialer-max="100" data-kt-dialer-step="1">
+          <button class="btn btn-icon btn-outline btn-active-color-primary" type="button" data-kt-dialer-control="decrease"><i class="ki-duotone ki-minus fs-2"></i></button>
+          <input name="quantity" type="text" class="form-control text-center" value="1" data-kt-dialer-control="input" />
+          <button class="btn btn-icon btn-outline btn-active-color-primary" type="button" data-kt-dialer-control="increase"><i class="ki-duotone ki-plus fs-2"></i></button>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-light-danger w-fit ms-auto" data-repeater-delete><span>Delete</span></button>
+    </div>
+  </article>
+</div>
+{% endpartialdef %}

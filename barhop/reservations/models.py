@@ -5,7 +5,6 @@ class Seating(models.Model):
 
     name = models.CharField(max_length=255)
     capacity = models.IntegerField(default=1)
-    desc = models.CharField(max_length=255)
 
     def __str__(self):
         """Returns the name of the model."""

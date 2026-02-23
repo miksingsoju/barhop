@@ -27,7 +27,7 @@
   </head>
 
   <body>
-    <nav class="d-flex bg-gray-100 border-bottom border-top border-gray-200 px-5 px-sm-12 align-items-center justify-content-between w-100 z-index-3 position-fixed h-sm-75px h-fit py-sm-0 py-5">
+    <nav class="d-flex bg-gray-100 border-bottom border-top border-gray-200 px-5 px-sm-12 align-items-center justify-content-between w-100 z-index-3 position-fixed h-fit py-5">
       <!-- Left of Nav -->
       <a class="d-sm-flex d-none gap-3 h-40px align-items-center" href="/">
         <span class="fw-bolder fs-1 text-gray-900 text-hover-info" style="font-family: 'Poppins';">BarHop</span>
@@ -39,13 +39,19 @@
           <i class="ki-outline ki-home fs-2 d-sm-none"></i>
           <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Home</span>
         </a>
-        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit{% if "/my-bars" in request.path %} active{% endif %}" href="#">
-          <i class="ki-outline ki-shop fs-2 d-sm-none"></i>
-          <span class="fs-sm-6 fs-8 pt-1 p-sm-0">My Bars</span>
-        </a>
+        {% if request.user.is_authenticated and user.user_type == "OWNER" %}
+          <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit{% if "/bars/" in request.path and request.path != '/bars/' %} active{% endif %}" href="{% url 'bars:bar-list' user.username %}">
+            <i class="ki-outline ki-shop fs-2 d-sm-none"></i>
+            <span class="fs-sm-6 fs-8 pt-1 p-sm-0">My Bars</span>
+          </a>
+        {% endif %}
         <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit{% if "/reservations" in request.path %} active{% endif %}" href="#">
           <i class="ki-outline ki-cheque fs-2 d-sm-none"></i>
-          <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Reservations</span>
+          {% if request.user.is_authenticated and user.user_type == "OWNER" %}
+            <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Reservations</span>
+          {% else %}
+            <span class="fs-sm-6 fs-8 pt-1 p-sm-0">My Bookings</span>
+          {% endif %}
         </a>
         <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit d-sm-none{% if "/profile" in request.path %} active{% endif %}" href="#">
           <i class="ki-outline ki-profile-circle fs-2"></i>
@@ -59,7 +65,9 @@
         {% if request.user.is_authenticated %}
           <div class="d-flex flex-row align-items-center gap-4" data-kt-menu-trigger="{default:'click', lg:'hover'}" data-kt-menu-placement="bottom" data-kt-menu-offset="0,20">
             <div class="w-40px h-40px d-flex align-items-center justify-content-center rounded-circle bg-gray-300">
-              <span class="fs-2 fw-semibold text-gray-700 text-center">{{ user.username|slice:"0:1" }}</span>
+              {% if not user.profile_pic %}
+                <span class="fs-2 fw-semibold text-gray-700 text-center">{{ user.username|slice:"0:1" }}</span>              
+              {% endif %}
             </div>
             <div class="d-flex flex-column">
               <span class="text-gray-600 fw-semibold fs-7 text-nowrap">Welcome back,</span>

@@ -74,6 +74,7 @@ nav { bottom: -1; }
 .w-60 { width: 60%; }
 .w-70 { width: 70%; }
 .w-fit { width: fit-content !important; }
+.h-fit { height: fit-content !important; }
 .text-main { color: var(--main)}
 .text-poppins {
   font-family: 'Poppins', 'Inter', sans-serif;
