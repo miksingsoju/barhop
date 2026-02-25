@@ -41,6 +41,7 @@ def create_bar(request):
             bar.bar_owner = request.user
             bar.bar_draft = False
             bar.save()
+            bar_form.save_m2m()
             return redirect('bars:bar-details', bar_id=bar.id)
     
     bar_form = CreateBarForm()

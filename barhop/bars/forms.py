@@ -29,22 +29,3 @@ class CreateBarForm(forms.ModelForm):
             raise ValidationError("You can't end a bar before it started. How are we supposed to bar hop now...")
 
         return bar_end_time
-
-# class UpdateBarForm(forms.ModelForm):
-#     class Meta:
-#         model = Bar
-#         fields = ['bar_name', 'bar_description', 'bar_start_time', 'bar_end_time', 'bar_amenities']
-#         widgets = {
-#                 'bar_name': forms.TextInput(attrs={'class': 'form-control'}),
-#                 'bar_description':forms.TextInput(attrs={'class': 'form-control'}),
-#                 'bar_start_time': forms.TimeInput(format='%H:%M',attrs={'type': 'time', 'class': 'form-control'}),
-#                 'bar_end_time': forms.TimeInput(format='%H:%M',attrs={'type': 'time', 'class': 'form-control'}),
-#                 'bar_amenities': forms.CheckboxSelectMultiple(),
-#             }
-#         labels = {
-#                 'bar_name': 'Name of bar',
-#                 'bar_description': 'Bar description',
-#                 'bar_start_time': 'Opening time',
-#                 'bar_end_time': 'Closing time',
-#                 'bar_amenities': 'Select amenities',
-#             }
