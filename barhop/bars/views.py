@@ -75,7 +75,7 @@ def create_bar(request):
         'bar_form': bar_form,
     }
     return render(request, 'bars/create-bar.html', ctx)
-
+    
 def bar_details(request, bar_id):
     bar_object = Bar.objects.get(id=bar_id)
     bar_owner = bar_object.bar_owner == request.user if request.user.is_authenticated else False
@@ -83,3 +83,20 @@ def bar_details(request, bar_id):
     return render(request, 'bars/bar-details.html', {
         'bar': bar_object,
     })
+
+def bar_update(request, bar_id):
+    bar_object = Bar.objects.get(id=bar_id)
+    if bar_object.bar_owner != request.user:
+        return redirect('bars:bar-details', bar_id=bar_id)
+    if request.method == 'POST':
+        bar_form = CreateBarForm(request.POST, instance=bar_object)
+        if bar_form.is_valid():
+            bar_form.save()
+            return redirect('bars:bar-details', bar_id=bar_id)
+    else:
+        bar_form = CreateBarForm(instance=bar_object)
+
+    return render(request, 'bars/update-bar.html', {
+        'bar_form': bar_form,
+    })
+

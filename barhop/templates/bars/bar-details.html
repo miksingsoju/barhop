@@ -9,7 +9,7 @@
     <h3> {{ bar.bar_start_time }} - {{ bar.bar_end_time }}</h3>
     <h3> Bar Status: {{ bar.bar_status }}</h3>
     {% if bar.bar_owner == request.user %} 
-        <a href="{% url 'bars:bar-details' bar_id=bar.id %}">go here lmao</a>
+        <a href="{% url 'bars:bar-update' bar_id=bar.id %}">update bar details</a>
     {% endif %}
     <p>Bar Description:</p>
     <p>{{bar.bar_description}}</p>
