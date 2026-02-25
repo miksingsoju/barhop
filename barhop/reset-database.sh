@@ -7,6 +7,6 @@ echo Database created successfully. Making migrations...
 source ..\venv\scripts\activate
 python3 manage.py makemigrations bars reservations reviews user_management
 python3 manage.py migrate 
-python3 manage.py createsuperuser --no-input 
+python3 manage.py createsuperuser 
 deactivate 
 echo Migrations successful.
