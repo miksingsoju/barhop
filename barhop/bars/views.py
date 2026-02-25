@@ -35,6 +35,11 @@ def bar_list(request, username=None):
 # @login_required
 def create_bar(request):
     bar_form = CreateBarForm(request.POST or None)
+    if not request.user.is_authenticated:
+        return redirect('bars:bar-list')
+    bar_user = request.user
+    if bar_user.user_type != Profile.UserType.BAR_OWNER:
+        return redirect('bars:bar-list')
     if request.method == "POST":
         if bar_form.is_valid():
             bar = bar_form.save(commit=False)
