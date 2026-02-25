@@ -1,5 +1,6 @@
 from django import forms
 from .models import Bar 
+from django.core.exceptions import ValidationError
 # will fix in the future
 
 class CreateBarForm(forms.ModelForm):
@@ -20,10 +21,14 @@ class CreateBarForm(forms.ModelForm):
             'bar_end_time': 'Closing time',
             'bar_amenities': 'Select amenities',
         }
-        def clean(self):
-            if self.bar_start_time is not None and self.bar_end_time is not None:
-                if self.start_time > self.end_time:
-                    raise ValidationError("You can't end a bar before it started. How are we supposed to bar hop now...")
+    def clean_bar_end_time(self):
+        bar_start_time = self.cleaned_data.get('bar_start_time')
+        bar_end_time = self.cleaned_data.get('bar_end_time')
+
+        if bar_start_time and bar_end_time and bar_start_time > bar_end_time:
+            raise ValidationError("You can't end a bar before it started. How are we supposed to bar hop now...")
+
+        return bar_end_time
 
 
 
