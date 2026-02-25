@@ -9,7 +9,7 @@
     {% for bar in bars %}
       <div class="bar-element">
         <h2>{{ bar.bar_name }}</h2>
-        <p>Activity: {{ bar.bar_status }}</p>
+        <p>Activity: {{ bar.get_bar_status_display }}</p>
         <a href="{% url 'bars:bar-details' bar_id=bar.id %}">more details</a>
       </div>
     {% endfor %}
@@ -20,7 +20,7 @@
         {% for bar in bars %}
         <div class="bar-element">
           <h2>{{ bar.bar_name }}</h2>
-          <p>Activity: {{ bar.bar_status }}</p>
+          <p>Activity: {{ bar.get_bar_status_display }}</p>
         </div>
         <a href="{% url 'bars:bar-details' bar_id=bar.id %}">more details</a>
       {% endfor %}

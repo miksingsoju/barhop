@@ -4,14 +4,24 @@
 {% block title %} Bar Details {% endblock %}
 
 {% block content %}
-  <div class="bar-details-container">
-    <h1>{{ bar.bar_name }}</h1>
-    <h3> {{ bar.bar_start_time }} - {{ bar.bar_end_time }}</h3>
-    <h3> Bar Status: {{ bar.bar_status }}</h3>
-    {% if bar.bar_owner == request.user %} 
-        <a href="{% url 'bars:bar-update' bar_id=bar.id %}">update bar details</a>
+    {% if bar.bar_owner == request.user %}
+        <a href="{% url 'bars:bar-list' username=user.username %}">back to owned bars</a>
+    {% else %}
+        <a href="{% url 'bars:bar-list' %}">back to bar list</a>
     {% endif %}
-    <p>Bar Description:</p>
-    <p>{{bar.bar_description}}</p>
-  </div>
+
+    <div class="bar-details-container">
+        <h1>{{ bar.bar_name }}</h1>
+        <h3> {{ bar.bar_start_time }} - {{ bar.bar_end_time }}</h3>
+        <h3> Bar Status: {{ bar.get_bar_status_display }}</h3>
+        {% if bar.bar_owner == request.user %} 
+            <a href="{% url 'bars:bar-update' bar_id=bar.id %}">update bar details</a>
+        {% endif %}
+        <p>Bar Description:</p>
+        <p>{{bar.bar_description}}</p>
+        <p>Amenities: </p>
+        {% for amenity in bar.bar_amenities.all %}
+        <span>[{{ amenity.name }}]</span>
+        {% endfor %}
+    </div>
 {% endblock %}

@@ -19,6 +19,13 @@ from user_management.models import Profile
 class Amenity(models.Model):
     name = models.CharField(max_length=67)
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Amenity'
+        verbose_name_plural = 'Amenities'
+
 class Bar(models.Model):
     bar_draft = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -38,7 +45,7 @@ class Bar(models.Model):
     bar_end_time = models.TimeField()
     
     def __str__(self):
-        return self.name
+        return self.bar_name
      
     class Meta:
         verbose_name = 'Bar'
