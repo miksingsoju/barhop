@@ -20,6 +20,8 @@ class Amenity(models.Model):
     name = models.CharField(max_length=67)
 
 class Bar(models.Model):
+    bar_draft = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     bar_name = models.CharField(max_length=67)
     bar_description = models.TextField()
     bar_owner = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)

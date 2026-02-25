@@ -53,14 +53,14 @@
         <header class="flex-row justify-content-between align-items-center card p-8">
           <h2 class="m-0">Bar Details</h2>
           <div class="bar-form-block">
-              <form method="post" enctype="multipart/form-data">
+              <form method="post" enctype="multipart/form-data" id="bar-form">
                   {% csrf_token %}
                   {% for field in bar_form %}
                     <div class="bar-form-field">
                       <label class="bar-form-label">{{ field.label }}</label>
                       {{field}}
                       {% if field.errors %}
-                      <ul class="errorlist">
+                      <ul class="error-list">
                         {% for error in field.errors %}
                           <li>{{ error }}</li>
                         {% endfor %}
@@ -68,7 +68,6 @@
                     {% endif %}
                     </div>
                   {% endfor %}
-                  <button type="Submit" class="button">Submit Bar</button>
               </form>
          </div>
         </header>
@@ -100,7 +99,7 @@
           <span>Continue</span>
           <i class="ki-solid ki-arrow-right fs-2 p-0"></i>
         </button>
-        <button type="button" class="btn btn-info" data-kt-stepper-action="submit">
+        <button type="submit" class="btn btn-info" form="bar-form" data-kt-stepper-action="submit">
           <span class="indicator-label">Submit</span>
           <span class="indicator-progress">Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
         </button>

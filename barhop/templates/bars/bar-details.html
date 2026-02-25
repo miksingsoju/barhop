@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Bar Details {% endblock %}
+
+{% block content %}
+  <div class="bar-details-container">
+    <h1>{{ bar.bar_name }}</h1>
+    <h3> {{ bar.bar_start_time }} - {{ bar.bar_end_time }}</h3>
+    <h3> Bar Status: {{ bar.bar_status }}</h3>
+    {% if bar.bar_owner == request.user %} 
+        <a href="{% url 'bars:bar-details' bar_id=bar.id %}">go here lmao</a>
+    {% endif %}
+    <p>Bar Description:</p>
+    <p>{{bar.bar_description}}</p>
+  </div>
+{% endblock %}
