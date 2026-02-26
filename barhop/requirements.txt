@@ -1,6 +1,7 @@
 asgiref==3.10.0
 Django==6.0.2
 mysqlclient==2.2.8
+pillow==12.1.1
 psycopg==3.2.12
 psycopg-binary==3.2.12
 python-dotenv==1.2.1

@@ -1,7 +1,27 @@
 from django import forms
-from .models import Bar 
 from django.core.exceptions import ValidationError
-# will fix in the future
+from .models import Bar
+
+
+class MultiFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultiImageField(forms.ImageField):
+
+    widget = MultiFileInput
+
+    def clean(self, data, initial=None):
+        if not data:
+            return []
+
+        if not isinstance(data, (list, tuple)):
+            data = [data]
+        cleaned_files = []
+        for f in data:
+            cleaned_files.append(super().clean(f, initial))
+        return cleaned_files
+
 
 class CreateBarForm(forms.ModelForm):
     class Meta: 
@@ -23,6 +43,9 @@ class CreateBarForm(forms.ModelForm):
             'bar_address' : 'Bar Address', 
             'bar_amenities': 'Select amenities',
         }
+
+    images = MultiImageField(label='Add bar images: (optional)', required=False)
+
     def clean_bar_end_time(self):
         bar_start_time = self.cleaned_data.get('bar_start_time')
         bar_end_time = self.cleaned_data.get('bar_end_time')

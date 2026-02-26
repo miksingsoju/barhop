@@ -16,6 +16,15 @@
         <h3> {{ bar.bar_start_time }} - {{ bar.bar_end_time }}</h3>
         <h3>{{ bar.bar_address }}</h3>
         <h3> Bar Status: {{ bar.get_bar_status_display }}</h3>
+        {% if bar.images.all %}
+            <div class="bar-images d-flex flex-row flex-wrap gap-4 my-4">
+                {% for bar_image in bar.images.all %}
+                    <div class="bar-image-wrapper">
+                        <img src="{{ bar_image.image.url }}" alt="{{ bar.bar_name }} image {{ forloop.counter }}" class="img-fluid rounded" />
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         {% if bar.bar_owner == request.user %} 
             <a href="{% url 'bars:bar-update' bar_id=bar.id %}">update bar details</a>
         {% endif %}

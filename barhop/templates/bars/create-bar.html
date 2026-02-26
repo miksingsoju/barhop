@@ -24,6 +24,47 @@
       })
     })
   </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var fileInput = document.querySelector('#bar-form input[type="file"][name="images"]')
+      if (!fileInput) return
+
+      var previewContainer = document.createElement('div')
+      previewContainer.id = 'image-preview-container'
+      previewContainer.className = 'd-flex flex-row flex-wrap gap-4 mt-4'
+      fileInput.closest('.bar-form-field')?.appendChild(previewContainer)
+
+      fileInput.addEventListener('change', function (event) {
+        var files = event.target.files
+        previewContainer.innerHTML = ''
+
+        if (!files || !files.length) return
+
+        Array.from(files).forEach(function (file) {
+          if (!file.type.startsWith('image/')) return
+
+          var reader = new FileReader()
+          reader.onload = function (e) {
+            var img = document.createElement('img')
+            img.src = e.target.result
+            img.alt = file.name
+            img.className = 'img-fluid rounded'
+            img.style.maxWidth = '200px'
+            img.style.maxHeight = '200px'
+            img.style.objectFit = 'cover'
+
+            var wrapper = document.createElement('div')
+            wrapper.className = 'bar-image-preview-wrapper'
+            wrapper.appendChild(img)
+
+            previewContainer.appendChild(wrapper)
+          }
+
+          reader.readAsDataURL(file)
+        })
+      })
+    })
+  </script>
 {% endblock %}
 
 {% block content %}
@@ -56,17 +97,32 @@
               <form method="post" enctype="multipart/form-data" id="bar-form">
                   {% csrf_token %}
                   {% for field in bar_form %}
-                    <div class="bar-form-field">
-                      <label class="bar-form-label">{{ field.label }}</label>
-                      {{field}}
-                      {% if field.errors %}
-                      <ul class="error-list">
-                        {% for error in field.errors %}
-                          <li>{{ error }}</li>
-                        {% endfor %}
-                      </ul>
+                    {% if field.name == 'images' %}
+                      <br>
+                      <div class="bar-form-field">
+                        <label class="bar-form-label">{{ field.label }}</label><br>
+                        {{ field }}
+                        {% if field.errors %}
+                        <ul class="error-list">
+                          {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                          {% endfor %}
+                        </ul>
+                        {% endif %}
+                      </div>
+                    {% else %}
+                      <div class="bar-form-field">
+                        <label class="bar-form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <ul class="error-list">
+                          {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                          {% endfor %}
+                        </ul>
+                        {% endif %}
+                      </div>
                     {% endif %}
-                    </div>
                   {% endfor %}
               </form>
          </div>
