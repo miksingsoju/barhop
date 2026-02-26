@@ -1,3 +1,4 @@
+
 @echo off
 (FOR /d /r . %%d IN (migrations) DO @IF EXIST "%%d" rd /s /q "%%d") &&^
 echo Begin reset database. && echo Recreating database... &&^

@@ -7,25 +7,46 @@ Update Profile
 {% block content %}
 <style>
     /* This targets the actual input boxes */
-    .edit-field input, 
+    .edit-field input,
     .edit-field textarea {
-        background-color: #5E6278 !important; /* Change this to your gray-100 hex */
+        background-color: #5E6278 !important;
+        /* Change this to your gray-100 hex */
         color: #A1A5B7;
         border: none !important;
         padding: 10px 15px;
+
+        width: 100%;
         border-radius: 8px;
+        margin-bottom: 10px;
+
     }
 
+    .input-group.input-group-solid .form-control,
+    .input-group.input-group-solid .input-group-text {
+        background-color: var(--bs-gray-200);
+        border-color: var(--bs-gray-200);
+    }
+
+
     /* Optional: Change color when user clicks inside */
-    .edit-field input:focus, 
+    .edit-field input:focus,
     .edit-field textarea:focus {
         background-color: #e9ecef !important;
         outline: none;
         box-shadow: none;
     }
+
+    .settings-section {
+        display: none;
+    }
+
+    /* Show only the first one (Edit Profile) initially */
+    #edit-profile-section {
+        display: block;
+    }
 </style>
 
-<main class="container pt-5">
+<main class="container">
     <div class="row g-8">
         <!-- Left Column -->
         <div class="col-lg-3 d-flex flex-column gap-6">
@@ -37,13 +58,13 @@ Update Profile
 
                     <!--Full Name and User Name-->
                     <div>
-                        <h5 class="mb-0 text-gray-900">{{user.profile.first_name}} {{user.profile.last_name}}</h5>
+                        <h5 class="mb-0 text-gray-900">{{user.first_name}} {{user.last_name}}</h5>
                         <small class="text-gray-700">@{{user.username}}</small>
                     </div>
                 </div>
 
                 <!-- Bio -->
-                <p>{{user.profile.bio}}</p>
+                <p>{{user.bio}}</p>
 
             </div>
 
@@ -62,7 +83,7 @@ Update Profile
                                 </i>My Bars
                             </span>
                             <i class="bi bi-chevron-right text-gray-800 "></i></a></li>
-                    <li class="py-2 px-3"><a href="#"
+                    <li class="py-2 px-3"><a href="javascript:void(0)" onclick="showSection('edit-profile-section')"
                             class=" d-flex justify-content-between text-decoration-none text-white">
                             <span class="d-flex gap-5 align-items-center">
 
@@ -73,7 +94,8 @@ Update Profile
                                 </i>Edit Profile
                             </span>
                             <i class="bi bi-chevron-right text-gray-800 "></i></a></li>
-                    <li class="py-2 px-3"><a href="#"
+                    <li class="py-2 px-3"><a href="javascript:void(0)"
+                            onclick="showSection('personal-information-section')"
                             class=" d-flex justify-content-between text-decoration-none text-white">
                             <span class="d-flex gap-5 align-items-center">
 
@@ -85,7 +107,7 @@ Update Profile
                                 Personal Information
                             </span>
                             <i class="bi bi-chevron-right text-gray-800 "></i></a></li>
-                    <li class="py-2 px-3"><a href="#"
+                    <li class="py-2 px-3"><a href="javascript:void(0)" onclick="showSection('change-password-section')"
                             class=" d-flex justify-content-between text-decoration-none text-white">
                             <span class="d-flex gap-5 align-items-center">
 
@@ -102,41 +124,136 @@ Update Profile
 
         <!-- Right Column -->
         <div class="col-lg-8">
-            <div class="card p-4 bg-gray-400">
-                <span class="mb-3 fs-5 fw-semibold ">Edit Profile</span>
+            <div class="card p-6 bg-gray-400">
+                <section class="settings-section" id="edit-profile-section">
+                    <span class="mb-3 fs-5 fw-semibold ">Edit Profile</span>
 
-                <!-- Profile Picture -->
-                <div class="mb-3 text-center">
-                    <img src="{% static 'media/profile.jpg' %}" class="rounded-circle mb-2" width="100" height="100">
-                    <button class="btn rounded-circle btn-sm btn-primary" width="32" height="32"><i
-                            class="bi bi-pencil"></i></button>
-                </div>
-
-                <!-- Form -->
-                <form method="POST" class="edit-field">
-                    {% csrf_token %}
-
-                    <h6 class="mb-3 "> Name </h6>
-
-                    <div class="row my-3">
-                        <div class="col">
-                            {{ form.first_name }}
+                    <!-- Profile Picture -->
+                    <div class="mb-3 text-center">
+                        <div class="symbol symbol-50px">
+<div class="symbol-label fs-2 fw-semibold rounded-circle bg-gray-300">A</div>                            <span class="symbol-badge badge badge-circle bg-info text-white top-100 start-100"><button class="btn"><i class="ki-duotone ki-pencil text-white">
+ <span class="path1"></span>
+ <span class="path2"></span>
+</i></button></span>
                         </div>
-                        <div class="col">
-                            {{ form.last_name }}
+                        
+                    </div>
+
+                    <!-- Form -->
+                    <form method="POST" class="edit-field">
+                        {% csrf_token %}
+
+                        <h6 class="mb-3 "> Name </h6>
+
+                        <div class="row my-3">
+                            <div class="col">
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col">
+                                {{ form.last_name }}
+                            </div>
                         </div>
+                        <h6 class="mt-5 mb-3 "> Biography </h6>
+                        <div class="mb-3">
+                            {{ form.bio }}
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-info">Save Changes</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="settings-section" id="personal-information-section">
+                    <span class="mb-3 fs-5 fw-semibold ">Personal Information</span>
+
+                    <!-- Profile Picture -->
+                    <div class="mb-3 text-center">
+                        <img src="{% static 'media/profile.jpg' %}" class="rounded-circle mb-2" width="100"
+                            height="100">
+                        <button class="btn rounded-circle btn-sm btn-primary" width="32" height="32"><i
+                                class="bi bi-pencil"></i></button>
                     </div>
-                    <h6 class="mt-5 mb-3 "> Biography </h6>
-                    <div class="mb-3">
-                        {{ form.bio }}
+
+                    <!-- Form -->
+                    <form method="POST" class="edit-field">
+                        {% csrf_token %}
+
+                        <h6 class="mb-3 align-items-center"> Email </h6>
+
+                        {{form.email}}
+
+                        <div class="fv-row fv-plugins-icon-container w-100">
+                            <div class="input-group input-group-solid">
+                                <span class="input-group-text">
+                                    <i class="ki-duotone ki-calendar fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </span>
+                                <input id="{{ form.date_of_birth.id_for_label }}"
+                                    name="{{ form.date_of_birth.html_name }}" type="date" class="form-control ps-0"
+                                    placeholder="Date of Birth" required />
+                            </div>
+                            <div
+                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                {% for error in form.date_of_birth.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-info">Save Changes</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="settings-section" id="change-password-section">
+                    <span class="mb-3 fs-5 fw-semibold ">Change Password</span>
+
+                    <!-- Profile Picture -->
+                    <div class="mb-3 text-center">
+                        <img src="{% static 'media/profile.jpg' %}" class="rounded-circle mb-2" width="100"
+                            height="100">
+                        <button class="btn rounded-circle btn-sm btn-primary" width="32" height="32"><i
+                                class="bi bi-pencil"></i></button>
                     </div>
-                    <div class="d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-danger">Cancel</button>
-                        <button type="submit" class="btn btn-info">Save Changes</button>
-                    </div>
-                </form>
+
+                    <!-- Form -->
+                    <form method="POST" class="edit-field">
+                        {% csrf_token %}
+
+                        <h6 class="mb-3 "> Old Password </h6>
+                        {{ form.password }}
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-info">Save Changes</button>
+                        </div>
+                    </form>
+                </section>
             </div>
+
         </div>
     </div>
 </main>
+
+<script>
+    function showSection(sectionId) {
+        // 1. Hide all sections
+        const sections = document.querySelectorAll('.settings-section');
+        sections.forEach(section => {
+            section.style.display = 'none';
+        });
+
+        // 2. Show the requested section
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.style.display = 'block';
+        }
+    }
+
+    document.querySelector("#id_date_of_birth").flatpickr({
+        dateFormat: "j F, Y",
+    });
+</script>
 {% endblock %}
