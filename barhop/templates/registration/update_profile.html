@@ -1,12 +1,142 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+
 {% block title%}
-    Update Profile
+Update Profile
 {% endblock %}
 {% block content %}
-    <h2>Update Profile</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-    </form>
+<style>
+    /* This targets the actual input boxes */
+    .edit-field input, 
+    .edit-field textarea {
+        background-color: #5E6278 !important; /* Change this to your gray-100 hex */
+        color: #A1A5B7;
+        border: none !important;
+        padding: 10px 15px;
+        border-radius: 8px;
+    }
+
+    /* Optional: Change color when user clicks inside */
+    .edit-field input:focus, 
+    .edit-field textarea:focus {
+        background-color: #e9ecef !important;
+        outline: none;
+        box-shadow: none;
+    }
+</style>
+
+<main class="container pt-5">
+    <div class="row g-8">
+        <!-- Left Column -->
+        <div class="col-lg-3 d-flex flex-column gap-6">
+            <!-- Profile Info Card -->
+            <div class="card d-flex flex-column bg-gray-300 gap-3 px-4 py-4">
+                <div class="d-flex align-items-center mb-3">
+                    <!--Profile Picture-->
+                    <img src="{% static 'media/profile.jpg' %}" class="rounded-circle me-3" width="60" height="60">
+
+                    <!--Full Name and User Name-->
+                    <div>
+                        <h5 class="mb-0 text-gray-900">{{user.profile.first_name}} {{user.profile.last_name}}</h5>
+                        <small class="text-gray-700">@{{user.username}}</small>
+                    </div>
+                </div>
+
+                <!-- Bio -->
+                <p>{{user.profile.bio}}</p>
+
+            </div>
+
+            <!-- Navigation Card -->
+            <div class="card p-3 bg-gray-400">
+                <ul class="fw-semibold list-unstyled mb-0 d-flex flex-column gap-3">
+                    <li class="py-2 px-3"><a href="#"
+                            class=" d-flex justify-content-between text-decoration-none text-white">
+                            <span class="d-flex gap-5 align-items-center">
+                                <i class="ki-duotone ki-shop fs-2x text-gray-800">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                    <span class="path5"></span>
+                                </i>My Bars
+                            </span>
+                            <i class="bi bi-chevron-right text-gray-800 "></i></a></li>
+                    <li class="py-2 px-3"><a href="#"
+                            class=" d-flex justify-content-between text-decoration-none text-white">
+                            <span class="d-flex gap-5 align-items-center">
+
+                                <i class="ki-duotone ki-profile-circle text-gray-800 fs-2x">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>Edit Profile
+                            </span>
+                            <i class="bi bi-chevron-right text-gray-800 "></i></a></li>
+                    <li class="py-2 px-3"><a href="#"
+                            class=" d-flex justify-content-between text-decoration-none text-white">
+                            <span class="d-flex gap-5 align-items-center">
+
+                                <i class="ki-duotone ki-address-book fs-2x text-gray-800">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>
+                                Personal Information
+                            </span>
+                            <i class="bi bi-chevron-right text-gray-800 "></i></a></li>
+                    <li class="py-2 px-3"><a href="#"
+                            class=" d-flex justify-content-between text-decoration-none text-white">
+                            <span class="d-flex gap-5 align-items-center">
+
+                                <i class="ki-duotone ki-lock text-gray-800 fs-2x">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>Change Password
+                            </span>
+                            <i class="bi bi-chevron-right text-gray-800 "></i></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-8">
+            <div class="card p-4 bg-gray-400">
+                <span class="mb-3 fs-5 fw-semibold ">Edit Profile</span>
+
+                <!-- Profile Picture -->
+                <div class="mb-3 text-center">
+                    <img src="{% static 'media/profile.jpg' %}" class="rounded-circle mb-2" width="100" height="100">
+                    <button class="btn rounded-circle btn-sm btn-primary" width="32" height="32"><i
+                            class="bi bi-pencil"></i></button>
+                </div>
+
+                <!-- Form -->
+                <form method="POST" class="edit-field">
+                    {% csrf_token %}
+
+                    <h6 class="mb-3 "> Name </h6>
+
+                    <div class="row my-3">
+                        <div class="col">
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col">
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <h6 class="mt-5 mb-3 "> Biography </h6>
+                    <div class="mb-3">
+                        {{ form.bio }}
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-danger">Cancel</button>
+                        <button type="submit" class="btn btn-info">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
 {% endblock %}
