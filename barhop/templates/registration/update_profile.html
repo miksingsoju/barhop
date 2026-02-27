@@ -25,6 +25,7 @@ Update Profile
     .input-group.input-group-solid .input-group-text {
         background-color: var(--bs-gray-200);
         border-color: var(--bs-gray-200);
+        color: #ffffff;
         padding: 10px 15px;
 
     }
@@ -192,15 +193,24 @@ Update Profile
 
                     <!-- Form -->
                     <form method="POST" class="edit-field">
-                        {% csrf_token %}
+    {% csrf_token %}
 
-                        <h6 class="mb-3 "> Old Password </h6>
-                        {{ form.password }}
+    <h6 class="mb-3">Old Password</h6>
+    <div class="input-group input-group-solid mb-5">
+        <span class="input-group-text"><i class="ki-duotone ki-key fs-2"><span class="path1"></span><span class="path2"></span></i></span>
+        <input type="password" name="old_password" class="form-control" placeholder="Current Password" required>
+    </div>
 
-                        <div class="d-flex justify-content-end gap-2">
-                            <button type="submit" name="change_password" class="btn btn-info">Save Changes</button>
-                        </div>
-                    </form>
+    <h6 class="mb-3">New Password</h6>
+    <div class="input-group input-group-solid mb-5">
+        <span class="input-group-text"><i class="ki-duotone ki-lock fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></span>
+        <input type="password" name="new_password" class="form-control" placeholder="New Password" required>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <button type="submit" name="change_password" class="btn btn-info">Save Changes</button>
+    </div>
+</form>
                 </section>
             </div>
 

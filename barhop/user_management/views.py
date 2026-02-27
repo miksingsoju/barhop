@@ -8,9 +8,12 @@ from django.contrib import messages
 from .forms import RegistrationFormStep1, RegistrationFormStep2, ProfileUpdateForm
 from .models import Profile
 
+from django.contrib.auth import update_session_auth_hash
+
 @login_required
 def update_profile(request):
     user = request.user # This is your Profile instance
+    form = ProfileUpdateForm(instance=user)
     
     if request.method == 'POST':
         # 1. Check for 'Edit Profile' submission
@@ -30,16 +33,25 @@ def update_profile(request):
 
         # 3. Check for 'Change Password' submission
         elif 'change_password' in request.POST:
-            new_password = request.POST.get('password')
-            if new_password:
-                user.set_password(new_password) # Hashes the password properly
-                user.save()
-                # Important: keep the user logged in after password change
-                update_session_auth_hash(request, user) 
-                messages.success(request, "Password changed successfully!")
+            old_pass = request.POST.get('old_password')
+            new_pass = request.POST.get('new_password')
 
-        return redirect('user_management:update_profile') # Refresh the page to show new data
-        
+            # 1. Verify the old password matches the database
+            if user.check_password(old_pass):
+                if len(new_pass) >= 8: # Basic length check
+                    # 2. Hash and save the new password
+                    user.set_password(new_pass)
+                    user.save()
+
+                    # 3. Update session so they stay logged in
+                    update_session_auth_hash(request, user)
+                    messages.success(request, "Password changed successfully!")
+                else:
+                    messages.error(request, "New password is too short (min 8 chars).")
+            else:
+                messages.error(request, "The 'Old Password' you entered is incorrect.")
+
+            return redirect('user_management:update_profile')
     else:
         form = ProfileUpdateForm(instance=user)
 
