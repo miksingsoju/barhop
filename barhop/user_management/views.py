@@ -10,13 +10,39 @@ from .models import Profile
 
 @login_required
 def update_profile(request):
+    user = request.user # This is your Profile instance
+    
     if request.method == 'POST':
-        form = ProfileUpdateForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('bars:bar-list')
+        # 1. Check for 'Edit Profile' submission
+        if 'edit_profile' in request.POST:
+            user.first_name = request.POST.get('first_name')
+            user.last_name = request.POST.get('last_name')
+            user.bio = request.POST.get('bio')
+            user.save()
+            messages.success(request, "Display info updated!")
+
+        # 2. Check for 'Personal Info' submission
+        elif 'personal_info' in request.POST:
+            user.email = request.POST.get('email')
+            user.date_of_birth = request.POST.get('date_of_birth')
+            user.save()
+            messages.success(request, "Personal details updated!")
+
+        # 3. Check for 'Change Password' submission
+        elif 'change_password' in request.POST:
+            new_password = request.POST.get('password')
+            if new_password:
+                user.set_password(new_password) # Hashes the password properly
+                user.save()
+                # Important: keep the user logged in after password change
+                update_session_auth_hash(request, user) 
+                messages.success(request, "Password changed successfully!")
+
+        return redirect('user_management:update_profile') # Refresh the page to show new data
+        
     else:
-        form = ProfileUpdateForm(instance=request.user)
+        form = ProfileUpdateForm(instance=user)
+
     return render(request, "registration/update_profile.html", {'form': form})
 
 
