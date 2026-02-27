@@ -1,12 +1,240 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+
 {% block title%}
-    Update Profile
+Update Profile
 {% endblock %}
 {% block content %}
-    <h2>Update Profile</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-    </form>
+<style>
+    /* This targets the actual input boxes */
+    .edit-field input,
+    .edit-field textarea {
+        background-color: #5E6278 !important;
+        /* Change this to your gray-100 hex */
+        color: #A1A5B7;
+        border: none !important;
+        padding: 10px 15px;
+
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 10px;
+
+    }
+
+    .input-group.input-group-solid .form-control,
+    .input-group.input-group-solid .input-group-text {
+        background-color: var(--bs-gray-200);
+        border-color: var(--bs-gray-200);
+        color: #ffffff;
+        padding: 10px 15px;
+
+    }
+
+    .settings-section {
+        display: none;
+    }
+
+    /* Show only the first one (Edit Profile) initially */
+    #edit-profile-section {
+        display: block;
+    }
+</style>
+
+<main class="container">
+    <div class="row g-8">
+        <!-- Left Column -->
+        <div class="col-lg-3 d-flex flex-column gap-6">
+            <!-- Profile Info Card -->
+            <div class="card d-flex flex-column bg-gray-300 gap-3 px-4 py-4">
+                <div class="d-flex align-items-center mb-3">
+                    <!--Profile Picture-->
+                    <img src="{% static 'media/profile.jpg' %}" class="rounded-circle me-3" width="60" height="60">
+
+                    <!--Full Name and User Name-->
+                    <div>
+                        <h5 class="mb-0 text-gray-900">{{user.first_name}} {{user.last_name}}</h5>
+                        <small class="text-gray-700">@{{user.username}}</small>
+                    </div>
+                </div>
+
+                <!-- Bio -->
+                <p>{{user.bio}}</p>
+
+            </div>
+
+            <!-- Navigation Card -->
+            <div class="card p-3 bg-gray-400">
+                <ul class="fw-semibold list-unstyled mb-0 d-flex flex-column gap-3">
+                    <li class="py-2 px-3"><a href="javascript:void(0)" onclick="showSection('edit-profile-section')"
+                            class=" d-flex justify-content-between text-decoration-none text-white">
+                            <span class="d-flex gap-5 align-items-center">
+
+                                <i class="ki-duotone ki-profile-circle text-gray-800 fs-2x">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>Edit Profile
+                            </span>
+                            <i class="bi bi-chevron-right text-gray-800 "></i></a></li>
+                    <li class="py-2 px-3"><a href="javascript:void(0)"
+                            onclick="showSection('personal-information-section')"
+                            class=" d-flex justify-content-between text-decoration-none text-white">
+                            <span class="d-flex gap-5 align-items-center">
+
+                                <i class="ki-duotone ki-address-book fs-2x text-gray-800">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>
+                                Personal Information
+                            </span>
+                            <i class="bi bi-chevron-right text-gray-800 "></i></a></li>
+                    <li class="py-2 px-3"><a href="javascript:void(0)" onclick="showSection('change-password-section')"
+                            class=" d-flex justify-content-between text-decoration-none text-white">
+                            <span class="d-flex gap-5 align-items-center">
+
+                                <i class="ki-duotone ki-lock text-gray-800 fs-2x">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>Change Password
+                            </span>
+                            <i class="bi bi-chevron-right text-gray-800 "></i></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-8">
+            <div class="card p-6 bg-gray-400">
+                <section class="settings-section" id="edit-profile-section">
+                    <span class="mb-3 fs-5 fw-semibold ">Edit Profile</span>
+
+                    <!-- Profile Picture -->
+                    <div class="mb-4x text-center">
+                        <div class="symbol symbol-100px">
+                            <div class="symbol-label fs-2 fw-semibold rounded-circle bg-gray-300">A</div> 
+                            <span class="symbol-badge badge badge-circle bg-info text-white top-100 start-100">
+                                <button class="btn"><i class="ki-duotone ki-pencil text-white">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i></button></span>
+                        </div>
+
+                    </div>
+
+                    <!-- Form -->
+                    <form method="POST" class="edit-field">
+                        {% csrf_token %}
+
+                        <h6 class="mb-3 "> Name </h6>
+
+                        <div class="row my-3">
+                            <div class="col">
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col">
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        <h6 class="mt-5 mb-3 "> Biography </h6>
+                        <div class="mb-3">
+                            {{ form.bio }}
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" name="edit_profile" class="btn btn-info">Save Changes</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="settings-section" id="personal-information-section">
+                    <h5 class="mb-4x fs-5 fw-semibold ">Personal Information</h5>
+
+                    <!-- Form -->
+                    <form method="POST" class="edit-field">
+                        {% csrf_token %}
+
+                        <h6 class="mb-3 align-items-center"> Email </h6>
+
+                        {{form.email}}
+                        <h6 class="mb-3 align-items-center"> Date of Birth </h6>
+
+                        <div class="fv-row fv-plugins-icon-container w-100">
+                            <div class="input-group input-group-solid">
+                                <span class="input-group-text">
+                                    <i class="ki-duotone ki-calendar fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </span>
+                                <input id="{{ form.date_of_birth.id_for_label }}" value="{{ user.date_of_birth|date:'Y-m-d' }}"
+                                    name="{{ form.date_of_birth.html_name }}" type="date" class="form-control ps-0"
+                                    placeholder="Date of Birth" required />
+                            </div>
+                            <div
+                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                {% for error in form.date_of_birth.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" name="personal_info" class="btn btn-info">Save Changes</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="settings-section" id="change-password-section">
+                    <h5 class="mb-5 fs-5 fw-semibold ">Change Password</h5>
+
+                    <!-- Profile Picture -->
+
+
+                    <!-- Form -->
+                    <form method="POST" class="edit-field">
+    {% csrf_token %}
+
+    <h6 class="mb-3">Old Password</h6>
+    <div class="input-group input-group-solid mb-5">
+        <span class="input-group-text"><i class="ki-duotone ki-key fs-2"><span class="path1"></span><span class="path2"></span></i></span>
+        <input type="password" name="old_password" class="form-control" placeholder="Current Password" required>
+    </div>
+
+    <h6 class="mb-3">New Password</h6>
+    <div class="input-group input-group-solid mb-5">
+        <span class="input-group-text"><i class="ki-duotone ki-lock fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></span>
+        <input type="password" name="new_password" class="form-control" placeholder="New Password" required>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <button type="submit" name="change_password" class="btn btn-info">Save Changes</button>
+    </div>
+</form>
+                </section>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<script>
+    function showSection(sectionId) {
+        // 1. Hide all sections
+        const sections = document.querySelectorAll('.settings-section');
+        sections.forEach(section => {
+            section.style.display = 'none';
+        });
+
+        // 2. Show the requested section
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.style.display = 'block';
+        }
+    }
+
+    document.querySelector("#id_date_of_birth").flatpickr({
+        dateFormat: "j F, Y",
+    });
+</script>
 {% endblock %}
