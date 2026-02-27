@@ -167,7 +167,7 @@ Update Profile
                                         <span class="path2"></span>
                                     </i>
                                 </span>
-                                <input id="{{ form.date_of_birth.id_for_label }}" 
+                                <input id="{{ form.date_of_birth.id_for_label }}" value="{{ user.date_of_birth|date:'Y-m-d' }}"
                                     name="{{ form.date_of_birth.html_name }}" type="date" class="form-control ps-0"
                                     placeholder="Date of Birth" required />
                             </div>
