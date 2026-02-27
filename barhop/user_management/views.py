@@ -51,7 +51,7 @@ def update_profile(request):
             else:
                 messages.error(request, "The 'Old Password' you entered is incorrect.")
 
-            return redirect('user_management:update_profile')
+        return redirect('user_management:update_profile')
     else:
         form = ProfileUpdateForm(instance=user)
 
