@@ -6,6 +6,22 @@
 
 {% block content %}
   <div class="bar-update-form-container">
+    {% if bar and bar.images.all %}
+      <div class="mb-6">
+        <h3>Existing Images</h3>
+        <div class="d-flex flex-row flex-wrap gap-4 my-4">
+          {% for bar_image in bar.images.all %}
+            <div class="bar-image-wrapper d-flex flex-column align-items-start gap-2">
+              <img src="{{ bar_image.image.url }}" alt="{{ bar.bar_name }} image {{ forloop.counter }}" class="img-fluid rounded mb-2" style="max-width: 200px; max-height: 200px; object-fit: cover;" />
+              <label class="form-check d-flex align-items-center gap-2">
+                <!-- <input class="form-check-input" type="checkbox" name="delete_images" value="{{ bar_image.id }}"> -->
+                <!-- <span class="form-check-label">Remove this image</span> WILL DO THIS IN THE FUTURE-->
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
     <form method="post" enctype="multipart/form-data" id="bar-form">
         {% csrf_token %}
         {% for field in bar_form %}
@@ -20,8 +36,62 @@
             </ul>
           {% endif %}
           </div>
+          {% if field.name == 'images' %}
+            <div class="mt-3">
+              <label class="bar-form-label d-block">New image previews</label>
+              <div id="image-preview-container" class="d-flex flex-row flex-wrap gap-4"></div>
+            </div>
+          {% endif %}
         {% endfor %}
         <button type="submit">Update bar details</button>
     </form>
   </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var fileInput = document.querySelector('#bar-form input[type="file"][name="images"]');
+      var previewContainer = document.getElementById('image-preview-container');
+
+      if (!fileInput || !previewContainer) {
+        return;
+      }
+
+      fileInput.addEventListener('change', function (event) {
+        var files = event.target.files;
+        previewContainer.innerHTML = '';
+
+        if (!files || !files.length) {
+          return;
+        }
+
+        Array.from(files).forEach(function (file) {
+          if (!file.type.startsWith('image/')) {
+            return;
+          }
+
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = file.name;
+            img.className = 'img-fluid rounded';
+            img.style.maxWidth = '200px';
+            img.style.maxHeight = '200px';
+            img.style.objectFit = 'cover';
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'bar-image-preview-wrapper';
+            wrapper.appendChild(img);
+
+            previewContainer.appendChild(wrapper);
+          };
+
+          reader.readAsDataURL(file);
+        });
+      });
+    });
+  </script>
 {% endblock %}

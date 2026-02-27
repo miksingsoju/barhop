@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import CreateBarForm
-from .models import Bar, Amenity #, Address
+from .models import Bar, Amenity, BarImage  # , Address
 from user_management.models import Profile
 from django.db.models import Case, When, Value, IntegerField
 from django.contrib.auth.decorators import login_required
@@ -34,7 +34,7 @@ def bar_list(request, username=None):
 
 # @login_required
 def create_bar(request):
-    bar_form = CreateBarForm(request.POST or None)
+    bar_form = CreateBarForm(request.POST or None, request.FILES or None)
     if not request.user.is_authenticated:
         return redirect('bars:bar-list')
     bar_user = request.user
@@ -47,9 +47,14 @@ def create_bar(request):
             bar.bar_draft = False
             bar.save()
             bar_form.save_m2m()
+
+            images = request.FILES.getlist('images')
+            for image_file in images:
+                BarImage.objects.create(bar=bar, image=image_file)
+
             return redirect('bars:bar-details', bar_id=bar.id)
-    
-    bar_form = CreateBarForm()
+    else:
+        bar_form = CreateBarForm()
 
     ctx = {
         "stepper": [
@@ -96,14 +101,24 @@ def bar_update(request, bar_id):
     if bar_object.bar_owner != request.user:
         return redirect('bars:bar-details', bar_id=bar_id)
     if request.method == 'POST':
-        bar_form = CreateBarForm(request.POST, instance=bar_object)
+        bar_form = CreateBarForm(request.POST, request.FILES, instance=bar_object)
         if bar_form.is_valid():
-            bar_form.save()
+            bar = bar_form.save()
+
+            to_delete_ids = request.POST.getlist('delete_images')
+            if to_delete_ids:
+                BarImage.objects.filter(id__in=to_delete_ids, bar=bar_object).delete()
+
+            images = request.FILES.getlist('images')
+            for image_file in images:
+                BarImage.objects.create(bar=bar, image=image_file)
+
             return redirect('bars:bar-details', bar_id=bar_id)
     else:
         bar_form = CreateBarForm(instance=bar_object)
 
     return render(request, 'bars/update-bar.html', {
         'bar_form': bar_form,
+        'bar': bar_object,
     })
 
