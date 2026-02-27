@@ -1,8 +1,34 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} Home {% endblock %}
+{% block title %} Bars {% endblock %}
 
 {% block content %}
+  {% if request.user.is_authenticated and user.username in request.path %}
+  <h1>Owned Bars</h1>
+  <div class="bar-list-container">
+    {% for bar in bars %}
+      <div class="bar-element">
+        <h2>{{ bar.bar_name }}</h2>
+        <p>Activity: {{ bar.get_bar_status_display }}</p>
+        <a href="{% url 'bars:bar-details' bar_id=bar.id %}">more details</a>
+        <br><br>
+      </div>
+    {% endfor %}
+    <a href="{% url 'bars:create-bar' %}" class="btn btn-info">Create Bar</a>  
+    {% else %}
+    <h1>Bar List</h1>
+      <div class="bar-list-container">
+        {% for bar in bars %}
+        <div class="bar-element">
+          <h2>{{ bar.bar_name }}</h2>
+          <p>Activity: {{ bar.get_bar_status_display }}</p>
+        </div>
+        <a href="{% url 'bars:bar-details' bar_id=bar.id %}">more details</a>
+        <br><br>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
 
 {% endblock %}

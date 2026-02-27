@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Bar Details
+{% endblock %}
+
+{% block styles %}
+  <style>
+    input[name='like-button']:not(:checked) + label i.ki-solid,
+    input[name='like-button']:checked + label i.ki-outline {
+      display: none;
+    }
+    
+    input[name='like-button']:not(:checked) + label i.ki-outline,
+    input[name='like-button']:checked + label i.ki-solid {
+      display: block;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  {% if bar.bar_owner == request.user %}
+    <a href="{% url 'bars:bar-list' username=user.username %}">back to owned bars</a>
+  {% else %}
+    <a href="{% url 'bars:bar-list' %}">back to bar list</a>
+  {% endif %}
+  <div class="d-flex flex-row justify-content-center gap-12 my-12">
+    {% partialdef bar_details inline %}
+    <section class="d-flex flex-column gap-7 w-100 mw-sm-700px">
+      <!-- image carousel -->
+      <div id="kt_carousel_2_carousel" class="carousel carousel-custom slide" data-bs-ride="carousel" data-bs-interval="8000">
+        <div class="d-flex align-items-center justify-content-between flex-wrap">
+          <div class="carousel-inner rounded">
+            <div class="carousel-item h-300px bg-gray-300 active">Image 1</div>
+            <div class="carousel-item h-300px bg-gray-300">Image 2</div>
+            <div class="carousel-item h-300px bg-gray-300">Image 3</div>
+          </div>
+          <ol class="p-0 m-0 carousel-indicators carousel-indicators-bullet position-absolute bottom-0 w-100">
+            <li data-bs-target="#kt_carousel_2_carousel" data-bs-slide-to="0" class="ms-1 active"></li>
+            <li data-bs-target="#kt_carousel_2_carousel" data-bs-slide-to="1" class="ms-1"></li>
+            <li data-bs-target="#kt_carousel_2_carousel" data-bs-slide-to="2" class="ms-1"></li>
+          </ol>
+        </div>
+      </div>
+
+      <header class="d-flex flex-row justify-content-between">
+        <figcaption>
+          <h2 id="bar-name" class="text-poppins">{{ bar.bar_name }}</h2>
+          <span class="text-gray-700 fs-6 d-flex mb-1 align-items-center">
+            <i class="ki-duotone ki-geolocation fs-4 pe-2 text-gray-700">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span id="bar-address">{{ bar.bar_address }}</span>
+          </span>
+          <span class="text-gray-700 fs-6 d-flex mb-1 align-items-center">
+            <i class="ki-duotone ki-time fs-4 pe-2 text-gray-700">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span id="bar-times">{{ bar.bar_start_time }} - {{ bar.bar_end_time }}</span>
+          </span>
+          {% if not preview %}
+            <span class="fs-6 d-flex mt-1 align-items-center">
+              {% if bar.bar_status == 'COLD' %}
+                <span class="fs-7 pe-2">&#129482;</span>
+                <span class="text-primary">{{ bar.get_bar_status_display }}</span>
+              {% elif bar.bar_status == 'FIRE' %}
+                <span class="fs-7 pe-2">&#128293;</span>
+                <span class="text-danger">{{ bar.get_bar_status_display }}</span>
+              {% else %}
+                <span class="fs-7 pe-2">&#127777;</span>
+                <span class="text-warning">{{ bar.get_bar_status_display }}</span>
+              {% endif %}
+            </span>
+          {% endif %}
+        </figcaption>
+        {% if bar_owner == request.user and not preview %}
+          <a class="btn btn-sm btn-info ps-4 h-fit" href="{% url 'bars:bar-update' bar.id %}">
+            <i class="ki-duotone ki-pencil fs-4">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span>Edit Bar Details</span>
+          </a>
+        {% endif %}
+      </header>
+
+      {% if not preview %}
+        <article class="border-gray-300 border-top border-bottom px-10 py-5 d-flex">
+          <div class="w-100 text-danger d-flex gap-3 justify-content-center align-items-bottom">
+            <input type="checkbox" class="btn-check" name="like-button" value="true" id="like-button" />
+            <label class="cursor-pointer" for="like-button">
+              <i class="ki-solid ki-heart fs-3x text-danger"></i>
+              <i class="ki-outline ki-heart fs-3x text-danger"></i>
+            </label>
+            <div class="d-flex flex-column align-items-center justify-content-around">
+              <span class="fs-2 fw-bold lh-1">0</span>
+              <span class="fs-7 lh-1">Likes</span>
+            </div>
+          </div>
+          <div class="w-100 text-warning d-flex gap-3 justify-content-center align-items-bottom">
+            <a href="#"><i class="ki-outline ki-star fs-3x text-warning"></i></a>
+            <div class="d-flex flex-column align-items-center justify-content-around">
+              <span class="fs-2 fw-bold lh-1">0</span>
+              <span class="fs-7 lh-1">Rating</span>
+            </div>
+          </div>
+        </article>
+      {% endif %}
+
+      <article class="d-flex flex-row gap-4 align-items-center rounded bg-gray-200 bg-opacity-50 border border-gray-200 py-5 px-6 mb-4">
+        <div class="symbol symbol-50px symbol-circle">
+          <div class="symbol-label fs-2 fw-semibold bg-light-info text-info">
+            {% if bar_owner.pfp %}
+              <img />
+            {% else %}
+              {{ bar_owner.username|slice:'0:1' }}
+            {% endif %}
+          </div>
+        </div>
+        <div class="d-flex flex-column">
+          <span class="fs-5 text-gray-700">Owned by <span class="fw-bold text-gray-800">{{ bar_owner.first_name }} {{ bar_owner.last_name }}</span></span>
+          {% comment %} <a href="{% url 'auth:profile' bar_owner.username %}" class="fs-7 fw-semibold text-gray-600">@ {{ bar_owner.username }}</a> {% endcomment %}
+          <a href="#" class="fs-7 fw-semibold text-gray-600">@ {{ bar_owner.username }}</a>
+        </div>
+      </article>
+
+      <article>
+        <p id="bar-desc" class="fs-6 mb-8">{{ bar.bar_description }}</p>
+        <h5 class="text-poppins">Amenities</h5>
+        <div class="d-flex flex-row gap-3 mt-4" id="amenities-container">
+          {% for amenity in bar.bar_amenities.all %}
+            <span class="badge badge-light-success badge-lg p-2 fs-semibold">{{ amenity.name }}</span>
+          {% endfor %}
+        </div>
+      </article>
+    </section>
+    {% endpartialdef %}
+
+    <aside class="w-100 w-sm-300px card"></aside>
+  </div>
+{% endblock %}

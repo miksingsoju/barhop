@@ -1,0 +1,27 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Update Bar Details {% endblock %}
+
+{% block content %}
+  <div class="bar-update-form-container">
+    <form method="post" enctype="multipart/form-data" id="bar-form">
+        {% csrf_token %}
+        {% for field in bar_form %}
+          <div class="bar-form-field">
+            <label class="bar-form-label">{{ field.label }}</label>
+            {{field}}
+            {% if field.errors %}
+            <ul class="error-list">
+              {% for error in field.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          </div>
+        {% endfor %}
+        <button type="submit">Update bar details</button>
+    </form>
+  </div>
+{% endblock %}

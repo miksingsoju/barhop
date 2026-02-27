@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Create Bar
+{% endblock %}
+
+{% block styles %}
+  {% include 'reservations/create-table.html#create_table_styles' %}
+  <style>
+    .input-group.input-group-solid .input-group-text + .form-control {
+      border-left-color: var(--bs-gray-300);
+    }
+    
+    .form-check-custom.form-check-solid {
+      width: 18px;
+    }
+    
+    @media (max-width: 767px) {
+      .stepper.stepper-pills.stepper-column .stepper-line {
+        margin: calc(var(--bs-stepper-pills-size) / 2) 0 auto 0;
+        border-left: none;
+        border-bottom: 1px dashed var(--bs-gray-400);
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block scripts %}
+  {% include 'reservations/create-table.html#create_table_scripts' %}
+  <script>
+    // client-side validations 
+    var validateBarForm = FormValidation.formValidation(document.forms["bar-form"], {
+      fields: {
+        bar_name: {
+          validators: {
+            notEmpty: { message: 'This field is required.' }
+          }
+        },
+        bar_description: {
+          validators: {
+            notEmpty: { message: 'This field is required.' }
+          }
+        },
+        bar_address: {
+          validators: {
+            notEmpty: { message: 'This field is required.' }
+          }
+        },
+        bar_start_time: {
+          validators: {
+            notEmpty: { message: 'This field is required.' }
+          }
+        },
+        bar_end_time: {
+          validators: {
+            notEmpty: { message: 'This field is required.' }
+          }
+        },
+      },
+  
+      plugins: {
+        trigger: new FormValidation.plugins.Trigger(),
+        bootstrap: new FormValidation.plugins.Bootstrap5({
+          rowSelector: '.fv-row',
+          eleInvalidClass: '',
+          eleValidClass: ''
+        })
+      }
+    });
+
+    const populatePreview = () => {
+      let { bar_name, bar_address, bar_description, bar_start_time, bar_end_time } = document.forms["bar-form"];
+      document.querySelector("#bar-name").innerText = bar_name.value;
+      document.querySelector("#bar-address").innerText = bar_address.value;
+      document.querySelector("#bar-desc").innerText = bar_description.value;
+      document.querySelector("#bar-times").innerText = bar_start_time.value + " - " + bar_end_time.value;
+      
+      document.querySelector("#amenities-container").innerHTML = ""
+      $("#id_bar_amenities").select2("data").forEach(opt => {
+        let el = document.createElement("span");
+        el.setAttribute("class", "badge badge-light-success badge-lg p-2 fs-semibold");
+        el.textContent = opt.text;
+        document.querySelector("#amenities-container").appendChild(el);
+      })
+      
+      console.log("populated!");
+    }
+
+    const validators = [validateBarForm, ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      var stepper = new KTStepper(document.querySelector('#form-stepper'))
+    
+      stepper.on('kt.stepper.next', function (stepper) {
+        if (!(validators[stepper.getCurrentStepIndex()-1])) stepper.goTo(stepper.getClickedStepIndex());
+        validators[stepper.getCurrentStepIndex()-1]?.validate().then(status => {
+          if (status == "Valid") {
+            stepper.goNext();
+            populatePreview();
+          }
+        });
+      });
+    
+      stepper.on('kt.stepper.previous', function (stepper) {
+        stepper.goPrevious()
+      })
+    
+      stepper.on('kt.stepper.click', function (stepper) {
+        if (!(validators[stepper.getCurrentStepIndex()-1])) stepper.goTo(stepper.getClickedStepIndex());
+        validators[stepper.getCurrentStepIndex()-1]?.validate().then(status => {
+          if (status == "Valid") {
+            stepper.goTo(stepper.getClickedStepIndex());
+            populatePreview();
+          }
+        });
+      })
+    })
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div>
+    {% if bar_form.non_field_errors %}
+      {% for error in bar_form.non_field_errors %}
+        <span>{{ error }}</span>
+      {% endfor %}
+    {% endif %}
+    {% for field in form %}
+      <div class="form-group">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <span class="help-block text-danger">{{ error }}</span>
+          {% endfor %}
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="stepper stepper-pills stepper-column d-flex flex-column flex-md-row justify-content-center gap-8 gap-sm-12 mx-6 mx-lg-0 my-8 my-sm-12" id="form-stepper">
+    <menu class="card p-6 p-sm-8 p-md-12 m-0 d-flex w-100 w-md-350px h-fit justify-content-sm-center">
+      <div class="stepper-nav flex-row flex-md-column justify-content-between gap-3 gap-md-0">
+        {% for step in stepper %}
+          <div class="stepper-item flex-row flex-md-column gap-3 gap-md-0 {% if stepper|length|stringformat:'s' != step.num %}w-100{% else %}w-fit{% endif %} me-md-5{% if step.current and step.current.strip %} current{% endif %}"
+            data-kt-stepper-element="nav"
+            data-kt-stepper-action="step">
+            <div class="stepper-wrapper d-flex flex-column flex-md-row align-items-center">
+              <div class="stepper-icon w-40px h-40px me-0 mb-3 mb-md-0 me-md-6">
+                <i class="stepper-check fas fa-check"></i>
+                <span class="stepper-number">{{ step.num }}</span>
+              </div>
+              <div class="stepper-label d-none d-sm-block">
+                <h3 class="stepper-title fs-7 fs-md-3 text-center text-md-start">{{ step.title }}</h3>
+                <div class="stepper-desc d-none d-md-block">{{ step.desc }}</div>
+              </div>
+            </div>
+            {% if stepper|length|stringformat:'s' != step.num %}
+              <div class="stepper-line w-100 w-md-0 h-md-40px"></div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </menu>
+
+    <div class="d-flex flex-column w-100 w-lg-600px gap-8">
+      <section class="flex-column gap-8 current" id="details-form-list" data-kt-stepper-element="content">
+        <article class="flex-column card p-8 gap-10">
+          <h2 class="m-0">Bar Details</h2>
+          <form method="post" enctype="multipart/form-data" id="bar-form" class="m-0 p-0 d-flex flex-column gap-10">
+            {% csrf_token %}
+            <div class="flex-grow-1 fv-row">
+              <label class="form-label" for="{{ form.bar_name.html_name }}">Bar Name</label>
+              <input id="{{ bar_form.bar_name.id_for_label }}" name="{{ bar_form.bar_name.html_name }}" type="text" class="form-control form-control-solid" placeholder="What's the name of your bar?" />
+              <div class="invalid-feedback">
+                {% for error in bar_form.bar_name.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="flex-grow-1 fv-row">
+              <label class="form-label" for="{{ bar_form.bar_description.html_name }}">Bar Description</label>
+              <textarea id="{{ bar_form.bar_description.id_for_label }}" name="{{ bar_form.bar_description.html_name }}" type="textarea" class="form-control form-control-solid" placeholder="Tell us more about your bar." data-kt-autosize="true" rows="3"></textarea>
+              <div class="invalid-feedback">
+                {% for error in bar_form.bar_description.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="flex-grow-1 fv-row">
+              <label class="form-label" for="{{ bar_form.bar_address.html_name }}">Bar Address</label>
+              <div class="input-group input-group-solid">
+                <span class="input-group-text">
+                  <i class="ki-duotone ki-geolocation fs-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </span>
+                <input id="{{ bar_form.bar_address.id_for_label }}" name="{{ bar_form.bar_address.html_name }}" type="text" class="form-control ps-0" placeholder="Where is your bar located?" />
+              </div>
+              <div class="invalid-feedback">
+                {% for error in bar_form.bar_address.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="d-flex flex-row gap-10">
+              <div class="w-100 fv-row">
+                <label class="form-label" for="{{ bar_form.bar_start_time.html_name }}">Opening Time</label>
+                <input id="{{ bar_form.bar_start_time.id_for_label }}" name="{{ bar_form.bar_start_time.html_name }}" type="time" class="form-control form-control-solid" placeholder="00:00" />
+                <div class="invalid-feedback">
+                  {% for error in bar_form.bar_opening_time.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="w-100 fv-row">
+                <label class="form-label" for="{{ bar_form.bar_end_time.html_name }}">Closing Time</label>
+                <input id="{{ bar_form.bar_end_time.id_for_label }}" name="{{ bar_form.bar_end_time.html_name }}" type="time" class="form-control form-control-solid" placeholder="00:00" />
+                <div class="invalid-feedback">
+                  {% for error in bar_form.bar_closing_time.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <div class="w-100">
+              <label class="form-label" for="{{ bar_form.bar_amenities.html_name }}">Amenities</label>
+              <select name="{{ bar_form.bar_amenities.html_name }}" id="{{ bar_form.bar_amenities.id_for_label }}" class="form-select form-select-solid" data-control="select2" data-placeholder="Select available amenities" multiple="multiple">
+                <option></option>
+                {% for widget in bar_form.bar_amenities.subwidgets %}
+                  {{ widget.tag }}
+                {% endfor %}
+              </select>
+              {% for error in bar_form.bar_amenities.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          </form>
+        </article>
+      </section>
+
+      <section class="flex-column gap-8" data-kt-stepper-element="content">
+        <header class="flex-row justify-content-between align-items-center card p-8">
+          <h2 class="m-0">Add Events</h2>
+        </header>
+      </section>
+
+      <section class="flex-column gap-8" id="table-form-list" data-kt-stepper-element="content">
+        <header class="flex-row justify-content-between align-items-center card p-8">
+          <h2 class="m-0">Add Tables</h2>
+          <button type="button" class="btn btn-sm btn-info" data-repeater-create><span>Add Listing</span></button>
+        </header>
+        {% include 'reservations/create-table.html#create_table_form' %}
+      </section>
+
+      <section class="flex-column gap-8 mb-3" data-kt-stepper-element="content">
+        <header class="flex-row justify-content-between align-items-center card p-8">
+          <h2 class="m-0">Publish Your Bar</h2>
+        </header>
+        {% with preview='true' bar_owner=request.user %}
+          {% include 'bars/bar-details.html#bar_details' %}
+        {% endwith %}
+        <br>
+      </section>
+
+      <footer class="flex-row justify-content-between align-items-center card p-8">
+        <button type="button" class="btn btn-light-info border border-info" data-kt-stepper-action="previous"><span>Back</span></button>
+        <button type="button" class="btn btn-info" data-kt-stepper-action="next">
+          <span>Continue</span>
+          <i class="ki-solid ki-arrow-right fs-2 p-0"></i>
+        </button>
+        <button type="submit" form="bar-form" id="submit-btn" class="btn btn-info" data-kt-stepper-action="submit">
+          <span class="indicator-label">Submit</span>
+          <span class="indicator-progress">Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+      </footer>
+    </div>
+  </div>
+{% endblock %}
