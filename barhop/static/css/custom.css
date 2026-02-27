@@ -3,6 +3,10 @@
   --bs-menu-dropdown-bg-color: var(--bs-gray-200);
   --bs-menu-link-bg-color-hover: var(--bs-info-light);
   --bs-body-bg: var(--bs-gray-200);
+  --bs-stepper-icon-bg-color-current: var(--bs-info);
+  --bs-stepper-icon-bg-color: var(--bs-info-light);
+  --bs-component-hover-color: var(--bs-info);
+  
 }
 
 /* overwrite */
@@ -12,9 +16,26 @@
 .menu-hover-primary .menu-item.hover:not(.here)> .menu-link:not(.disabled):not(.active):not(.here) .menu-title, .menu-hover-primary .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) .menu-title 
 { color: var(--bs-info); }
 
+.select2-container--bootstrap5 .select2-dropdown .select2-results__option.select2-results__option--selected,  
+.select2-container--bootstrap5 .select2-dropdown .select2-results__option.select2-results__option--highlighted {
+  background-color: var(--bs-gray-200);
+}
+
+.select2-container--bootstrap5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+  background-color: var(--bs-gray-200);
+}
+
+.select2-container--bootstrap5.select2-container--focus:not(.select2-container--disabled) .form-select-solid,
+.select2-container--bootstrap5 .select2-dropdown,
+.form-select.form-select-solid,
+.input-group.input-group-solid .input-group-text {
+  background-color: var(--bs-gray-300);
+  border-color: var(--bs-gray-300);
+}
+
 .form-control.form-control-solid {
-    background-color: var(--bs-gray-200);
-    border-color: var(--bs-gray-200);
+  background-color: var(--bs-gray-200);
+  border-color: var(--bs-gray-200);
 }
 
 .flatpickr-current-month .flatpickr-monthDropdown-months,
@@ -36,16 +57,18 @@
 .flatpickr-day { color: var(--bs-gray-700); }
 .flatpickr-day.nextMonthDay { color: var(--bs-gray-500); }
 
-
+.stepper.stepper-pills.stepper-column .stepper-line {
+  border-color: var(--bs-gray-400);
+}
 
 /* custom css */
 
 @media (min-width: 576px) {
-  .justify-content-sm-between { justify-content: space-between !important; }
+  /* .justify-content-sm-between { justify-content: space-between !important; }
   .justify-content-sm-around { justify-content: space-around !important; }
   .justify-content-sm-start { justify-content: start !important; }
   .justify-content-sm-end { justify-content: end !important; }
-  .justify-content-sm-center { justify-content: center !important; }
+  .justify-content-sm-center { justify-content: center !important; } */
   
   .w-sm-10 { width: 10% !important; }
   .w-sm-20 { width: 20% !important; }

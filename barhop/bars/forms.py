@@ -12,7 +12,9 @@ class MultiImageField(forms.ImageField):
     widget = MultiFileInput
 
     def clean(self, data, initial=None):
-        if not data:
+        if data in self.empty_values:
+            if self.required and not initial:
+                raise ValidationError(self.error_messages["required"], code="required")
             return []
 
         if not isinstance(data, (list, tuple)):
