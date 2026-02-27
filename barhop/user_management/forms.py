@@ -36,23 +36,31 @@ class RegistrationFormStep2(forms.Form):
     accept_terms = forms.BooleanField(required=True)
     
 class ProfileUpdateForm(forms.ModelForm):
+    fields = [
+        'username',
+        'email',
+        'password',
+        'first_name',
+        'last_name',
+        'date_of_birth',
+        'user_type'
+    ]
+    widgets = {
+        'username': forms.TextInput(attrs={'class': 'form-control'}),
+        'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        'password': forms.PasswordInput(attrs={'class': 'form-control'}),
+        'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+        'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+        'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        'user_type': forms.Select(attrs={'class': 'form-control'}),
+    }
+
     class Meta:
         model = Profile
         fields = [
             'username',
             'email',
-            'password',
             'first_name',
             'last_name',
-            'date_of_birth',
-            'user_type'
+            'date_of_birth'
         ]
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'password': forms.PasswordInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'user_type': forms.Select(attrs={'class': 'form-control'}),
-        }

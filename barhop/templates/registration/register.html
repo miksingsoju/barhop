@@ -3,12 +3,84 @@
 
 {% block title %} Register {% endblock %}
 
+{% block styles %}
+<style>
+  .input-group.input-group-solid .form-control, .input-group.input-group-solid .input-group-text {
+    background-color: var(--bs-gray-200);
+    border-color: var(--bs-gray-200);
+  }
+
+  .input-group.input-group-solid .input-group-text+.form-control {
+    border-left-color: var(--bs-gray-200);
+  }
+
+  .form-check-custom.form-check-solid {
+    width: 18px;
+  }
+
+  #user_type_owner:checked + label, #user_type_owner:hover + label { border-color: var(--bs-success); }
+
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const blockedBtn = new KTBlockUI(document.querySelector("#register-btn"));
+  const loading = document.querySelector("#id_username + span span.spinner-border");
+  const success = document.querySelector("#id_username + span i.text-success");
+  const successMsg = document.querySelector("span.user-avail");
+  const fail = document.querySelector("#id_username + span i.text-danger");
+  const failMsg = document.querySelector("span.user-exists");
+
+  const checkUsername = debounce(async (e) => {
+    loading.style.display = "none";
+    if (e.target.value == "") return;
+
+    try {
+      let res = await fetch("check-username?username="+ e.target.value);
+      console.log(res);
+
+      if (res.ok) {
+        fail.style.display = "block";
+        failMsg.style.display = "block";
+      } else {
+        success.style.display = "block";
+        successMsg.style.display = "block";
+      }
+    } catch (error) {
+      // console.log(error);
+    }
+  }, 1000, { "trailing": true });
+
+  const startLoading = debounce((e) => {
+    loading.style.display 
+    = fail.style.display = failMsg.style.display
+    = success.style.display = successMsg.style.display = "none";
+    
+    if (e.target.value == "") return;
+    loading.style.display = "block";
+  }, 1000, { "leading": true });
+
+  document.querySelector("#id_username").addEventListener("input", e => {
+    startLoading(e);
+    checkUsername(e);
+  });
+
+  document.querySelector("#id_date_of_birth").flatpickr({
+     dateFormat: "j F, Y",
+  });
+</script>
+{% endblock %}
+
 {% block content %}
-<div class="d-flex flex-column w-100 h-100 justify-content-center align-items-center">
-    <h1 class="text-poppins fw-bolder fs-3x text-center mb-10">BarHop</h1>
-    <form method="post" class="d-flex flex-column align-items-center gap-6 m-0 w-sm-400px">
-        {% csrf_token %}
-        <h1 class="text-center mb-5">Sign up for an account</h1>
+<div class="d-flex flex-column w-100 h-100 mt-12 mt-sm-n5 justify-content-start justify-content-sm-center align-items-center">
+    <h1 class="text-poppins fw-bolder fs-3x text-center mb-8">BarHop</h1>
+    <form method="post" class="d-flex flex-column align-items-center gap-6 m-0 px-8 px-sm-0 w-100 w-sm-400px">
+      {% csrf_token %}
+      <div class="d-flex flex-column gap-3 mb-6">
+        <h1 class="text-center m-0">Sign up for an account</h1>
+        <span class="text-center fs-5 text-gray-600 m-0">Tell us about yourself!</span>
+      </div>
 
         {% if step == 1 %}
             <div class="fv-row fv-plugins-icon-container w-100">
@@ -35,66 +107,184 @@
                     {% endfor %}
                 </div>
             </div>
-            <button class="btn btn-info mt-6 w-100" type="submit">Continue</button>
+            <button class="btn btn-icon-white btn-info w-100" type="submit">
+              Continue
+              <i class="ki-solid ki-arrow-right fs-2"></i>
+            </button>
+            <span class="fs-semibold text-gray-600 text-center w-100">
+              Already have an account? <a class="text-main" href="{% url 'login' %}">Login</a>
+            </span>
 
         {% elif step == 2 %}
             <div class="fv-row fv-plugins-icon-container w-100">
-                <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text" placeholder="Username" autocomplete="off" class="form-control form-control-solid" value="{{ form.username.value|default:'' }}" required />
+                <div class="input-group input-group-solid">
+                  <span class="input-group-text">@</span>
+                  <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text" placeholder="Username" autocomplete="off" class="form-control ps-0" required />
+                  <span class="input-group-text">
+                    <span style="display:none;" class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    <i style="display:none;" class="ki-duotone ki-check-circle fs-2 text-success">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    <i style="display:none;" class="ki-duotone ki-information-2 fs-2 text-danger rotate-180">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                    </i>
+                  </span>
+                </div>
                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                  <span class="user-avail valid-feedback">Username is available!</span>
+                  <span style="display:none;" class="user-exists">An account with this username already exists.</span>
                     {% for error in form.username.errors %}
                         <span>{{ error }}</span>
                     {% endfor %}
                 </div>
             </div>
-            <div class="fv-row fv-plugins-icon-container w-100">
-                <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" type="text" placeholder="First Name" autocomplete="off" class="form-control form-control-solid" value="{{ form.first_name.value|default:'' }}" required />
-                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                    {% for error in form.first_name.errors %}
-                        <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
+            <div class="d-flex flex-row gap-4 w-100">
+              <div class="fv-row fv-plugins-icon-container w-100">
+                  <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" type="text" placeholder="First Name" autocomplete="off" class="form-control form-control-solid" required />
+                  <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                      {% for error in form.first_name.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              </div>
+              <div class="fv-row fv-plugins-icon-container w-100">
+                  <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" type="text" placeholder="Last Name" autocomplete="off" class="form-control form-control-solid" required />
+                  <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                      {% for error in form.last_name.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+              </div>
             </div>
             <div class="fv-row fv-plugins-icon-container w-100">
-                <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" type="text" placeholder="Last Name" autocomplete="off" class="form-control form-control-solid" value="{{ form.last_name.value|default:'' }}"required />
-                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                    {% for error in form.last_name.errors %}
-                        <span>{{ error }}</span>
-                    {% endfor %}
+                <div class="input-group input-group-solid">
+                  <span class="input-group-text">
+                    <i class="ki-duotone ki-calendar fs-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                  </span>
+                  <input id="{{ form.date_of_birth.id_for_label }}" name="{{ form.date_of_birth.html_name }}" type="date" class="form-control ps-0"  placeholder="Date of Birth" required />
                 </div>
-            </div>
-            <div class="fv-row fv-plugins-icon-container w-100">
-                <input id="{{ form.date_of_birth.id_for_label }}" name="{{ form.date_of_birth.html_name }}" type="date" class="form-control form-control-solid" value="{{ form.date_of_birth.value|default:'' }}"required />
                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                     {% for error in form.date_of_birth.errors %}
                         <span>{{ error }}</span>
                     {% endfor %}
                 </div>
             </div>
+            
+            {% partialdef radio %}
+            <div class="d-flex flex-row gap-4">
+              <label class="d-flex flex-stack cursor-pointer w-100 gap-2" for="user_type_hopper">
+                <span class="d-flex align-items-center gap-2">
+                  <span class="symbol symbol-45px">
+                    <span class="symbol-label bg-light-primary">
+                      <i class="ki-duotone ki-profile-circle fs-2 text-primary">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                      </i>
+                    </span>
+                  </span>
+
+                  <span class="d-flex flex-column">
+                    <span class="fw-bolder fs-8 text-gray-700">Bar Hopper</span>
+                    <span class="fs-9 fs-semibold text-gray-600 lh-xs">
+                      Find great bars nearby, book tables, and share your experience.
+                    </span>
+                  </span>
+                </span>
+
+                <span class="form-check form-check-custom form-check-solid ratio-square">
+                  <input id="user_type_hopper" class="form-check-input h-auto w-100 ratio-square" type="radio"  name="{{ form.user_type.html_name }}" value="HOPPER"/>
+                </span>
+              </label>
+
+              <label class="d-flex flex-stack cursor-pointer w-100 gap-2" for="user_type_owner">
+                <span class="d-flex align-items-center gap-2">
+                  <span class="symbol symbol-45px">
+                    <span class="symbol-label bg-light-success">
+                      <i class="ki-duotone ki-shop fs-2 text-success">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                        <span class="path5"></span>
+                      </i>
+                    </span>
+                  </span>
+                  <span class="d-flex flex-column">
+                    <span class="fw-bolder fs-8 text-gray-700">Bar Owner</span>
+                    <span class="fs-9 fw-semibold text-gray-600 lh-xs">
+                      List on BarHop and turn your bar into the next go-to spot.
+                    </span>
+                  </span>
+                </span>
+
+                <span class="form-check form-check-custom form-check-solid ratio-square">
+                  <input id="user_type_owner" class="form-check-input h-100 w-auto ratio-square" type="radio" name="{{ form.user_type.html_name }}" value="OWNER"/>
+                </span>
+              </label>
+            </div>
+            {% endpartialdef %}
+
+            {% partialdef radio_two inline %}
+            <div class="d-flex flex-row gap-4">
+              <input id="user_type_hopper" class="btn-check" type="radio"  name="{{ form.user_type.html_name }}" value="HOPPER"/>
+              <label class="d-flex flex-stack cursor-pointer w-100 btn btn-outline btn-outline-dashed btn-active-light-primary p-3 rounded" for="user_type_hopper">
+                <span class="d-flex align-items-center gap-3">
+                  <i class="ki-duotone ki-profile-circle fs-1 text-primary">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                  </i>
+                  <span class="d-flex flex-column text-start">
+                    <span class="fw-bold fs-8 text-gray-700">Bar Hopper</span>
+                    <span class="fs-9 fs-semibold text-gray-600 lh-xs">Find great bars nearby and book your next experience.</span>
+                  </span>
+                </span>
+              </label>
+
+              <input id="user_type_owner" class="btn-check" type="radio" name="{{ form.user_type.html_name }}" value="OWNER"/>
+              <label class="d-flex flex-stack cursor-pointer w-100 btn btn-outline btn-active-outline-success btn-outline-dashed btn-active-light-success p-3 rounded" for="user_type_owner">
+                <span class="d-flex align-items-center gap-3">
+                  <i class="ki-duotone ki-shop fs-1 text-success">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                    <span class="path5"></span>
+                  </i>
+                  <span class="d-flex flex-column text-start">
+                    <span class="fw-bold fs-8 text-gray-700">Bar Owner</span>
+                    <span class="fs-9 fw-semibold text-gray-600 lh-xs">List on BarHop and turn your bar into the next go-to spot.</span>
+                  </span>
+                </span>
+              </label>
+            </div>
+            {% endpartialdef %}
 
             <div class="fv-row w-100">
-                <input id="{{ form.accept_terms.id_for_label }}" name="{{ form.accept_terms.html_name }}" type="checkbox" class="form-check-input" {% if form.accept_terms.value %}checked{% endif %} required />
+              <div class="form-check form-check-custom form-check-solid form-check-sm w-100">
+                <input class="form-check-input"  type="checkbox" id="{{ form.accept_terms.id_for_label }}" name="{{ form.accept_terms.html_name }}" required />
                 <label class="form-check-label" for="{{ form.accept_terms.id_for_label }}">
-                I accept the 
-                <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="link-primary fw-bold">
-                terms and conditions</a></label>
-            </div>
-            <div class="fv-plugins-message-container invalid-feedback">
-                {% for error in form.accept_terms.errors %}
+                  I accept the 
+                  <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="link-info fw-bold">
+                  Terms and Conditions</a>.
+                </label>
+              </div>
+                  <div class="fv-plugins-message-container invalid-feedback">
+                  {% for error in form.accept_terms.errors %}
                     <span>{{ error }}</span>
-                {% endfor %}
+                  {% endfor %}
+                </div>
             </div>
-
-            <div class="fv-row w-100">
-                    <input id="user_type_hopper" name="{{ form.user_type.html_name }}" type="radio" value = "HOPPER" class="form-check-input" {% if form.user_type.value == "HOPPER" %}checked{% endif %} required />
-                    <label class="form-check-label" for="user_type_hopper">Bar Hopper</label>
-
-                    <input id="user_type_owner" name="{{ form.user_type.html_name }}" type="radio" value = "OWNER" class="form-check-input" {% if form.user_type.value == "OWNER" %}checked{% endif %} required />
-                    <label class="form-check-label" for="user_type_owner">Bar Owner</label>
-
-
-            <div class="d-flex w-100 gap-3 mt-6">
-            <a href="{% url 'user_management:register' %}?reset=1" class="btn btn-secondary w-25 mt-6">Back</a>
-            <button class="btn btn-info mt-6 w-75" type="submit">Create New Account</button>
+            <div class="d-flex w-100 gap-4">
+              <a href="{% url 'user_management:register' %}?reset=1" class="btn btn-bg-secondary btn-active-light-info w-25 w-25">Back</a>
+              <button class="btn btn-info w-75" id="register-btn" type="submit">Create New Account</button>
             </div>
 
             {% if form.non_field_errors %}
