@@ -20,7 +20,10 @@
       @media (min-width: 576px) {
         main { margin-top: 75px; }
       }
-      main { margin-bottom: 68px; }
+      
+      @media (max-width: 575px) {
+        main { margin-bottom: 65px; overflow: auto; }
+      }
     </style>
 
     <title>BarHop - {% block title %}{% endblock %}</title>
@@ -112,7 +115,7 @@
       </div>
     </nav>
 
-    <main class="mt-sm-75px">
+    <main>
       {% block content %}{% endblock %}
     </main>
     

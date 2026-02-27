@@ -84,10 +84,11 @@ def create_bar(request):
     
 def bar_details(request, bar_id):
     bar_object = Bar.objects.get(id=bar_id)
-    bar_owner = bar_object.bar_owner == request.user if request.user.is_authenticated else False
-
+    bar_owner = bar_object.bar_owner
+    
     return render(request, 'bars/bar-details.html', {
         'bar': bar_object,
+        'bar_owner': bar_owner,
     })
 
 def bar_update(request, bar_id):
