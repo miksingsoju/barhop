@@ -119,7 +119,7 @@
             <div class="fv-row fv-plugins-icon-container w-100">
                 <div class="input-group input-group-solid">
                   <span class="input-group-text">@</span>
-                  <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text" placeholder="Username" autocomplete="off" class="form-control ps-0" required />
+                  <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text" placeholder="Username" autocomplete="off" class="form-control ps-0" value="{{ form.username.value|default:'' }}" required />
                   <span class="input-group-text">
                     <span style="display:none;" class="spinner-border spinner-border-sm align-middle ms-2"></span>
                     <i style="display:none;" class="ki-duotone ki-check-circle fs-2 text-success">
@@ -143,7 +143,7 @@
             </div>
             <div class="d-flex flex-row gap-4 w-100">
               <div class="fv-row fv-plugins-icon-container w-100">
-                  <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" type="text" placeholder="First Name" autocomplete="off" class="form-control form-control-solid" required />
+                  <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" type="text" placeholder="First Name" autocomplete="off" class="form-control form-control-solid" value="{{ form.first_name.value|default:'' }}" required />
                   <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                       {% for error in form.first_name.errors %}
                           <span>{{ error }}</span>
@@ -151,7 +151,7 @@
                   </div>
               </div>
               <div class="fv-row fv-plugins-icon-container w-100">
-                  <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" type="text" placeholder="Last Name" autocomplete="off" class="form-control form-control-solid" required />
+                  <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" type="text" placeholder="Last Name" autocomplete="off" class="form-control form-control-solid" value="{{ form.last_name.value|default:'' }}" required />
                   <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                       {% for error in form.last_name.errors %}
                           <span>{{ error }}</span>
@@ -167,7 +167,7 @@
                       <span class="path2"></span>
                     </i>
                   </span>
-                  <input id="{{ form.date_of_birth.id_for_label }}" name="{{ form.date_of_birth.html_name }}" type="date" class="form-control ps-0"  placeholder="Date of Birth" required />
+                  <input id="{{ form.date_of_birth.id_for_label }}" name="{{ form.date_of_birth.html_name }}" type="date" class="form-control ps-0"  placeholder="Date of Birth" value="{{ form.date_of_birth.value|default:'' }}" required />
                 </div>
                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                     {% for error in form.date_of_birth.errors %}
@@ -199,7 +199,7 @@
                 </span>
 
                 <span class="form-check form-check-custom form-check-solid ratio-square">
-                  <input id="user_type_hopper" class="form-check-input h-auto w-100 ratio-square" type="radio"  name="{{ form.user_type.html_name }}" value="HOPPER"/>
+                  <input id="user_type_hopper" class="form-check-input h-auto w-100 ratio-square" type="radio"  name="{{ form.user_type.html_name }}" value="HOPPER" {% if form.user_type.value == "HOPPER" %}checked{% endif %} />
                 </span>
               </label>
 
@@ -225,7 +225,7 @@
                 </span>
 
                 <span class="form-check form-check-custom form-check-solid ratio-square">
-                  <input id="user_type_owner" class="form-check-input h-100 w-auto ratio-square" type="radio" name="{{ form.user_type.html_name }}" value="OWNER"/>
+                  <input id="user_type_owner" class="form-check-input h-100 w-auto ratio-square" type="radio" name="{{ form.user_type.html_name }}" value="OWNER" {% if form.user_type.value == "OWNER" %}checked{% endif %} />
                 </span>
               </label>
             </div>
