@@ -1,5 +1,5 @@
 from django import forms
-from .models import Bar 
+from .models import Bar, Amenity
 from django.core.exceptions import ValidationError
 # will fix in the future
 
@@ -13,15 +13,7 @@ class CreateBarForm(forms.ModelForm):
             'bar_start_time': forms.TimeInput(format='%H:%M',attrs={'type': 'time', 'class': 'form-control'}),
             'bar_end_time': forms.TimeInput(format='%H:%M',attrs={'type': 'time', 'class': 'form-control'}),
             'bar_address':forms.TextInput(attrs={'class': 'form-control'}),
-            'bar_amenities': forms.CheckboxSelectMultiple(),
-        }
-        labels = {
-            'bar_name': 'Name of bar',
-            'bar_description': 'Bar description',
-            'bar_start_time': 'Opening time',
-            'bar_end_time': 'Closing time',
-            'bar_address' : 'Bar Address', 
-            'bar_amenities': 'Select amenities',
+            'bar_amenities': forms.SelectMultiple(),
         }
     def clean_bar_end_time(self):
         bar_start_time = self.cleaned_data.get('bar_start_time')

@@ -53,7 +53,7 @@
             <span class="fs-sm-6 fs-8 pt-1 p-sm-0">My Bookings</span>
           {% endif %}
         </a>
-        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit d-sm-none{% if "/profile" in request.path %} active{% endif %}" href="#">
+        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit d-sm-none{% if "/profile" in request.path %} active{% endif %}" href="{% url 'auth:update_profile' %}">
           <i class="ki-outline ki-profile-circle fs-2"></i>
           <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Profile</span>
         </a>

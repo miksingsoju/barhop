@@ -7,6 +7,15 @@
 
 {% block styles %}
   {% include 'reservations/create-table.html#create_table_styles' %}
+  <style>
+    .input-group.input-group-solid .input-group-text + .form-control {
+      border-left-color: var(--bs-gray-300);
+    }
+    
+    .form-check-custom.form-check-solid {
+      width: 18px;
+    }
+  </style>
 {% endblock %}
 
 {% block scripts %}
@@ -22,16 +31,36 @@
       stepper.on('kt.stepper.previous', function (stepper) {
         stepper.goPrevious()
       })
+    
+      stepper.on('kt.stepper.click', function (stepper) {
+        stepper.goTo(stepper.getClickedStepIndex())
+      })
     })
   </script>
 {% endblock %}
 
 {% block content %}
-  <div class="stepper stepper-pills stepper-column d-flex flex-row justify-content-center gap-12" id="form-stepper">
+  <div>
+    {% if bar_form.non_field_errors %}
+      {% for error in bar_form.non_field_errors %}
+        <span>{{ error }}</span>
+      {% endfor %}
+    {% endif %}
+    {% for field in form %}
+      <div class="form-group">
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <span class="help-block text-danger">{{ error }}</span>
+          {% endfor %}
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="stepper stepper-pills stepper-column d-flex flex-row justify-content-center gap-12 my-12" id="form-stepper">
     <menu class="card p-12 m-0 w-lg-350px h-fit justify-content-center">
       <div class="stepper-nav">
         {% for step in stepper %}
-          <div class="stepper-item me-5{% if step.current and step.current.strip %} current{% endif %}" data-kt-stepper-element="nav">
+          <div class="stepper-item me-5{% if step.current and step.current.strip %} current{% endif %}" data-kt-stepper-element="nav" data-kt-stepper-action="step">
             <div class="stepper-wrapper d-flex align-items-center">
               <div class="stepper-icon w-40px h-40px">
                 <i class="stepper-check fas fa-check"></i>
@@ -42,7 +71,9 @@
                 <div class="stepper-desc">{{ step.desc }}</div>
               </div>
             </div>
-            <div class="stepper-line h-40px"></div>
+            {% if stepper|length|stringformat:'s' != step.num %}
+              <div class="stepper-line h-40px"></div>
+            {% endif %}
           </div>
         {% endfor %}
       </div>
@@ -50,27 +81,81 @@
 
     <div class="d-flex flex-column gap-8">
       <section class="flex-column w-lg-600px gap-8 current" id="details-form-list" data-kt-stepper-element="content">
-        <header class="flex-row justify-content-between align-items-center card p-8">
+        <article class="flex-column card p-8 gap-10">
           <h2 class="m-0">Bar Details</h2>
-          <div class="bar-form-block">
-              <form method="post" enctype="multipart/form-data" id="bar-form">
-                  {% csrf_token %}
-                  {% for field in bar_form %}
-                    <div class="bar-form-field">
-                      <label class="bar-form-label">{{ field.label }}</label>
-                      {{field}}
-                      {% if field.errors %}
-                      <ul class="error-list">
-                        {% for error in field.errors %}
-                          <li>{{ error }}</li>
-                        {% endfor %}
-                      </ul>
-                    {% endif %}
-                    </div>
+          <form method="post" enctype="multipart/form-data" id="bar-form" class="m-0 p-0 d-flex flex-column gap-10">
+            {% csrf_token %}
+            <div class="flex-grow-1 fv-row fv-plugins-icon-container">
+              <label class="form-label" for="{{ form.bar_name.html_name }}">Bar Name</label>
+              <input id="{{ bar_form.bar_name.id_for_label }}" name="{{ bar_form.bar_name.html_name }}" type="text" class="form-control form-control-solid" placeholder="What's the name of your bar?" />
+              <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                {% for error in bar_form.bar_name.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="flex-grow-1">
+              <label class="form-label" for="{{ bar_form.bar_description.html_name }}">Bar Description</label>
+              <textarea id="{{ bar_form.bar_description.id_for_label }}" name="{{ bar_form.bar_description.html_name }}" type="textarea" class="form-control form-control-solid" placeholder="Tell us more about your bar." data-kt-autosize="true" rows="3"></textarea>
+              <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                {% for error in bar_form.bar_description.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="flex-grow-1 fv-row fv-plugins-icon-container">
+              <label class="form-label" for="{{ bar_form.bar_address.html_name }}">Bar Location</label>
+              <div class="input-group input-group-solid">
+                <span class="input-group-text">
+                  <i class="ki-duotone ki-geolocation fs-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </span>
+                <input id="{{ bar_form.bar_address.id_for_label }}" name="{{ bar_form.bar_address.html_name }}" type="text" class="form-control ps-0" placeholder="Where is your bar located?" />
+              </div>
+              <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                {% for error in bar_form.bar_address.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="d-flex flex-row gap-10 fv-row fv-plugins-icon-container w-100">
+              <div class="w-100">
+                <label class="form-label" for="{{ bar_form.bar_start_time.html_name }}">Opening Time</label>
+                <input id="{{ bar_form.bar_start_time.id_for_label }}" name="{{ bar_form.bar_start_time.html_name }}" type="time" class="form-control form-control-solid" placeholder="00:00" />
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                  {% for error in bar_form.bar_opening_time.errors %}
+                    <span>{{ error }}</span>
                   {% endfor %}
-              </form>
-         </div>
-        </header>
+                </div>
+              </div>
+              <div class="w-100">
+                <label class="form-label" for="{{ bar_form.bar_end_time.html_name }}">Closing Time</label>
+                <input id="{{ bar_form.bar_end_time.id_for_label }}" name="{{ bar_form.bar_end_time.html_name }}" type="time" class="form-control form-control-solid" placeholder="00:00" />
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                  {% for error in bar_form.bar_closing_time.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <div class="fv-row fv-plugins-icon-container w-100">
+              <label class="form-label" for="{{ bar_form.bar_amenities.html_name }}">Amenities</label>
+              <select name="{{ bar_form.bar_amenities.html_name }}" id="{{ bar_form.bar_amenities.id_for_label }}" class="form-select form-select-solid" data-control="select2" data-placeholder="Select available amenities" multiple="multiple">
+                <option></option>
+                {% for widget in bar_form.bar_amenities.subwidgets %}
+                  {{ widget.tag }}
+                {% endfor %}
+              </select>
+              {% for error in bar_form.bar_amenities.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% comment %} {{ bar_form.bar_amenities }} {% endcomment %}
+          </form>
+        </article>
       </section>
 
       <section class="flex-column w-lg-600px gap-8" data-kt-stepper-element="content">
@@ -99,7 +184,7 @@
           <span>Continue</span>
           <i class="ki-solid ki-arrow-right fs-2 p-0"></i>
         </button>
-        <button type="submit" class="btn btn-info" form="bar-form" data-kt-stepper-action="submit">
+        <button type="submit" form="bar-form" class="btn btn-info" data-kt-stepper-action="submit">
           <span class="indicator-label">Submit</span>
           <span class="indicator-progress">Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
         </button>
