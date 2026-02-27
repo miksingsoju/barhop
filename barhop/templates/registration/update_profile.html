@@ -1,12 +1,96 @@
-{% extends "base.html" %}
-{% block title%}
-    Update Profile
+{% extends 'no-nav.html' %}
+{% load static %}
+
+{% block title %} Update Profile {% endblock %}
+
+{% block styles %}
+<style>
+  .input-group.input-group-solid .form-control, .input-group.input-group-solid .input-group-text {
+    background-color: var(--bs-gray-200);
+    border-color: var(--bs-gray-200);
+  }
+  .input-group.input-group-solid .input-group-text+.form-control {
+    border-left-color: var(--bs-gray-200);
+  }
+  /* Style for the Radio Buttons to match your Register look */
+  .btn-check:checked + label { border-color: var(--bs-primary) !important; background-color: var(--bs-light-primary) !important; }
+  .btn-active-light-success:checked + label { border-color: var(--bs-success) !important; background-color: var(--bs-light-success) !important; }
+</style>
 {% endblock %}
+
 {% block content %}
-    <h2>Update Profile</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+<div class="d-flex flex-column w-100 h-100 mt-12 mt-sm-n5 justify-content-start justify-content-sm-center align-items-center">
+    <h1 class="text-poppins fw-bolder fs-3x text-center mb-8">BarHop</h1>
+    
+    <form method="post" class="d-flex flex-column align-items-center gap-6 m-0 px-8 px-sm-0 w-100 w-sm-400px">
+      {% csrf_token %}
+      
+      <div class="d-flex flex-column gap-3 mb-6">
+        <h1 class="text-center m-0">Update Profile</h1>
+        <span class="text-center fs-5 text-gray-600 m-0">Modify your account details</span>
+      </div>
+
+      <div class="fv-row fv-plugins-icon-container w-100">
+          <div class="input-group input-group-solid">
+            <span class="input-group-text">@</span>
+            <input id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" type="text" placeholder="Username" autocomplete="off" class="form-control ps-0" value="{{ form.username.value|default:'' }}" required />
+          </div>
+          <div class="fv-plugins-message-container invalid-feedback">
+              {% for error in form.username.errors %}<span>{{ error }}</span>{% endfor %}
+          </div>
+      </div>
+
+      <div class="fv-row fv-plugins-icon-container w-100">
+          <input id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" type="email" placeholder="Email Address" class="form-control form-control-solid" value="{{ form.email.value|default:'' }}" required />
+          <div class="fv-plugins-message-container invalid-feedback">
+              {% for error in form.email.errors %}<span>{{ error }}</span>{% endfor %}
+          </div>
+      </div>
+
+      <div class="d-flex flex-row gap-4 w-100">
+        <div class="fv-row fv-plugins-icon-container w-100">
+            <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" type="text" placeholder="First Name" class="form-control form-control-solid" value="{{ form.first_name.value|default:'' }}" required />
+            <div class="fv-plugins-message-container invalid-feedback">
+                {% for error in form.first_name.errors %}<span>{{ error }}</span>{% endfor %}
+            </div>
+        </div>
+        <div class="fv-row fv-plugins-icon-container w-100">
+            <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}" type="text" placeholder="Last Name" class="form-control form-control-solid" value="{{ form.last_name.value|default:'' }}" required />
+            <div class="fv-plugins-message-container invalid-feedback">
+                {% for error in form.last_name.errors %}<span>{{ error }}</span>{% endfor %}
+            </div>
+        </div>
+      </div>
+
+      <div class="fv-row fv-plugins-icon-container w-100">
+          <div class="input-group input-group-solid">
+            <span class="input-group-text"><i class="ki-duotone ki-calendar fs-2"><span class="path1"></span><span class="path2"></span></i></span>
+            <input id="{{ form.date_of_birth.id_for_label }}" name="{{ form.date_of_birth.html_name }}" type="date" class="form-control ps-0" value="{{ form.date_of_birth.value|date:'Y-m-d'|default:'' }}" required />
+          </div>
+          <div class="fv-plugins-message-container invalid-feedback">
+              {% for error in form.date_of_birth.errors %}<span>{{ error }}</span>{% endfor %}
+          </div>
+      </div>
+    
+      <div class="d-flex w-100 gap-4 mt-4">
+        <a href="{% url 'bars:bar-list' %}" class="btn btn-bg-secondary w-25">Cancel</a>
+        <button class="btn btn-info w-75" type="submit">Save Changes</button>
+      </div>
+
+      {% if form.non_field_errors %}
+          <div class="alert alert-danger w-100">
+              {{ form.non_field_errors }}
+          </div>
+      {% endif %}
+
     </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.querySelector("#id_date_of_birth").flatpickr({
+         dateFormat: "Y-m-d",
+    });
+</script>
 {% endblock %}
