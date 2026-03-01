@@ -29,8 +29,10 @@
 {% block scripts %}
   {% include 'reservations/create-table.html#create_table_scripts' %}
   <script>
-    // client-side validations 
-    var validateBarForm = FormValidation.formValidation(document.forms["bar-form"], {
+    // TO-DO: clean-up javascript code here, seprate into its own file
+    
+    // client-side validations
+    var validateBarForm = FormValidation.formValidation(document.forms['bar-form'], {
       fields: {
         bar_name: {
           validators: {
@@ -56,9 +58,9 @@
           validators: {
             notEmpty: { message: 'This field is required.' }
           }
-        },
+        }
       },
-  
+    
       plugins: {
         trigger: new FormValidation.plugins.Trigger(),
         bootstrap: new FormValidation.plugins.Bootstrap5({
@@ -67,168 +69,150 @@
           eleValidClass: ''
         })
       }
-    });
+    })
+    
+    const validators = [validateBarForm, ]
 
-    const populatePreview = () => {
-      let { bar_name, bar_address, bar_description, bar_start_time, bar_end_time } = document.forms["bar-form"];
-      document.querySelector("#bar-name").innerText = bar_name.value;
-      document.querySelector("#bar-address").innerText = bar_address.value;
-      document.querySelector("#bar-desc").innerText = bar_description.value;
-      document.querySelector("#bar-times").innerText = bar_start_time.value + " - " + bar_end_time.value;
-      
-      document.querySelector("#amenities-container").innerHTML = ""
-      $("#id_bar_amenities").select2("data").forEach(opt => {
-        let el = document.createElement("span");
-        el.setAttribute("class", "badge badge-light-success badge-lg p-2 fs-semibold");
-        el.textContent = opt.text;
-        document.querySelector("#amenities-container").appendChild(el);
+    // image upload dropzone
+    var barDropzone = new Dropzone('#bar-dropzone', {
+      url: "{% url 'bars:create-bar' %}", // Set the url for your upload script location
+      paramName: 'file', // The name that will be used to transfer the file
+      maxFiles: 10,
+      maxFilesize: 10, // MB
+      autoProcessQueue: false,
+      previewsContainer: '#bar-dropzone + .image-preview-container',
+      previewTemplate: document.querySelector('#bar-dropzone + .image-preview-container .d-none').innerHTML
+    })
+    
+    barDropzone.on('addedfile', (file) => {
+      document.querySelector('#bar-dropzone').classList.remove('d-flex')
+      document.querySelector('#bar-dropzone').style.display = 'none'
+    })
+    
+    barDropzone.on('reset', (file) => {
+      document.querySelector('#bar-dropzone').style = ''
+      document.querySelector('#bar-dropzone').classList.add('d-flex')
+    })
+  
+    var stepper = new KTStepper(document.querySelector('#form-stepper'))
+  
+    stepper.on('kt.stepper.next', function (stepper) {
+      var validator = validators[stepper.getCurrentStepIndex() - 1]
+  
+      if (!validator) {
+        stepper.goNext()
+        return
+      }
+  
+      validator.validate().then((status) => {
+        if (status === 'Valid') {
+          stepper.goNext()
+          uploadImages()
+          populatePreview()
+        }
       })
-      
-      console.log("populated!");
-    }
-
-    const validators = [validateBarForm, ];
-
-    document.addEventListener('DOMContentLoaded', () => {
-      var stepper = new KTStepper(document.querySelector('#form-stepper'));
-    
-      stepper.on('kt.stepper.next', function (stepper) {
-        var validator = validators[stepper.getCurrentStepIndex() - 1];
-
-        if (!validator) {
-          stepper.goNext();
-          return;
-        }
-
-        validator.validate().then(status => {
-          if (status === 'Valid') {
-            stepper.goNext();
-            populatePreview();
-          }
-        });
-      });
-    
-      stepper.on('kt.stepper.previous', function (stepper) {
-        stepper.goPrevious();
-      });
-    
-      stepper.on('kt.stepper.click', function (stepper) {
-        var validator = validators[stepper.getCurrentStepIndex() - 1];
-
-        if (!validator) {
+    })
+  
+    stepper.on('kt.stepper.previous', function (stepper) {
+      stepper.goPrevious()
+    })
+  
+    stepper.on('kt.stepper.click', function (stepper) {
+      var validator = validators[stepper.getCurrentStepIndex() - 1]
+  
+      if (!validator) {
+        stepper.goTo(stepper.getClickedStepIndex())
+        return
+      }
+  
+      validator.validate().then((status) => {
+        if (status === 'Valid') {
           stepper.goTo(stepper.getClickedStepIndex());
-          return;
+          uploadImages(barDropzone.files);
+          renderCarouselFromFiles(barDropzone.files);
+          populatePreview();
         }
+      })
+    })
 
-        validator.validate().then(status => {
-          if (status === 'Valid') {
-            stepper.goTo(stepper.getClickedStepIndex());
-            populatePreview();
-          }
+    const uploadImages = (files) => {
+      if (files.length > 0) {
+        const dataTransfer = new DataTransfer()
+        files.forEach(file => {
+          dataTransfer.items.add(file)
         });
-      });
-    });
-  </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var fileInput = document.querySelector('#bar-form input[type="file"][name="images"]');
-      if (!fileInput) return;
-
-      var previewContainer = document.createElement('div');
-      previewContainer.id = 'image-preview-container';
-      previewContainer.className = 'd-flex flex-row flex-wrap gap-4 mt-4';
-      var fieldWrapper = fileInput.closest('.bar-form-field') || fileInput.parentElement;
-      if (fieldWrapper) {
-        fieldWrapper.appendChild(previewContainer);
+        document.querySelector('#id_images').files = dataTransfer.files
       }
-
-      function renderLocalPreviews(files) {
-        previewContainer.innerHTML = '';
-        if (!files || !files.length) return;
-
-        Array.from(files).forEach(function (file) {
-          if (!file.type.startsWith('image/')) return;
-
-          var reader = new FileReader();
-          reader.onload = function (e) {
-            var img = document.createElement('img');
-            img.src = e.target.result;
-            img.alt = file.name;
-            img.className = 'img-fluid rounded';
-            img.style.maxWidth = '200px';
-            img.style.maxHeight = '200px';
-            img.style.objectFit = 'cover';
-
-            var wrapper = document.createElement('div');
-            wrapper.className = 'bar-image-preview-wrapper';
-            wrapper.appendChild(img);
-
-            previewContainer.appendChild(wrapper);
+    }
+    
+    const renderCarouselFromFiles = (files) => {
+      let carousel = document.querySelector('#bar-images .carousel-inner')
+      let indicators = document.querySelector('#bar-images ol.carousel-indicators')
+    
+      if (files.length > 0) {
+        carousel.innerHTML = ''
+        indicators.innerHTML = ''
+    
+        Array.from(files).forEach((file, index) => {
+          if (!file.type.startsWith('image/')) {
+            console.log("file is not an image!");
+            return;
           };
 
-          reader.readAsDataURL(file);
-        });
-      }
-
-      function renderCarouselFromFiles(files) {
-        var carousel = document.getElementById('kt_carousel_2_carousel');
-        if (!carousel) return;
-
-        var inner = carousel.querySelector('.carousel-inner');
-        var indicators = carousel.querySelector('.carousel-indicators');
-        if (!inner || !indicators) return;
-
-        inner.innerHTML = '';
-        indicators.innerHTML = '';
-
-        if (!files || !files.length) {
-          // fallback empty slide
-          var emptySlide = document.createElement('div');
-          emptySlide.className = 'carousel-item h-300px bg-gray-300 active';
-          inner.appendChild(emptySlide);
-
-          var li = document.createElement('li');
-          li.setAttribute('data-bs-target', '#kt_carousel_2_carousel');
-          li.setAttribute('data-bs-slide-to', '0');
-          li.className = 'ms-1 active';
-          indicators.appendChild(li);
-          return;
-        }
-
-        Array.from(files).forEach(function (file, index) {
-          if (!file.type.startsWith('image/')) return;
-
-          var reader = new FileReader();
-          reader.onload = function (e) {
-            var slide = document.createElement('div');
-            slide.className = 'carousel-item h-300px' + (index === 0 ? ' active' : '');
-
-            var img = document.createElement('img');
-            img.src = e.target.result;
-            img.alt = file.name;
-            img.className = 'd-block w-100 h-100';
-            img.style.objectFit = 'cover';
-
-            slide.appendChild(img);
-            inner.appendChild(slide);
-          };
-
-          reader.readAsDataURL(file);
-
-          var li = document.createElement('li');
-          li.setAttribute('data-bs-target', '#kt_carousel_2_carousel');
+          let slide = document.createElement('div');
+          slide.className = 'carousel-item h-300px' + (index === 0 ? ' active' : '')
+  
+          let img = document.createElement('img');
+          img.src = file.dataURL;
+          img.alt = file.name;
+          img.className = 'd-block w-100 h-100'
+          img.style.objectFit = 'cover'
+  
+          slide.appendChild(img);
+          carousel.appendChild(slide);
+    
+          let li = document.createElement('li');
+          li.setAttribute('data-bs-target', '#bar-images');
           li.setAttribute('data-bs-slide-to', String(index));
           li.className = 'ms-1' + (index === 0 ? ' active' : '');
           indicators.appendChild(li);
-        });
+        })
       }
-
-      fileInput.addEventListener('change', function (event) {
-        var files = event.target.files;
-        renderLocalPreviews(files);
-        renderCarouselFromFiles(files);
-      });
-    });
+      /*
+          if (!files || !files.length) {
+            // fallback empty slide
+            var emptySlide = document.createElement('div')
+            emptySlide.className = 'carousel-item h-300px bg-gray-300 active'
+            inner.appendChild(emptySlide)
+        
+            var li = document.createElement('li')
+            li.setAttribute('data-bs-target', '#kt_carousel_2_carousel')
+            li.setAttribute('data-bs-slide-to', '0')
+            li.className = 'ms-1 active'
+            indicators.appendChild(li)
+            return
+          }
+          */
+    }
+    
+    const populatePreview = () => {
+      let { bar_name, bar_address, bar_description, bar_start_time, bar_end_time } = document.forms['bar-form']
+      document.querySelector('#bar-name').innerText = bar_name.value
+      document.querySelector('#bar-address').innerText = bar_address.value
+      document.querySelector('#bar-desc').innerText = bar_description.value
+      document.querySelector('#bar-times').innerText = bar_start_time.value + ' - ' + bar_end_time.value
+    
+      document.querySelector('#amenities-container').innerHTML = ''
+      $('#id_bar_amenities')
+        .select2('data')
+        .forEach((opt) => {
+          let el = document.createElement('span')
+          el.setAttribute('class', 'badge badge-light-success badge-lg p-2 fs-semibold')
+          el.textContent = opt.text
+          document.querySelector('#amenities-container').appendChild(el)
+        })
+      // console.log('populated!')
+    }
   </script>
 {% endblock %}
 
@@ -253,7 +237,19 @@
     <menu class="card p-6 p-sm-8 p-md-12 m-0 d-flex w-100 w-md-350px h-fit justify-content-sm-center">
       <div class="stepper-nav flex-row flex-md-column justify-content-between gap-3 gap-md-0">
         {% for step in stepper %}
-          <div class="stepper-item flex-row flex-md-column gap-3 gap-md-0 {% if stepper|length|stringformat:'s' != step.num %}w-100{% else %}w-fit{% endif %} me-md-5{% if step.current and step.current.strip %} current{% endif %}"
+          <div class="stepper-item flex-row flex-md-column gap-3 gap-md-0 {% if stepper|length|stringformat:'s' != step.num %}
+              
+              
+              w-100
+
+
+            {% else %}
+              
+              
+              w-fit
+
+
+            {% endif %} me-md-5{% if step.current and step.current.strip %} current{% endif %}"
             data-kt-stepper-element="nav"
             data-kt-stepper-action="step">
             <div class="stepper-wrapper d-flex flex-column flex-md-row align-items-center">
@@ -348,9 +344,24 @@
                 <span>{{ error }}</span>
               {% endfor %}
             </div>
-            <div class="w-100">
-              <label class="form-label" for="{{ bar_form.images.html_name }}">{{ bar_form.images.label }}</label><br>
-              {{ bar_form.images }}
+            <div class="fv-row w-100">
+              <label class="form-label" for="{{ bar_form.images.html_name }}">Images</label>
+              <input type="file" multiple="" accept="image/*" class="d-none" name="{{ bar_form.images.html_name }}" id="{{ bar_form.images.id_for_label }}" />
+              <div id="bar-dropzone" class="w-100 d-flex flex-column align-items-center gap-2 py-6 rounded bg-gray-300 border-2 border-dashed border-gray-400 text-gray-500 cursor-pointer">
+                <i class="ki-duotone ki-file-up fs-3x text-gray-500">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                <span class="fw-semibold">Drag images here or click to upload.</span>
+              </div>
+              <div class="image-preview-container d-flex flex-row gap-10 mt-4">
+                <div class="d-none">
+                  <div class="preview-template symbol symbol-100px">
+                    <img data-dz-thumbnail />
+                    <span class="symbol-badge badge badge-circle bg-info start-100 cursor-pointer" data-dz-remove><i class="ki-solid ki-cross fs-2 text-gray-800"></i></span>
+                  </div>
+                </div>
+              </div>
               {% for error in bar_form.images.errors %}
                 <span>{{ error }}</span>
               {% endfor %}
@@ -380,7 +391,7 @@
         {% with preview='true' bar_owner=request.user %}
           {% include 'bars/bar-details.html#bar_details' %}
         {% endwith %}
-        <br>
+        <br />
       </section>
 
       <footer class="flex-row justify-content-between align-items-center card p-8">
