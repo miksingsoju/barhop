@@ -52,3 +52,16 @@ class Bar(models.Model):
         verbose_name = 'Bar'
         verbose_name_plural = 'Bars'
 
+
+class BarImage(models.Model):
+    bar = models.ForeignKey(Bar, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='bar_images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Bar Image'
+        verbose_name_plural = 'Bar Images'
+
+    def __str__(self):
+        return f"Image for {self.bar.bar_name}"
+

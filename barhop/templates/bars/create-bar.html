@@ -90,12 +90,18 @@
     const validators = [validateBarForm, ];
 
     document.addEventListener('DOMContentLoaded', () => {
-      var stepper = new KTStepper(document.querySelector('#form-stepper'))
+      var stepper = new KTStepper(document.querySelector('#form-stepper'));
     
       stepper.on('kt.stepper.next', function (stepper) {
-        if (!(validators[stepper.getCurrentStepIndex()-1])) stepper.goTo(stepper.getClickedStepIndex());
-        validators[stepper.getCurrentStepIndex()-1]?.validate().then(status => {
-          if (status == "Valid") {
+        var validator = validators[stepper.getCurrentStepIndex() - 1];
+
+        if (!validator) {
+          stepper.goNext();
+          return;
+        }
+
+        validator.validate().then(status => {
+          if (status === 'Valid') {
             stepper.goNext();
             populatePreview();
           }
@@ -103,19 +109,126 @@
       });
     
       stepper.on('kt.stepper.previous', function (stepper) {
-        stepper.goPrevious()
-      })
+        stepper.goPrevious();
+      });
     
       stepper.on('kt.stepper.click', function (stepper) {
-        if (!(validators[stepper.getCurrentStepIndex()-1])) stepper.goTo(stepper.getClickedStepIndex());
-        validators[stepper.getCurrentStepIndex()-1]?.validate().then(status => {
-          if (status == "Valid") {
+        var validator = validators[stepper.getCurrentStepIndex() - 1];
+
+        if (!validator) {
+          stepper.goTo(stepper.getClickedStepIndex());
+          return;
+        }
+
+        validator.validate().then(status => {
+          if (status === 'Valid') {
             stepper.goTo(stepper.getClickedStepIndex());
             populatePreview();
           }
         });
-      })
-    })
+      });
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var fileInput = document.querySelector('#bar-form input[type="file"][name="images"]');
+      if (!fileInput) return;
+
+      var previewContainer = document.createElement('div');
+      previewContainer.id = 'image-preview-container';
+      previewContainer.className = 'd-flex flex-row flex-wrap gap-4 mt-4';
+      var fieldWrapper = fileInput.closest('.bar-form-field') || fileInput.parentElement;
+      if (fieldWrapper) {
+        fieldWrapper.appendChild(previewContainer);
+      }
+
+      function renderLocalPreviews(files) {
+        previewContainer.innerHTML = '';
+        if (!files || !files.length) return;
+
+        Array.from(files).forEach(function (file) {
+          if (!file.type.startsWith('image/')) return;
+
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = file.name;
+            img.className = 'img-fluid rounded';
+            img.style.maxWidth = '200px';
+            img.style.maxHeight = '200px';
+            img.style.objectFit = 'cover';
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'bar-image-preview-wrapper';
+            wrapper.appendChild(img);
+
+            previewContainer.appendChild(wrapper);
+          };
+
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function renderCarouselFromFiles(files) {
+        var carousel = document.getElementById('kt_carousel_2_carousel');
+        if (!carousel) return;
+
+        var inner = carousel.querySelector('.carousel-inner');
+        var indicators = carousel.querySelector('.carousel-indicators');
+        if (!inner || !indicators) return;
+
+        inner.innerHTML = '';
+        indicators.innerHTML = '';
+
+        if (!files || !files.length) {
+          // fallback empty slide
+          var emptySlide = document.createElement('div');
+          emptySlide.className = 'carousel-item h-300px bg-gray-300 active';
+          inner.appendChild(emptySlide);
+
+          var li = document.createElement('li');
+          li.setAttribute('data-bs-target', '#kt_carousel_2_carousel');
+          li.setAttribute('data-bs-slide-to', '0');
+          li.className = 'ms-1 active';
+          indicators.appendChild(li);
+          return;
+        }
+
+        Array.from(files).forEach(function (file, index) {
+          if (!file.type.startsWith('image/')) return;
+
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var slide = document.createElement('div');
+            slide.className = 'carousel-item h-300px' + (index === 0 ? ' active' : '');
+
+            var img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = file.name;
+            img.className = 'd-block w-100 h-100';
+            img.style.objectFit = 'cover';
+
+            slide.appendChild(img);
+            inner.appendChild(slide);
+          };
+
+          reader.readAsDataURL(file);
+
+          var li = document.createElement('li');
+          li.setAttribute('data-bs-target', '#kt_carousel_2_carousel');
+          li.setAttribute('data-bs-slide-to', String(index));
+          li.className = 'ms-1' + (index === 0 ? ' active' : '');
+          indicators.appendChild(li);
+        });
+      }
+
+      fileInput.addEventListener('change', function (event) {
+        var files = event.target.files;
+        renderLocalPreviews(files);
+        renderCarouselFromFiles(files);
+      });
+    });
   </script>
 {% endblock %}
 
@@ -165,10 +278,10 @@
       <section class="flex-column gap-8 current" id="details-form-list" data-kt-stepper-element="content">
         <article class="flex-column card p-8 gap-10">
           <h2 class="m-0">Bar Details</h2>
-          <form method="post" enctype="multipart/form-data" id="bar-form" class="m-0 p-0 d-flex flex-column gap-10">
+          <form method="post" enctype="multipart/form-data" id="bar-form" name="bar-form" class="m-0 p-0 d-flex flex-column gap-10">
             {% csrf_token %}
             <div class="flex-grow-1 fv-row">
-              <label class="form-label" for="{{ form.bar_name.html_name }}">Bar Name</label>
+              <label class="form-label" for="{{ bar_form.bar_name.html_name }}">Bar Name</label>
               <input id="{{ bar_form.bar_name.id_for_label }}" name="{{ bar_form.bar_name.html_name }}" type="text" class="form-control form-control-solid" placeholder="What's the name of your bar?" />
               <div class="invalid-feedback">
                 {% for error in bar_form.bar_name.errors %}
@@ -208,7 +321,7 @@
                 <label class="form-label" for="{{ bar_form.bar_start_time.html_name }}">Opening Time</label>
                 <input id="{{ bar_form.bar_start_time.id_for_label }}" name="{{ bar_form.bar_start_time.html_name }}" type="time" class="form-control form-control-solid" placeholder="00:00" />
                 <div class="invalid-feedback">
-                  {% for error in bar_form.bar_opening_time.errors %}
+                  {% for error in bar_form.bar_start_time.errors %}
                     <span>{{ error }}</span>
                   {% endfor %}
                 </div>
@@ -217,7 +330,7 @@
                 <label class="form-label" for="{{ bar_form.bar_end_time.html_name }}">Closing Time</label>
                 <input id="{{ bar_form.bar_end_time.id_for_label }}" name="{{ bar_form.bar_end_time.html_name }}" type="time" class="form-control form-control-solid" placeholder="00:00" />
                 <div class="invalid-feedback">
-                  {% for error in bar_form.bar_closing_time.errors %}
+                  {% for error in bar_form.bar_end_time.errors %}
                     <span>{{ error }}</span>
                   {% endfor %}
                 </div>
@@ -232,6 +345,13 @@
                 {% endfor %}
               </select>
               {% for error in bar_form.bar_amenities.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            <div class="w-100">
+              <label class="form-label" for="{{ bar_form.images.html_name }}">{{ bar_form.images.label }}</label><br>
+              {{ bar_form.images }}
+              {% for error in bar_form.images.errors %}
                 <span>{{ error }}</span>
               {% endfor %}
             </div>

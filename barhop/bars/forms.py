@@ -1,7 +1,29 @@
 from django import forms
 from .models import Bar, Amenity
 from django.core.exceptions import ValidationError
-# will fix in the future
+
+
+class MultiFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultiImageField(forms.ImageField):
+
+    widget = MultiFileInput
+
+    def clean(self, data, initial=None):
+        if data in self.empty_values:
+            if self.required and not initial:
+                raise ValidationError(self.error_messages["required"], code="required")
+            return []
+
+        if not isinstance(data, (list, tuple)):
+            data = [data]
+        cleaned_files = []
+        for f in data:
+            cleaned_files.append(super().clean(f, initial))
+        return cleaned_files
+
 
 class CreateBarForm(forms.ModelForm):
     class Meta: 
@@ -15,6 +37,9 @@ class CreateBarForm(forms.ModelForm):
             'bar_address':forms.TextInput(attrs={'class': 'form-control'}),
             'bar_amenities': forms.SelectMultiple(),
         }
+
+    images = MultiImageField(label='Add bar images: (optional)', required=False)
+
     def clean_bar_end_time(self):
         bar_start_time = self.cleaned_data.get('bar_start_time')
         bar_end_time = self.cleaned_data.get('bar_end_time')

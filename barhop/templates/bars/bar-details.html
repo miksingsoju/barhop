@@ -32,14 +32,24 @@
       <div id="kt_carousel_2_carousel" class="carousel carousel-custom slide" data-bs-ride="carousel" data-bs-interval="8000">
         <div class="d-flex align-items-center justify-content-between flex-wrap">
           <div class="carousel-inner rounded">
-            <div class="carousel-item h-300px bg-gray-300 active">Image 1</div>
-            <div class="carousel-item h-300px bg-gray-300">Image 2</div>
-            <div class="carousel-item h-300px bg-gray-300">Image 3</div>
+            {% if bar.images.all %}
+              {% for bar_image in bar.images.all %}
+                <div class="carousel-item h-300px {% if forloop.first %}active{% endif %}">
+                  <img src="{{ bar_image.image.url }}" alt="{{ bar.bar_name }} image {{ forloop.counter }}" class="d-block w-100 h-100" style="object-fit: cover;">
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="carousel-item h-300px bg-gray-300 active"></div>
+            {% endif %}
           </div>
           <ol class="p-0 m-0 carousel-indicators carousel-indicators-bullet position-absolute bottom-0 w-100">
-            <li data-bs-target="#kt_carousel_2_carousel" data-bs-slide-to="0" class="ms-1 active"></li>
-            <li data-bs-target="#kt_carousel_2_carousel" data-bs-slide-to="1" class="ms-1"></li>
-            <li data-bs-target="#kt_carousel_2_carousel" data-bs-slide-to="2" class="ms-1"></li>
+            {% if bar.images.all %}
+              {% for bar_image in bar.images.all %}
+                <li data-bs-target="#kt_carousel_2_carousel" data-bs-slide-to="{{ forloop.counter0 }}" class="ms-1 {% if forloop.first %}active{% endif %}"></li>
+              {% endfor %}
+            {% else %}
+              <li data-bs-target="#kt_carousel_2_carousel" data-bs-slide-to="0" class="ms-1 active"></li>
+            {% endif %}
           </ol>
         </div>
       </div>
