@@ -16,11 +16,15 @@
     }
   </style>
 
-  <div class="d-flex flex-sm-row gap-12 justify-content-center my-12">
+  <header class="d-sm-none d-block w-100 top-0 position-absolute bg-gray-100 pt-12 pb-6 z-index-3 border border-bottom border-gray-200">
+    <h2 class="text-center text-poppins">My Profile</h2>
+  </header>
+
+  <div class="d-flex flex-sm-row flex-column gap-12 justify-content-center pt-18 pt-sm-0 mt-18 mb-12 my-sm-12 px-6 px-sm-0">
     <!-- Left Column -->
-    <div class="w-300px d-flex flex-column gap-12">
+    <div class="w-100 w-sm-300px d-flex flex-column gap-sm-12 gap-10">
       <!-- Profile Info Card -->
-      <div class="card d-flex flex-column gap-7 py-7 px-8">
+      <div class="card d-flex flex-sm-column flex-row align-items-center align-items-sm-start justify-content-between gap-7 py-sm-7 py-4 px-sm-8 px-6">
         <div class="d-flex gap-6 align-items-center">
           <!-- Profile Picture -->
           <div class="symbol symbol-circle symbol-60px">
@@ -33,55 +37,93 @@
 
           <!-- Full Name and User Name -->
           <div>
-            <h5 class="mt-2 mb-1 text-gray-900">{{ user.first_name }} {{ user.last_name }}</h5>
+            <h5 class="mt-sm-2 mt-0 mb-2 mb-sm-1 text-gray-900">{{ user.first_name }} {{ user.last_name }}</h5>
             <span class="fw-semibold text-gray-700">@ {{ user.username }}</span>
           </div>
         </div>
 
         <!-- Bio -->
-        <p class="m-0 text-gray-800">{{ user.bio }}</p>
+        <p class="m-0 text-gray-800 d-none d-sm-block">{{ user.bio }}</p>
+        <i class="d-sm-none d-sm-flex ki-solid ki-right text-gray-700 fs-2"></i>
       </div>
 
       <!-- Navigation Card -->
-      <div class="card px-4 py-1">
-        <a href="javascript:void(0)" onclick="showSection('#edit-profile-section')"
-          class="d-flex justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
-          <span class="d-flex gap-3 align-items-center">
-            <i class="ki-duotone ki-profile-circle text-gray-700 fs-1">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-            </i>
-            Edit Profile
-          </span>
-          <i class="ki-solid ki-right text-gray-700 fs-2"></i>
-        </a>
-        <hr class="m-0 border-gray-600">
-        <a href="javascript:void(0)" onclick="showSection('#personal-information-section')"
-          class="d-flex justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
-          <span class="d-flex gap-3 align-items-center">
-            <i class="ki-duotone ki-address-book text-gray-700 fs-1">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-            </i>
-            Personal Information
-          </span>
-          <i class="ki-solid ki-right text-gray-700 fs-2"></i>
-        </a>
-        <hr class="m-0 border-gray-600">
-        <a href="javascript:void(0)" onclick="showSection('#change-password-section')"
-          class="d-flex justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
-          <span class="d-flex gap-3 align-items-center">
-            <i class="ki-duotone ki-lock text-gray-700 fs-1">
-              <span class="path1"></span>
-              <span class="path2"></span>
-              <span class="path3"></span>
-            </i>
-            Change Password
-          </span>
-          <i class="ki-solid ki-right text-gray-700 fs-2"></i>
-        </a>
+      <div>
+        <h6 class="d-sm-none d-block text-gray-600">Settings</h6>
+        <div class="card px-4 py-1">
+          <a href="javascript:void(0)" onclick="showSection('#edit-profile-section')"
+            class="d-sm-flex d-none justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
+            <span class="d-flex gap-3 align-items-center">
+              <i class="ki-duotone ki-profile-circle text-gray-700 fs-1">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+              Edit Profile
+            </span>
+            <i class="ki-solid ki-right text-gray-700 fs-2"></i>
+          </a>
+          <hr class="m-0 d-sm-block d-none border-gray-600">
+          <a href="javascript:void(0)" onclick="showSection('#personal-information-section')"
+            class="d-flex justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
+            <span class="d-flex gap-3 align-items-center">
+              <i class="ki-duotone ki-address-book text-gray-700 fs-1">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+              Personal Information
+            </span>
+            <i class="ki-solid ki-right text-gray-700 fs-2"></i>
+          </a>
+          <hr class="m-0 border-gray-600">
+          <a href="javascript:void(0)" onclick="showSection('#change-password-section')"
+            class="d-flex justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
+            <span class="d-flex gap-3 align-items-center">
+              <i class="ki-duotone ki-lock text-gray-700 fs-1">
+                <span class="path1"></span>
+                <span class="path2"></span>
+                <span class="path3"></span>
+              </i>
+              Change Password
+            </span>
+            <i class="ki-solid ki-right text-gray-700 fs-2"></i>
+          </a>
+          <hr class="m-0 d-block d-sm-none border-gray-600">
+          <form method="post" action="{% url 'logout' %}" class="m-0 d-block d-sm-none">
+            {% csrf_token %}
+            <button type="submit"
+              class="d-flex w-100 justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
+              <span class="d-flex gap-3 align-items-center">
+                <i class="ki-duotone ki-exit-right text-gray-700 fs-1">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+                Logout
+              </span>
+              <i class="ki-solid ki-right text-gray-700 fs-2"></i>
+            </button>
+          </form>
+          <hr class="m-0 border-gray-600">
+          {% comment %} <form method="post" action="{% url 'auth:delete' %}" class="m-0"> {% endcomment %}
+            {% comment %} {% csrf_token %} {% endcomment %}
+            <!-- TO-DO: delete user -->
+            <button type="button"
+              class="d-flex w-100 justify-content-between align-items-center fw-semibold text-danger px-2 py-4">
+              <span class="d-flex gap-3 align-items-center">
+                <i class="ki-duotone ki-trash text-danger fs-1">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+                Delete My Account
+              </span>
+              <i class="ki-solid ki-right text-danger fs-2"></i>
+            </button>
+          {% comment %} </form> {% endcomment %}
+        </div>
       </div>
     </div>
 
