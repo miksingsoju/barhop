@@ -44,7 +44,7 @@
 
       <!-- Navigation Card -->
       <div class="card px-4 py-1">
-        <a href="javascript:void(0)" onclick="showSection('edit-profile-section')"
+        <a href="javascript:void(0)" onclick="showSection('#edit-profile-section')"
           class="d-flex justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
           <span class="d-flex gap-3 align-items-center">
             <i class="ki-duotone ki-profile-circle text-gray-700 fs-1">
@@ -57,7 +57,7 @@
           <i class="ki-solid ki-right text-gray-700 fs-2"></i>
         </a>
         <hr class="m-0 border-gray-600">
-        <a href="javascript:void(0)" onclick="showSection('personal-information-section')"
+        <a href="javascript:void(0)" onclick="showSection('#personal-information-section')"
           class="d-flex justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
           <span class="d-flex gap-3 align-items-center">
             <i class="ki-duotone ki-address-book text-gray-700 fs-1">
@@ -70,7 +70,7 @@
           <i class="ki-solid ki-right text-gray-700 fs-2"></i>
         </a>
         <hr class="m-0 border-gray-600">
-        <a href="javascript:void(0)" onclick="showSection('change-password-section')"
+        <a href="javascript:void(0)" onclick="showSection('#change-password-section')"
           class="d-flex justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
           <span class="d-flex gap-3 align-items-center">
             <i class="ki-duotone ki-lock text-gray-700 fs-1">
@@ -210,7 +210,7 @@
             <div class="fv-row w-100">
               <label class="form-label" for="{{ form.new_password.html_name }}">New Password</label>
               <input id="{{ form.new_password.id_for_label }}" name="{{ form.new_password.html_name }}"
-                type="password" class="form-control form-control-solid" placeholder="Current Password" />
+                type="password" class="form-control form-control-solid" placeholder="New Password" />
               <div class="invalid-feedback">
                 {% for error in form.new_password.errors %}
                   <span>{{ error }}</span>
@@ -227,7 +227,13 @@
 
 {% block scripts %}
   <script>
+    document.addEventListener("DOMContentLoaded", e => {
+      const hash = window.location.hash;
+      if (hash) showSection(hash + "-section");
+    });
+
     function showSection(sectionId) {
+      window.location.href = sectionId.replace("-section", "");
       // 1. Hide all sections
       const sections = document.querySelectorAll('.settings-section')
       sections.forEach((section) => {
@@ -235,10 +241,11 @@
       })
     
       // 2. Show the requested section
-      const target = document.getElementById(sectionId)
+      const target = document.querySelector(sectionId)
       if (target) {
         target.style.display = 'block'
       }
+      window.scrollTo(0, 0);
     }
     
     document.querySelector('#id_date_of_birth').flatpickr({
