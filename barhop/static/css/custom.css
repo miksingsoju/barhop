@@ -38,6 +38,20 @@
   border-color: var(--bs-gray-200);
 }
 
+.btn.btn-outline:not(.btn-outline-dashed),
+.input-group.input-group-solid .form-control,
+.form-control.form-control-solid,
+.form-control.form-control-solid:active,
+.form-control.form-control-solid:focus {
+  background-color: var(--bs-gray-300);
+  border-color: var(--bs-gray-300);
+  color: var(--bs-gray-600);
+}
+
+.input-group.input-group-solid .input-group-text + .form-control {
+  border-left-color: var(--bs-gray-300);
+}
+
 .flatpickr-current-month .flatpickr-monthDropdown-months,
 .flatpickr-current-month .flatpickr-monthDropdown-months:hover,
 .flatpickr-calendar {

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Bar, Amenity
+from .models import Bar, BarImage, Amenity
 from django.core.exceptions import ValidationError
 
 
@@ -38,3 +38,11 @@ class CreateBarForm(forms.ModelForm):
         }
 
     images = MultiImageField(required=False)
+
+
+UpdateBarImageFormSet = forms.modelformset_factory(
+    BarImage,
+    fields=('image',),
+    extra=0,
+    can_delete=True
+)

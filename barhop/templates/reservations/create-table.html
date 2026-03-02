@@ -1,19 +1,5 @@
 {% load static %}
 
-{% partialdef create_table_styles %}
-<style>
-  .btn.btn-outline:not(.btn-outline-dashed),
-  .input-group.input-group-solid .form-control,
-  .form-control.form-control-solid,
-  .form-control.form-control-solid:active,
-  .form-control.form-control-solid:focus {
-    background-color: var(--bs-gray-300);
-    border-color: var(--bs-gray-300);
-    color: var(--bs-gray-600);
-  }
-</style>
-{% endpartialdef %}
-
 {% partialdef create_table_scripts %}
 <script src="{% static 'plugins/custom/formrepeater/formrepeater.bundle.js' %}"></script>
 <script>

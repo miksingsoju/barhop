@@ -1,11 +1,9 @@
-from django.conf import settings
 from django.shortcuts import render, redirect
-from .forms import CreateBarForm
+from .forms import CreateBarForm, UpdateBarImageFormSet
 from .models import Bar, Amenity, BarImage  # , Address
 from user_management.models import Profile
 from django.db.models import Case, When, Value, IntegerField
 from django.contrib.auth.decorators import login_required
-import os
 
 
 def bar_list(request, username=None):
@@ -33,8 +31,6 @@ def bar_list(request, username=None):
     })
 
 # @login_required
-
-
 def create_bar(request):
     bar_form = CreateBarForm(request.POST or None, request.FILES or None)
     if not request.user.is_authenticated:
@@ -95,6 +91,7 @@ def create_bar(request):
     }
     return render(request, 'bars/create-bar.html', ctx)
     
+
 def bar_details(request, bar_id):
     bar_object = Bar.objects.get(id=bar_id)
     bar_owner = bar_object.bar_owner
@@ -104,8 +101,10 @@ def bar_details(request, bar_id):
         'bar_owner': bar_owner,
     })
 
+
 def bar_update(request, bar_id):
     bar_object = Bar.objects.get(id=bar_id)
+    bar_images = BarImage.objects.filter(bar=bar_object)
     if bar_object.bar_owner != request.user:
         return redirect('bars:bar-details', bar_id=bar_id)
     if request.method == 'POST':
@@ -124,9 +123,28 @@ def bar_update(request, bar_id):
             return redirect('bars:bar-details', bar_id=bar_id)
     else:
         bar_form = CreateBarForm(instance=bar_object)
-
-    return render(request, 'bars/update-bar.html', {
+        if bar_images:
+            bar_image_formset = UpdateBarImageFormSet(queryset=bar_images)
+    
+    ctx = {
+        "stepper": [
+            {
+                "num": "1",
+                "title": "Bar Details",
+                "desc": "Edit up your bar's details.",
+                "current": "current",
+            },
+            {
+                "num": "2",
+                "title": "Publish Your Bar",
+                "desc": "Share your bar with the world!",
+                "current": "",
+            }
+        ],
         'bar_form': bar_form,
+        'bar_image_formset': bar_image_formset if bar_images else None,
         'bar': bar_object,
-    })
+    }
+
+    return render(request, 'bars/update-bar.html', ctx)
 
