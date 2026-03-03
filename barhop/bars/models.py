@@ -53,9 +53,12 @@ class Bar(models.Model):
         verbose_name_plural = 'Bars'
 
 
+def upload_path_handler(instance, filename):
+    return "bars/{id}/{file}".format(id=instance.bar.id, file=filename)
+
 class BarImage(models.Model):
     bar = models.ForeignKey(Bar, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='bar_images/')
+    image = models.ImageField(upload_to=upload_path_handler)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

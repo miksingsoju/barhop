@@ -29,29 +29,28 @@
     {% partialdef bar_details inline %}
     <section class="d-flex flex-column gap-7 w-100 mw-sm-700px">
       <!-- image carousel -->
-      <div id="kt_carousel_2_carousel" class="carousel carousel-custom slide" data-bs-ride="carousel" data-bs-interval="8000">
-        <div class="d-flex align-items-center justify-content-between flex-wrap">
-          <div class="carousel-inner rounded">
-            {% if bar.images.all %}
-              {% for bar_image in bar.images.all %}
-                <div class="carousel-item h-300px {% if forloop.first %}active{% endif %}">
-                  <img src="{{ bar_image.image.url }}" alt="{{ bar.bar_name }} image {{ forloop.counter }}" class="d-block w-100 h-100" style="object-fit: cover;">
-                </div>
-              {% endfor %}
-            {% else %}
-              <div class="carousel-item h-300px bg-gray-300 active"></div>
-            {% endif %}
-          </div>
-          <ol class="p-0 m-0 carousel-indicators carousel-indicators-bullet position-absolute bottom-0 w-100">
-            {% if bar.images.all %}
-              {% for bar_image in bar.images.all %}
-                <li data-bs-target="#kt_carousel_2_carousel" data-bs-slide-to="{{ forloop.counter0 }}" class="ms-1 {% if forloop.first %}active{% endif %}"></li>
-              {% endfor %}
-            {% else %}
-              <li data-bs-target="#kt_carousel_2_carousel" data-bs-slide-to="0" class="ms-1 active"></li>
-            {% endif %}
-          </ol>
+      <div id="bar-images" class="carousel carousel-custom slide" data-bs-ride="carousel" data-bs-interval="8000">
+        <div class="carousel-inner rounded">
+          {% if bar.images.all %}
+            {% for bar_image in bar.images.all %}
+              <div class="carousel-item h-300px{% if forloop.first %} active{% endif %}">
+                <img src="{{ bar_image.image.url }}" alt="{{ bar.bar_name }} image {{ forloop.counter }}" class="d-block w-100 h-100" style="object-fit: cover;" />
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="carousel-item h-300px bg-gray-300 active"></div>
+          {% endif %}
         </div>
+        <!-- indicators -->
+        <ol class="p-0 m-0 carousel-indicators carousel-indicators-bullet position-absolute bottom-0 w-100">
+          {% if bar.images.all %}
+            {% for bar_image in bar.images.all %}
+              <li data-bs-target="#bar-images" data-bs-slide-to="{{ forloop.counter0 }}" class="ms-1 {% if forloop.first %}active{% endif %}"></li>
+            {% endfor %}
+          {% else %}
+            <li data-bs-target="#bar-images" data-bs-slide-to="0" class="ms-1 active"></li>
+          {% endif %}
+        </ol>
       </div>
 
       <header class="d-flex flex-row justify-content-between">
