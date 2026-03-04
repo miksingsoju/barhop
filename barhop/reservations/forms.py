@@ -1,2 +1,2 @@
-from .models import Profile
+from .models import Table
 from django import forms

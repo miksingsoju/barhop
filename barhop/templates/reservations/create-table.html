@@ -7,9 +7,6 @@
     $('#table-form-list').repeater({
       initEmpty: false,
       isFirstItemUndeletable: true,
-      defaultValues: {
-        'text-input': 'foo',
-      },
   
       show: function () {
         $(this).slideDown();
@@ -25,7 +22,7 @@
 {% endpartialdef %}
 
 {% partialdef create_table_form %}
-<div class="d-flex flex-column gap-8" data-repeater-list="seating-form-list">
+<div id="tables-form" class="d-flex flex-column gap-8 m-0" data-repeater-list="seating-form-list">
   <article class="d-flex flex-column card p-8 gap-10" data-repeater-item>
     <div class="flex-grow-1">
       <label class="form-label">Table Type</label>

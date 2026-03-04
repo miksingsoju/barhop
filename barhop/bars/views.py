@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import CreateBarForm, UpdateBarImageFormSet
 from .models import Bar, Amenity, BarImage  # , Address
 from user_management.models import Profile
+from reservations.views import create_tables
 from django.db.models import Case, When, Value, IntegerField
 from django.contrib.auth.decorators import login_required
 
@@ -47,12 +48,14 @@ def create_bar(request):
             bar.bar_owner = request.user
             bar.bar_draft = False
             bar.save()
+            res = create_tables(request, bar=bar)
             bar_form.save_m2m()
 
             images = request.FILES.getlist('images')
             for image_file in images:
                 BarImage.objects.create(bar=bar, image=image_file)
 
+            # if res.status_code == 201:
             return redirect('bars:bar-details', bar_id=bar.id)
         else:
             print(bar_form.errors)

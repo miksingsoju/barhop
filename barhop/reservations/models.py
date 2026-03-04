@@ -1,30 +1,23 @@
 from django.db import models
+from bars.models import Bar
 
-class Seating(models.Model):
-    """A model that represents the Seating Entity."""
 
-    name = models.CharField(max_length=255)
-    capacity = models.IntegerField(default=1)
-
-    def __str__(self):
-        """Returns the name of the model."""
-        return self.name
-
-    class Meta:
-        """Metadata for the model."""
-        verbose_name = 'Seating'
+def upload_path_handler(instance, filename):
+    return "bars/{id}/seats/{file}".format(id=instance.bar.id, file=filename)
 
 
 class Table(models.Model):
     """A model that represents the Table Entity."""
 
-    seating = models.ForeignKey(Seating, on_delete=models.CASCADE)
+    bar = models.ForeignKey(Bar, on_delete=models.CASCADE)
+    table_type = models.CharField(max_length=255)
     qty = models.IntegerField(default=1)
-    desc = models.CharField(max_length=255)
+    capacity = models.IntegerField(default=1)
+    image = models.ImageField(upload_to=upload_path_handler, null=True, blank=True)
 
     def __str__(self):
         """Returns the name of the model."""
-        return self.seating
+        return self.table_type
 
     class Meta:
         """Metadata for the model."""

@@ -1,19 +1,27 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Seating, Table
+from .models import Table
+import json
 
 
-def create_table(request):
-    if request.method == 'POST':
-        seatings = request.POST.get("seat_types")
-        seating_objects = []
+def create_tables(request, bar):
+    if request.method == "POST":
+        bar_tables = json.loads(request.POST.get("bar_tables", ""))
 
-        for seat in seatings:
-            s = Seating(name=seat["seating_name"], capacity=seat["capacity"])
-            seating_objects.append(s)
-    
-    return HttpResponse(JsonResponse(s), status=302)
+        if not bar_tables:
+            return HttpResponse("no tables to create", status=200)
+
+        for table in bar_tables:
+            Table.objects.create(
+                bar=bar,
+                table_type=table["table_type"],
+                qty=int(table["quantity"]),
+                capacity=int(table["capacity"]),
+            )
+        
+        return HttpResponse("tables created", status=201)
+        
 
 
 # @login_required

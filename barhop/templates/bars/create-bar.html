@@ -27,8 +27,10 @@
     <script>
       // TO-DO: clean-up javascript code here, seprate into its own file
       
+      const barForm = document.forms['bar-form'];
+
       // client-side validations
-      var validateBarForm = FormValidation.formValidation(document.forms['bar-form'], {
+      var validateBarForm = FormValidation.formValidation(barForm, {
         fields: {
           bar_name: {
             validators: {
@@ -66,6 +68,15 @@
           })
         }
       })
+
+      // TO-DO: tables-form validation
+      /*
+      var validateTablesForm = FormValidation.formValidation(document.forms['tables-form'], {
+        fields: {
+
+        }
+      })
+      */
       
       const validators = [validateBarForm, ]
 
@@ -127,13 +138,19 @@
         })
       })
 
+      barForm.addEventListener("submit", e => {
+        e.preventDefault();
+        appendTablesData();
+        barForm.submit();
+      });
+
       const uploadImages = (files) => {
         if (files.length > 0) {
-          const dataTransfer = new DataTransfer()
+          const dataTransfer = new DataTransfer();
           files.forEach(file => {
-            dataTransfer.items.add(file)
+            dataTransfer.items.add(file);
           });
-          document.querySelector('#id_images').files = dataTransfer.files
+          barForm.images.files = dataTransfer.files;
         }
       }
       
@@ -204,6 +221,11 @@
             document.querySelector('#amenities-container').appendChild(el)
           })
         // console.log('populated!')
+      }
+
+      const appendTablesData = () => {
+        const tablesFormData = $("#table-form-list").repeaterVal()["seating-form-list"];
+        barForm.bar_tables.value = JSON.stringify(tablesFormData);
       }
     </script>
   {% endpartialdef %}
@@ -336,6 +358,7 @@
                 <span>{{ error }}</span>
               {% endfor %}
             </div>
+            <!-- images input -->
             <div class="fv-row w-100">
               <label class="form-label" for="{{ bar_form.images.html_name }}">Images</label>
               {% if bar and bar.images.all %}
@@ -381,6 +404,9 @@
                 <span>{{ error }}</span>
               {% endfor %}
             </div>
+
+            <!-- hidden input for tables -->
+            <input type="hidden" id="id_bar_tables" name="bar_tables">
           </form>
         </article>
       </section>
@@ -395,7 +421,9 @@
         <section class="flex-column gap-8" id="table-form-list" data-kt-stepper-element="content">
           <header class="flex-row justify-content-between align-items-center card p-8">
             <h2 class="m-0">Add Tables</h2>
-            <button type="button" class="btn btn-sm btn-info" data-repeater-create><span>Add Listing</span></button>
+            <button type="button" class="btn btn-sm btn-info" data-repeater-create>
+              <span>Add Listing</span>
+            </button>
           </header>
           {% include 'reservations/create-table.html#create_table_form' %}
         </section>
