@@ -1,27 +1,58 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Table
+from .models import Table, Seating
 import json
 
 
-def create_tables(request, bar):
-    if request.method == "POST":
+def get_or_create_seatings(request, bar):
+    seatings = Seating.objects.filter(bar=bar)
+
+    if request.method == "GET":
+        return JsonResponse(seatings, safe=False)
+    elif request.method == "POST":
         bar_tables = json.loads(request.POST.get("bar_tables", ""))
 
-        if not bar_tables:
-            return HttpResponse("no tables to create", status=200)
-
-        for table in bar_tables:
-            Table.objects.create(
+        new_seatings = [
+            Seating(
                 bar=bar,
-                table_type=table["table_type"],
-                qty=int(table["quantity"]),
-                capacity=int(table["capacity"]),
-            )
+                seating=table["table_type"],
+                capacity=int(table["capacity"])
+            ) for table in bar_tables
+        ]
+
+        Seating.objects.bulk_create(new_seatings)
+        return HttpResponse("seatings created", status=201)
+    else:
+        return seatings
+
+
+def get_or_create_tables(request, bar):
+    tables = Table.objects.filter(table_type__bar=bar)
+
+    if request.method == "GET":
+        return JsonResponse(tables, safe=False)
+    if request.method == "POST":
+        if not request.POST.get("bar_tables", ""):
+            msg = "no tables to create"
+            print(msg)
+            return HttpResponse(msg, status=204)
         
+        bar_tables = json.loads(request.POST.get("bar_tables", ""))
+
+        res = get_or_create_seatings(request, bar)
+        if (res >= 400):
+            return HttpResponse("error creating table types", status=400)
+
+        seatings = Seating.objects.filter(bar=bar)
+
+        new_tables = [Table(table_type=s) for i, s in enumerate(seatings) for _ in range(int(bar_tables[i]["quantity"]))]
+        Table.objects.bulk_create(new_tables)
+
+        print("new_tables", new_tables)
         return HttpResponse("tables created", status=201)
-        
+    else:
+        return tables
 
 
 # @login_required

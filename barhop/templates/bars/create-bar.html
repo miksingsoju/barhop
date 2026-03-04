@@ -212,20 +212,27 @@
         document.querySelector('#bar-times').innerText = bar_start_time.value + ' - ' + bar_end_time.value
       
         document.querySelector('#amenities-container').innerHTML = ''
-        $('#id_bar_amenities')
-          .select2('data')
-          .forEach((opt) => {
+        let amenities = $('#id_bar_amenities').select2('data');
+        if (amenities.length > 0) {
+          amenities.forEach((opt) => {
             let el = document.createElement('span')
             el.setAttribute('class', 'badge badge-light-success badge-lg p-2 fs-semibold')
             el.textContent = opt.text
             document.querySelector('#amenities-container').appendChild(el)
           })
+        } else {
+          document.querySelector('h5:has(+#amenities-container)').style.display = "none";
+        }
         // console.log('populated!')
       }
 
       const appendTablesData = () => {
-        const tablesFormData = $("#table-form-list").repeaterVal()["seating-form-list"];
-        barForm.bar_tables.value = JSON.stringify(tablesFormData);
+        try {
+          const tablesFormData = $("#table-form-list").repeaterVal();
+          barForm.bar_tables.value = JSON.stringify(tablesFormData["seating-form-list"]);
+        } catch (TypeError) {
+          return;
+        }
       }
     </script>
   {% endpartialdef %}

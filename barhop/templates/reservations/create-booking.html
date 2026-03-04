@@ -1,0 +1,55 @@
+{% load static %}
+
+{% partialdef booking_form_styles %}
+  <style>
+    .flatpickr-calendar {
+      box-shadow: none;
+    }
+
+    /*
+    .flatpickr-day {
+      color: var(--bs-info);
+    }
+    
+    .flatpickr-day.nextMonthDay.flatpickr-disabled:hover,
+    .flatpickr-day.nextMonthDay.flatpickr-disabled {
+      color: var(--bs-gray-500);
+    }
+
+    .flatpickr-day.nextMonthDay.flatpickr-disabled:hover {
+      background: var(--bs-gray-200);
+    }
+
+    .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover {
+      color: var(--bs-gray-700);
+    }
+    */
+  </style>
+{% endpartialdef %}
+
+{% partialdef booking_form_scripts %}
+  <script>
+    $("#id_booking_date").flatpickr({
+      inline: true,
+      enable: [
+        {
+          from: "2026-03-01",
+          to: "2026-03-18"
+        }
+      ]
+    });
+  </script>
+{% endpartialdef %}
+
+
+{% partialdef booking_form %}
+  {% if seating %}
+    <form method="post" id="booking-form" name="booking-form"
+      class="m-0 d-flex justify-content-center">
+      <input id="id_booking_date" name="booking_date" type="date" class="d-none form-control"  placeholder="Date of Birth" />
+    </form>
+  {% else %}
+    
+  {% endif %}
+
+{% endpartialdef %}

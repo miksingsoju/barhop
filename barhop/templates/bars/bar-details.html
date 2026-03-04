@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block styles %}
+  {% include 'reservations/create-booking.html#booking_form_styles' %}
   <style>
     input[name='like-button']:not(:checked) + label i.ki-solid,
     input[name='like-button']:checked + label i.ki-outline {
@@ -17,6 +18,10 @@
       display: block;
     }
   </style>
+{% endblock %}
+
+{% block scripts %}
+  {% include 'reservations/create-booking.html#booking_form_scripts' %}
 {% endblock %}
 
 {% block content %}
@@ -138,16 +143,55 @@
 
       <article>
         <p id="bar-desc" class="fs-6 mb-8">{{ bar.bar_description }}</p>
-        <h5 class="text-poppins">Amenities</h5>
-        <div class="d-flex flex-row gap-3 mt-4" id="amenities-container">
-          {% for amenity in bar.bar_amenities.all %}
-            <span class="badge badge-light-success badge-lg p-2 fs-semibold">{{ amenity.name }}</span>
-          {% endfor %}
-        </div>
+
+        {% if bar.bar_amenities.length > 0 or preview %}
+          <h5 class="text-poppins">Amenities</h5>
+          <div class="d-flex flex-row gap-3 mt-4" id="amenities-container">
+            {% for amenity in bar.bar_amenities.all %}
+              <span class="badge badge-light-success badge-lg p-2 fs-semibold">{{ amenity.name }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
       </article>
     </section>
     {% endpartialdef %}
 
-    <aside class="w-100 w-sm-300px card"></aside>
+    <aside class="w-100 w-sm-300px h-fit card d-flex">
+      {% if not seating %}
+        <div class="d-flex flex-column gap-4 p-8">
+          <h4 class="m-0">Table Types</h4>
+          <span>No tables to show.</span>
+          
+          {% if request.user and request.user.user_type == 'OWNER' %}
+            <a href="#" class="btn btn-sm btn-info mt-4">Add Tables</a>
+          {% endif %}
+        </div>
+      {% elif seating and request.user and request.user.user_type == 'OWNER' %}
+        <div class="d-flex flex-column gap-4 p-8">
+          <h4 class="m-0">Table Types</h4>
+            {% for s in seating %}
+              <article class="d-flex flex-row gap-4 w-100 align-items-center">
+                <div class="w-65px h-65px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center">
+                  {% if s.image %}
+                    <img src="s.image" alt="{{ s.seating }}" />
+                  {% else %}
+                    <i class="ki-duotone ki-picture text-gray-800 fs-2x">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                  {% endif %}
+                </div>
+                <div>
+                  <span class="d-block fs-6 text-gray-800 fw-semibold">{{ s.seating }}</span>
+                  <span class="d-block fw-semibold text-gray-500">Seats{% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
+                </div>
+              </article>
+            {% endfor %}
+            <a href="#" class="btn btn-sm btn-info mt-4">Manage Tables</a>
+        </div>
+      {% else %}
+        {% include 'reservations/create-booking.html#booking_form' %}
+      {% endif %}
+    </aside>
   </div>
 {% endblock %}

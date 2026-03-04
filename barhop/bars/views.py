@@ -1,8 +1,10 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .forms import CreateBarForm, UpdateBarImageFormSet
 from .models import Bar, Amenity, BarImage  # , Address
+from reservations.models import Seating
 from user_management.models import Profile
-from reservations.views import create_tables
+from reservations.views import get_or_create_tables
 from django.db.models import Case, When, Value, IntegerField
 from django.contrib.auth.decorators import login_required
 
@@ -48,14 +50,17 @@ def create_bar(request):
             bar.bar_owner = request.user
             bar.bar_draft = False
             bar.save()
-            res = create_tables(request, bar=bar)
+            res = get_or_create_tables(request, bar=bar)
+
+            if (res.status_code >= 400):
+                return HttpResponse("error with creating tables", status_code=400)
+
             bar_form.save_m2m()
 
             images = request.FILES.getlist('images')
             for image_file in images:
                 BarImage.objects.create(bar=bar, image=image_file)
 
-            # if res.status_code == 201:
             return redirect('bars:bar-details', bar_id=bar.id)
         else:
             print(bar_form.errors)
@@ -97,10 +102,12 @@ def create_bar(request):
 def bar_details(request, bar_id):
     bar_object = Bar.objects.get(id=bar_id)
     bar_owner = bar_object.bar_owner
+    seating = Seating.objects.filter(bar=bar_object)
     
     return render(request, 'bars/bar-details.html', {
         'bar': bar_object,
         'bar_owner': bar_owner,
+        'seating': seating,
     })
 
 
