@@ -21,7 +21,7 @@
 {% endblock %}
 
 {% block scripts %}
-  {% include 'reservations/create-booking.html#booking_form_scripts' %}
+  {% include 'reservations/create-booking.html#booking_form_datetime_scripts' %}
 {% endblock %}
 
 {% block content %}
@@ -73,7 +73,7 @@
               <span class="path1"></span>
               <span class="path2"></span>
             </i>
-            <span id="bar-times">{{ bar.bar_start_time }} - {{ bar.bar_end_time }}</span>
+            <span id="bar-times">{{ bar.bar_start_time|time:'g:i A' }} - {{ bar.bar_end_time|time:'g:i A' }}</span>
           </span>
           {% if not preview %}
             <span class="fs-6 d-flex mt-1 align-items-center">
@@ -156,11 +156,11 @@
     </section>
     {% endpartialdef %}
 
-    <aside class="w-100 w-sm-300px h-fit card d-flex">
+    <aside class="w-100 w-sm-350px h-fit card d-flex">
       {% if not seating %}
         <div class="d-flex flex-column gap-4 p-8">
           <h4 class="m-0">Table Types</h4>
-          <span>No tables to show.</span>
+          <span class="text-gray-700">No tables to show.</span>
           
           {% if request.user and request.user.user_type == 'OWNER' %}
             <a href="#" class="btn btn-sm btn-info mt-4">Add Tables</a>
@@ -183,14 +183,14 @@
                 </div>
                 <div>
                   <span class="d-block fs-6 text-gray-800 fw-semibold">{{ s.seating }}</span>
-                  <span class="d-block fw-semibold text-gray-500">Seats{% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
+                  <span class="d-block fw-semibold text-gray-500">Seats {% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
                 </div>
               </article>
             {% endfor %}
             <a href="#" class="btn btn-sm btn-info mt-4">Manage Tables</a>
         </div>
       {% else %}
-        {% include 'reservations/create-booking.html#booking_form' %}
+        {% include 'reservations/create-booking.html#booking_form_datetime' %}
       {% endif %}
     </aside>
   </div>

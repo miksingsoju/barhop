@@ -41,7 +41,7 @@ class Table(models.Model):
 class Reservation(models.Model):
     """A model that represents the Reservation Entity."""
 
-    table = models.ForeignKey(Table, on_delete=models.CASCADE)
+    tables = models.ManyToManyField(Table)
     hopper = models.ForeignKey(Profile, on_delete=models.CASCADE)
     guests = models.IntegerField(default=0)
     start_time = models.TimeField()
@@ -52,7 +52,7 @@ class Reservation(models.Model):
 
     def __str__(self):
         """Returns the name of the model."""
-        return f"{self.table_type} for {self.hopper.first_name}"
+        return f"{self.hopper.first_name} at {self.date}, {self.start_time} - {self.end_time}"
 
     class Meta:
         """Metadata for the model."""
