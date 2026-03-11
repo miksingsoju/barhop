@@ -26,8 +26,10 @@ def update_profile(request):
 
         # 2. Check for 'Personal Info' submission
         elif 'personal_info' in request.POST:
+            form = ProfileUpdateForm(request.POST, instance=user)
+
             user.email = request.POST.get('email')
-            user.date_of_birth = request.POST.get('date_of_birth')
+
             user.save()
             messages.success(request, "Personal details updated!")
 
