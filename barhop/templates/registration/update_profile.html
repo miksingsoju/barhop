@@ -118,15 +118,32 @@ Update Profile
 
                         <div class="row my-3">
                             <div class="col">
-                                {{ form.first_name }}
+                                <div class="fv-row fv-plugins-icon-container w-100">
+                                    <input id="{{ form.first_name.id_for_label }}"
+                                        name="{{ form.first_name.html_name }}" type="text" placeholder="First Name"
+                                        autocomplete="off" class="form-control form-control-solid"
+                                        value="{{ form.first_name.value|default:'' }}" required />
+
+                                </div>
                             </div>
                             <div class="col">
-                                {{ form.last_name }}
+                                <div class="fv-row fv-plugins-icon-container w-100">
+                                    <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}"
+                                        type="text" placeholder="Last Name" autocomplete="off"
+                                        class="form-control form-control-solid"
+                                        value="{{ form.last_name.value|default:'' }}" required />
+
+                                </div>
                             </div>
                         </div>
                         <h6 class="mt-5 mb-3 "> Biography </h6>
-                        <div class="mb-3">
-                            {{ form.bio }}
+                        <div class="mb-4">
+                            <div class="fv-row fv-plugins-icon-container w-100">
+                                <textarea id="{{ form.bio.id_for_label }}" name="{{ form.bio.html_name }}"
+                                    placeholder="Tell us a bit about yourself..."
+                                    class="form-control form-control-solid" rows="4"
+                                    required>{{ form.bio.value|default:'' }}</textarea>
+                            </div>
                         </div>
                         <div class="d-flex justify-content-end gap-2">
                             <button type="submit" name="edit_profile" class="btn btn-info">Save Changes</button>
@@ -163,7 +180,7 @@ Update Profile
                                 <div class="form-control ps-0">
                                     {{user.date_of_birth}}
                                 </div>
-                                
+
                             </div>
                         </div>
 
