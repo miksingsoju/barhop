@@ -42,7 +42,6 @@ class ProfileUpdateForm(forms.ModelForm):
         'password',
         'first_name',
         'last_name',
-        'date_of_birth',
         'user_type',
         'bio'
     ]
@@ -54,7 +53,6 @@ class ProfileUpdateForm(forms.ModelForm):
         'last_name': forms.TextInput(attrs={'class': 'form-control'}),
         'bio': forms.TextInput(attrs={'class': 'form-control'}),
 
-        'date_of_birth': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         'user_type': forms.Select(attrs={'class': 'form-control'}),
     }
 
@@ -65,7 +63,6 @@ class ProfileUpdateForm(forms.ModelForm):
             'email',
             'first_name',
             'last_name',
-            'date_of_birth',
             'bio',
             'password'
         ]

@@ -6,29 +6,16 @@ Update Profile
 {% endblock %}
 {% block content %}
 <style>
-    /* This targets the actual input boxes */
-    .edit-field input,
-    .edit-field textarea {
-        background-color: #5E6278 !important;
-        /* Change this to your gray-100 hex */
-        color: #A1A5B7;
-        border: none !important;
-        padding: 10px 15px;
-
-        width: 100%;
-        border-radius: 8px;
-        margin-bottom: 10px;
-
-    }
-
     .input-group.input-group-solid .form-control,
     .input-group.input-group-solid .input-group-text {
         background-color: var(--bs-gray-200);
         border-color: var(--bs-gray-200);
-        color: #ffffff;
-        padding: 10px 15px;
-
     }
+
+    .input-group.input-group-solid .input-group-text+.form-control {
+        border-left-color: var(--bs-gray-200);
+    }
+
 
     .settings-section {
         display: none;
@@ -113,7 +100,7 @@ Update Profile
                     <!-- Profile Picture -->
                     <div class="mb-4x text-center">
                         <div class="symbol symbol-100px">
-                            <div class="symbol-label fs-2 fw-semibold rounded-circle bg-gray-300">A</div> 
+                            <div class="symbol-label fs-2 fw-semibold rounded-circle bg-gray-300">A</div>
                             <span class="symbol-badge badge badge-circle bg-info text-white top-100 start-100">
                                 <button class="btn"><i class="ki-duotone ki-pencil text-white">
                                         <span class="path1"></span>
@@ -156,7 +143,29 @@ Update Profile
 
                         <h6 class="my-4 align-items-center"> Email </h6>
 
-                        {{form.email}}
+                        <div class="fv-row fv-plugins-icon-container w-100">
+                            <input id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" type="email"
+                                placeholder={{user.email}} autocomplete="off" class="form-control form-control-solid"
+                                value="{{ form.email.value|default:''}}" required />
+                        </div>
+
+                        <h6 class="my-4 align-items-center"> Date of Birth </h6>
+
+
+                        <div class="fv-row fv-plugins-icon-container w-100">
+                            <div class="input-group input-group-solid">
+                                <span class="input-group-text">
+                                    <i class="ki-duotone ki-calendar fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </span>
+                                <div class="form-control ps-0">
+                                    {{user.date_of_birth}}
+                                </div>
+                                
+                            </div>
+                        </div>
 
                         <div class="d-flex justify-content-end gap-2">
                             <button type="submit" name="personal_info" class="btn btn-info">Save Changes</button>
@@ -172,24 +181,29 @@ Update Profile
 
                     <!-- Form -->
                     <form method="POST" class="edit-field">
-    {% csrf_token %}
+                        {% csrf_token %}
 
-    <h6 class="mb-3">Old Password</h6>
-    <div class="input-group input-group-solid mb-5">
-        <span class="input-group-text"><i class="ki-duotone ki-key fs-2"><span class="path1"></span><span class="path2"></span></i></span>
-        <input type="password" name="old_password" class="form-control" placeholder="Current Password" required>
-    </div>
+                        <h6 class="mb-3">Old Password</h6>
+                        <div class="input-group input-group-solid mb-5">
+                            <span class="input-group-text"><i class="ki-duotone ki-key fs-2"><span
+                                        class="path1"></span><span class="path2"></span></i></span>
+                            <input type="password" name="old_password" class="form-control"
+                                placeholder="Current Password" required />
+                        </div>
 
-    <h6 class="mb-3">New Password</h6>
-    <div class="input-group input-group-solid mb-5">
-        <span class="input-group-text"><i class="ki-duotone ki-lock fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></span>
-        <input type="password" name="new_password" class="form-control" placeholder="New Password" required>
-    </div>
+                        <h6 class="mb-3">New Password</h6>
+                        <div class="input-group input-group-solid mb-5">
+                            <span class="input-group-text"><i class="ki-duotone ki-lock fs-2"><span
+                                        class="path1"></span><span class="path2"></span><span
+                                        class="path3"></span></i></span>
+                            <input type="password" name="new_password" class="form-control" placeholder="New Password"
+                                required />
+                        </div>
 
-    <div class="d-flex justify-content-end gap-2">
-        <button type="submit" name="change_password" class="btn btn-info">Save Changes</button>
-    </div>
-</form>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" name="change_password" class="btn btn-info">Save Changes</button>
+                        </div>
+                    </form>
                 </section>
             </div>
 
