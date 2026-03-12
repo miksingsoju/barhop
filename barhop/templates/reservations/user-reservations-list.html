@@ -6,9 +6,9 @@
 {% block content %}
 <h1>My Reservations</h1>
 {% for reservation in reservations %}
-    <div class="reservation block">
+    <div class="reservation-block">
         <h3>Reservation id: {{ reservation.id }}</h3>
-        <p>No. of guests: {{ reservation.guest }}</p>
+        <p>No. of guests: {{ reservation.guests }}</p>
         <p>{{ reservation.date }}</p>
         <p>{{ reservation.start_time }} - {{ reservation.end_time}}</p>
         <p>status: {{ reservation.status }}</p>

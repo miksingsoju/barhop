@@ -11,7 +11,7 @@
     <input type="hidden" name="rsv_id" value="{{ reservation.id }}">
     <div class="reservation-block">
         <h3>Reservation id: {{ reservation.id }}</h3>
-        <p>No. of guests: {{ reservation.guest }}</p>
+        <p>No. of guests: {{ reservation.guests }}</p>
         <p>{{ reservation.date }}</p>
         <p>{{ reservation.start_time }} - {{ reservation.end_time}}</p>
         {% for table in reservation.tables.all %}
