@@ -76,6 +76,9 @@
               <span class="text-gray-600 fw-semibold fs-7 text-nowrap">Welcome back,</span>
               <span class="text-gray-800 fs-6 fw-bold d-flex align-items-center text-nowrap">
                 {{ user.first_name }} {{ user.last_name }}
+                {% if user.user_type == "OWNER" %}
+                  <i id="owner-verified" class="ki-solid ki-verify text-info ps-2 fs-4"></i>
+                {% endif %}
               </span>
             </div>
             <i class="fs-1 text-gray-600 ki-solid ki-down hover-rotate-180"></i>

@@ -27,8 +27,10 @@
     <script>
       // TO-DO: clean-up javascript code here, seprate into its own file
       
+      const barForm = document.forms['bar-form'];
+
       // client-side validations
-      var validateBarForm = FormValidation.formValidation(document.forms['bar-form'], {
+      var validateBarForm = FormValidation.formValidation(barForm, {
         fields: {
           bar_name: {
             validators: {
@@ -66,6 +68,15 @@
           })
         }
       })
+
+      // TO-DO: tables-form validation
+      /*
+      var validateTablesForm = FormValidation.formValidation(document.forms['tables-form'], {
+        fields: {
+
+        }
+      })
+      */
       
       const validators = [validateBarForm, ]
 
@@ -112,19 +123,13 @@
       })
     
       stepper.on('kt.stepper.previous', function (stepper) {
-        stepper.goPrevious()
-      })
+        stepper.goPrevious();
+      });
     
       stepper.on('kt.stepper.click', function (stepper) {
-        var validator = validators[stepper.getCurrentStepIndex() - 1]
-    
-        if (!validator) {
-          stepper.goTo(stepper.getClickedStepIndex())
-          return
-        }
-    
-        validator.validate().then((status) => {
-          if (status === 'Valid') {
+        if (!(validators[stepper.getCurrentStepIndex()-1])) stepper.goTo(stepper.getClickedStepIndex());
+        validators[stepper.getCurrentStepIndex()-1]?.validate().then(status => {
+          if (status == "Valid") {
             stepper.goTo(stepper.getClickedStepIndex());
             uploadImages(barDropzone.files);
             renderCarouselFromFiles(barDropzone.files);
@@ -133,13 +138,19 @@
         })
       })
 
+      barForm.addEventListener("submit", e => {
+        e.preventDefault();
+        appendTablesData();
+        barForm.submit();
+      });
+
       const uploadImages = (files) => {
         if (files.length > 0) {
-          const dataTransfer = new DataTransfer()
+          const dataTransfer = new DataTransfer();
           files.forEach(file => {
-            dataTransfer.items.add(file)
+            dataTransfer.items.add(file);
           });
-          document.querySelector('#id_images').files = dataTransfer.files
+          barForm.images.files = dataTransfer.files;
         }
       }
       
@@ -201,15 +212,27 @@
         document.querySelector('#bar-times').innerText = bar_start_time.value + ' - ' + bar_end_time.value
       
         document.querySelector('#amenities-container').innerHTML = ''
-        $('#id_bar_amenities')
-          .select2('data')
-          .forEach((opt) => {
+        let amenities = $('#id_bar_amenities').select2('data');
+        if (amenities.length > 0) {
+          amenities.forEach((opt) => {
             let el = document.createElement('span')
             el.setAttribute('class', 'badge badge-light-success badge-lg p-2 fs-semibold')
             el.textContent = opt.text
             document.querySelector('#amenities-container').appendChild(el)
           })
+        } else {
+          document.querySelector('h5:has(+#amenities-container)').style.display = "none";
+        }
         // console.log('populated!')
+      }
+
+      const appendTablesData = () => {
+        try {
+          const tablesFormData = $("#table-form-list").repeaterVal();
+          barForm.bar_tables.value = JSON.stringify(tablesFormData["seating-form-list"]);
+        } catch (TypeError) {
+          return;
+        }
       }
     </script>
   {% endpartialdef %}
@@ -342,6 +365,7 @@
                 <span>{{ error }}</span>
               {% endfor %}
             </div>
+            <!-- images input -->
             <div class="fv-row w-100">
               <label class="form-label" for="{{ bar_form.images.html_name }}">Images</label>
               {% if bar and bar.images.all %}
@@ -387,6 +411,9 @@
                 <span>{{ error }}</span>
               {% endfor %}
             </div>
+
+            <!-- hidden input for tables -->
+            <input type="hidden" id="id_bar_tables" name="bar_tables">
           </form>
         </article>
       </section>
@@ -401,7 +428,9 @@
         <section class="flex-column gap-8" id="table-form-list" data-kt-stepper-element="content">
           <header class="flex-row justify-content-between align-items-center card p-8">
             <h2 class="m-0">Add Tables</h2>
-            <button type="button" class="btn btn-sm btn-info" data-repeater-create><span>Add Listing</span></button>
+            <button type="button" class="btn btn-sm btn-info" data-repeater-create>
+              <span>Add Listing</span>
+            </button>
           </header>
           {% include 'reservations/create-table.html#create_table_form' %}
         </section>

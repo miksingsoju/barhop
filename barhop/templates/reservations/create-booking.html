@@ -1,0 +1,210 @@
+{% load static %}
+
+{% partialdef booking_form_styles %}
+  <style>
+    .flatpickr-calendar {
+      box-shadow: none;
+    }
+
+    .form-check.form-check-solid .form-check-input:not(:checked) {
+      background-color: var(--bs-gray-300);
+    }
+
+    .form-check-input:checked {
+      background-color: var(--bs-info);
+    }
+
+    /*
+    .flatpickr-day {
+      color: var(--bs-info);
+    }
+    
+    .flatpickr-day.nextMonthDay.flatpickr-disabled:hover,
+    .flatpickr-day.nextMonthDay.flatpickr-disabled {
+      color: var(--bs-gray-500);
+    }
+
+    .flatpickr-day.nextMonthDay.flatpickr-disabled:hover {
+      background: var(--bs-gray-200);
+    }
+
+    .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover {
+      color: var(--bs-gray-700);
+    }
+    */
+  </style>
+{% endpartialdef %}
+
+{% partialdef booking_form_datetime_scripts %}
+  <script>
+    $("#id_booking_date").flatpickr({
+      inline: true,
+      mode: "range",
+      minDate: "today",
+      //maxDate: new Date().fp_incr(1),
+      onReady: (selectedDates, dateStr, instance) => {
+        instance.calendarContainer.classList.add("w-100");
+      },
+      onValueUpdate: (selectedDates, dateStr, instance) => {
+        instance.setDate([selectedDates[0], selectedDates[0]], false);
+      },
+
+      /*
+      enable: [
+        {
+          from: "2026-03-01",
+          to: "2026-03-18"
+        }
+      ]*/
+    });
+    
+    const end_time_fp = $("#id_end_time").flatpickr({
+      enableTime: true,
+      noCalendar: true,
+      altInput: true,
+      dateFormat: "H:i",
+      altFormat: "h:i K",
+      minuteIncrement: 30,
+      minTime: "{{ bar.bar_start_time|time:'H:i' }}",
+    });
+
+    const start_time_fp = $("#id_start_time").flatpickr({
+      enableTime: true,
+      noCalendar: true,
+      altInput: true,
+      dateFormat: "H:i",
+      altFormat: "h:i K",
+      minuteIncrement: 30,
+      minTime: "{{ bar.bar_start_time|time:'H:i' }}",
+      onValueUpdate: (selectedDates, dateStr, instance) => {
+        // console.log("changed", selectedDates[0]);
+        end_time_fp.set("minTime", selectedDates[0]);
+        if (end_time_fp.selectedDates[0] < selectedDates[0]) {
+          end_time_fp.setDate(selectedDates[0], false);
+        }
+      }
+    });
+
+    const bookingDatetimeForm = document.forms["booking-form-datetime"];
+    var validateDatetimeForm = FormValidation.formValidation(bookingDatetimeForm, {
+      fields: {
+        "booking_date": { validators: { notEmpty: { message: 'This field is required.' }, }, },
+        "start_time": { validators: { notEmpty: { message: 'This field is required.' }, }, },
+        "end_time": { validators: { notEmpty: { message: 'This field is required.' }, }, },
+      }
+    });
+
+    const validateForm = async (e) => {
+      // console.log(e.target.value);
+      let status = await validateDatetimeForm.validate();
+      if (status === "Valid") {
+        let formObject = Object.fromEntries(new FormData(bookingDatetimeForm));
+        console.log(formObject);
+        
+        $("#booking-form-tables").load(
+          "{% url 'reservations:get-avail-tables' bar_id=bar.id %}",
+          formObject,
+          (res, status, xhr) => {
+            console.log(status, xhr);
+          }
+        );
+      }
+    }
+
+    document.querySelector("#id_booking_date").addEventListener("change", async e => validateForm(e));
+    document.querySelector("#id_start_time").addEventListener("change", async e => validateForm(e));
+    document.querySelector("#id_end_time").addEventListener("change", async e => validateForm(e));
+    
+  </script>
+{% endpartialdef %}
+
+
+{% partialdef booking_form_datetime %}
+  <h4 class="m-8 mb-0 text-poppins">Book a Table</h4>
+  <form id="booking-form-datetime" method="post" 
+    action="{% url 'reservations:get-avail-tables' bar_id=bar.id %}"
+    class="d-flex flex-column justify-content-center gap-6 px-2 pb-8 m-0">
+    {% csrf_token %}
+
+    <div class="fv-row">
+      <input id="id_booking_date" name="booking_date" type="date" class="d-none form-control" />
+    </div>
+
+    <div class="d-flex flex-row w-100 gap-4 px-6">
+      <div class="fv-row">
+        <label class="form-label" for="start_time">Start Time</label>
+        <input id="id_start_time" name="start_time"
+          type="time" class="form-control form-control-solid" value="{{ bar.bar_start_time|time:'h:i A' }}" />
+      </div>
+      <div class="fv-row">
+        <label class="form-label" for="end_time">End Time</label>
+        <input id="id_end_time" name="end_time" 
+          type="time" class="form-control form-control-solid" value="{{ bar.bar_start_time|time:'h:i A' }}" />
+      </div>
+    </div>
+  </form>
+  <div id="booking-form-tables"></div>
+{% endpartialdef %}
+
+
+{% partialdef booking_form_tables %}
+  <script>
+    KTDialer.createInstances();
+  </script>
+  <form class="w-100 pt-0 p-8 m-0" method="post" id="create-reservation-form"
+    action="{% url 'reservations:create-reservation' bar_id=bar_id %}">
+    {% csrf_token %}
+    <label class="form-label" for="pax">No. of Guests</label>
+    <div class="input-group input-group-solid w-100" data-kt-dialer="true" data-kt-dialer-min="0" data-kt-dialer-max="100" data-kt-dialer-step="1">
+      <button class="btn btn-icon btn-outline btn-active-color-primary" type="button" data-kt-dialer-control="decrease">
+        <i class="ki-duotone ki-minus fs-2"></i>
+      </button>
+      <input id="id_pax" name="pax" type="text" class="form-control text-center" value="1" data-kt-dialer-control="input" />
+      <button class="btn btn-icon btn-outline btn-active-color-primary" type="button" data-kt-dialer-control="increase">
+        <i class="ki-duotone ki-plus fs-2"></i>
+      </button>
+    </div>
+
+    <input type="hidden" id="id_rsv_date" name="rsv_date" value="{{ booking_date }}">
+    <input type="hidden" id="id_rsv_start_time" name="rsv_start_time" value="{{ start_time }}">
+    <input type="hidden" id="id_rsv_end_time" name="rsv_end_time" value="{{ end_time }}">
+
+    <div class="d-flex flex-column gap-4">
+      <hr class="mt-8 border-gray-600">
+      <h6>Available Tables</h6>
+      {% include 'reservations/create-booking.html#seatings' %}
+    </div>
+
+    <button type="submit" id="book-table-submit" class="btn btn-info mt-8 w-100">Book Table</button>
+  </form>
+{% endpartialdef %}
+
+{% partialdef seatings %}
+  <div data-kt-buttons="true" data-kt-buttons-target=".form-check-input"
+    class="d-flex flex-column gap-4 w-100">
+    {% for s in avail_seating %}
+      <label class="cursor-pointer d-flex flex-row w-100 align-items-center justify-content-between form-check form-check-custom form-check-solid">
+        <!-- left -->
+        <div class="d-flex flex-row gap-4 align-items-center">
+          <div class="w-60px h-60px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center">
+            {% if s.image %}
+              <img src="{{ s.image }}" alt="{{ s.seating }}" />
+            {% else %}
+              <i class="ki-duotone ki-picture text-gray-800 fs-2x">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+            {% endif %}
+          </div>
+          <div>
+            <span class="d-block fs-6 text-gray-800 fw-semibold">{{ s.seating }}</span>
+            <span class="d-block fw-semibold text-gray-500">Seats {% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
+          </div>
+        </div>
+
+        <!-- right -->
+        <input class="cursor-pointer form-check-input" type="checkbox" value="{{ s.id }}" name="selected_tables"/>
+      </label>
+    {% endfor %}
+  </div>
+{% endpartialdef %}

@@ -99,3 +99,51 @@
     });
   </script>
 {% endblock %}
+
+{% block scripts_2 %}
+  {{ block.super }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var fileInput = document.querySelector('#bar-form input[type="file"][name="images"]');
+      var previewContainer = document.getElementById('image-preview-container');
+
+      if (!fileInput || !previewContainer) {
+        return;
+      }
+
+      fileInput.addEventListener('change', function (event) {
+        var files = event.target.files;
+        previewContainer.innerHTML = '';
+
+        if (!files || !files.length) {
+          return;
+        }
+
+        Array.from(files).forEach(function (file) {
+          if (!file.type.startsWith('image/')) {
+            return;
+          }
+
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = file.name;
+            img.className = 'img-fluid rounded';
+            img.style.maxWidth = '200px';
+            img.style.maxHeight = '200px';
+            img.style.objectFit = 'cover';
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'bar-image-preview-wrapper';
+            wrapper.appendChild(img);
+
+            previewContainer.appendChild(wrapper);
+          };
+
+          reader.readAsDataURL(file);
+        });
+      });
+    });
+  </script>
+{% endblock %}
