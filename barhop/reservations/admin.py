@@ -16,7 +16,10 @@ class TableAdmin(admin.ModelAdmin):
 
 class ReservationAdmin(admin.ModelAdmin):
     model = Reservation
-    list_display = ('id', 'hopper', 'date', 'start_time', 'end_time')
+    list_display = ('id', 'hopper', 'date', 'start_time', 'end_time', 'tables_list')
+
+    def tables_list(self, obj):
+        return ", ".join([str(table.table_type.seating) for table in obj.tables.all()])
 
 
 admin.site.register(Seating, SeatingAdmin)
