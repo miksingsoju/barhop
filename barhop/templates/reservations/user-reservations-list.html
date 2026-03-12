@@ -1,2 +1,25 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block title %} Reservations {% endblock %}
+
+{% block content %}
+<h1>My Reservations</h1>
+{% for reservation in reservations %}
+    <div class="reservation block">
+        <h3>Reservation id: {{ reservation.id }}</h3>
+        <p>No. of guests: {{ reservation.guest }}</p>
+        <p>{{ reservation.date }}</p>
+        <p>{{ reservation.start_time }} - {{ reservation.end_time}}</p>
+        {% for table in reservation.tables.all %}
+        <ul>
+            <li>
+                <p>{{ table.id }}</p>
+                <p>Table type: {{ table.table_type.seating }}</p>
+                <p>Table capacity: {{ table.table_type.capacity }}</p>
+            </li>
+        </ul>            
+        {% endfor %}
+    </div>
+{% endfor %}
+{% endblock %}

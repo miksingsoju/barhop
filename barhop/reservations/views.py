@@ -8,13 +8,26 @@ import json
 # TO-DO:
 def my_reservations(request):
     if request.method == "GET":
-        Reservation.objects.filter(hopper=request.user)
-        return render(request, "reservations/user-reservations-list.html")
+        reservations = Reservation.objects.filter(hopper=request.user)
+        return render(request, "reservations/user-reservations-list.html", {
+            'reservations': reservations,
+        })
 
 
 @login_required
 def create_reservation(request, bar_id):
     if request.method == "POST":
+        
+        date=request.POST.get("rsv_date")
+        start_time=request.POST.get("rsv_start_time")
+        end_time=request.POST.get("rsv_end_time")
+
+        reservations = Reservation.objects.filter(
+            date=date,
+            start_time__lt=end_time,
+            end_time__gte=start_time,
+        )
+
         r = Reservation.objects.create(
             hopper=request.user,
             guests=request.POST.get("pax"),
@@ -26,7 +39,9 @@ def create_reservation(request, bar_id):
         selected_seating_ids = request.POST.getlist("selected_tables")
         selected_tables = []
         for id in selected_seating_ids:
-            selected_tables.append(*Table.objects.filter(table_type__id=id)[:1])
+            table = Table.objects.filter(table_type_id=id).exclude(reservation__in=reservations).first()
+            if table:
+                selected_tables.append(table)
         
         print(selected_seating_ids, selected_tables)
         r.tables.add(*selected_tables)
@@ -35,10 +50,17 @@ def create_reservation(request, bar_id):
 
 
 def get_avail_tables(request, bar_id):
+    avail_tables = Table.objects.filter(table_type__bar__id=bar_id)
+    avail_seating = Seating.objects.filter(bar__id=bar_id).distinct()
     if request.method == "POST":
         booking_date = request.POST.get("booking_date")
         start_time = request.POST.get("start_time")
         end_time = request.POST.get("end_time")
+
+        
+        print("date: " + booking_date)
+        print("start time: " + start_time)
+        print("end time: " + end_time)
 
         # get all reservations for selected date
         # where time period overlaps selected time
@@ -51,11 +73,12 @@ def get_avail_tables(request, bar_id):
 
         # get all tables not under reservation
         # where bar is this bar
-        avail_tables = Table.objects.exclude(id__in=reservations).filter(table_type__bar__id=bar_id)
 
         # get all table types of available tables
-        avail_seating = Seating.objects.filter(bar__id=bar_id, table__id__in=avail_tables)
-        
+        reserved_tables = Table.objects.filter(reservation__in=reservations).values_list("id", flat=True)
+        avail_tables = Table.objects.filter(table_type__bar__id=bar_id).exclude(id__in=reserved_tables)
+        avail_seating = Seating.objects.filter(bar__id=bar_id, table__id__in=avail_tables.values_list("id", flat=True)).distinct()
+
         print(reservations)
         print(avail_tables)
         print(avail_seating)
