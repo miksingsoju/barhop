@@ -13,6 +13,21 @@ def my_reservations(request):
             'reservations': reservations,
         })
 
+def reservations_list(request, bar_id):
+    seatings = Seating.objects.filter(bar__id=bar_id).distinct()
+    tables = Table.objects.filter(table_type__in=seatings)
+    reservations = Reservation.objects.filter(tables__in=tables).distinct()
+    if request.method == "POST":
+        status=request.POST.get("rsv_status")
+        rsv_id=request.POST.get("rsv_id")
+        if rsv_id and status:
+            reservation = Reservation.objects.get(id=rsv_id)
+            reservation.status = status
+            reservation.save()
+
+    return render(request, "reservations/manage-reservations.html", {
+        'reservations': reservations,
+    })
 
 @login_required
 def create_reservation(request, bar_id):

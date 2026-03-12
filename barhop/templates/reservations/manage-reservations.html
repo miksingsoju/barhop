@@ -4,23 +4,33 @@
 {% block title %} Reservations {% endblock %}
 
 {% block content %}
-<h1>My Reservations</h1>
+<h1>Reservation list</h1>
 {% for reservation in reservations %}
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="rsv_id" value="{{ reservation.id }}">
     <div class="reservation-block">
         <h3>Reservation id: {{ reservation.id }}</h3>
         <p>No. of guests: {{ reservation.guests }}</p>
         <p>{{ reservation.date }}</p>
         <p>{{ reservation.start_time }} - {{ reservation.end_time}}</p>
-        <p>status: {{ reservation.status }}</p>
         {% for table in reservation.tables.all %}
         <ul>
             <li>
-                <p>{{ table.id }}</p>
+                <p>Table ID: {{ table.id }}</p>
                 <p>Table type: {{ table.table_type.seating }}</p>
                 <p>Table capacity: {{ table.table_type.capacity }}</p>
             </li>
         </ul>            
         {% endfor %}
+        {% for choice_value, choice_name in reservation.STATUS_CHOICES %}
+            <label for="{{ choice.id_for_label }}">
+                <input type="radio" name="rsv_status" value="{{ choice_value }}" {% if reservation.status == choice_value %}checked{% endif %}>
+                {{ choice_name }}
+            </label>
+        {% endfor %}
     </div>
+    <button type="submit" id="reservation-status-submit">Confirm Reservation</button>
+</form>
 {% endfor %}
 {% endblock %}
