@@ -17,17 +17,14 @@ def bar_list(request, username=None):
         When(bar_status='COLD', then=Value(2)),
         output_field=IntegerField()
     )
-    if username:
-        bars = Bar.objects.filter(bar_owner=request.user).annotate(
-        status_order=custom_order).order_by('status_order')
+    
+    bars = Bar.objects.filter(bar_owner=request.user) if username else Bar.objects.all()
+    bars.annotate(status_order=custom_order).order_by('status_order')
+    
+    # if user_profile != None and username == None:
+    #         bars = Bar.objects.exclude(bar_owner=request.user).annotate(
+    #             status_order=custom_order).order_by('status_order')
 
-    if user_profile != None and username == None:
-            bars = Bar.objects.exclude(bar_owner=request.user).annotate(
-                status_order=custom_order).order_by('status_order')
-
-    if user_profile == None:
-         bars = Bar.objects.all().annotate(
-            status_order=custom_order).order_by('status_order')
 
     return render(request, 'bars/bar-list.html', {
         'bars': bars,

@@ -108,6 +108,7 @@
         </div>
 
         <!-- right -->
+        {% if request.user.is_authenticated and bar.bar_owner != request.user %}
          <div class="d-flex flex-column align-items-end">
           <button class="btn btn-sm btn-icon btn-bg-secondary btn-active-danger rounded-pill">
             <i class="ki-outline ki-heart fs-2"></i>
@@ -127,7 +128,7 @@
             </span>
             {% endcomment %}
          </div>
-
+        {% endif %}
       </div>
       {% if bar.bar_amenities.all %}
         <div class="mb-3">
