@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Manage Tables
+{% endblock %}
+
+{% block content %}
+  <a href="{% url 'bars:bar-details' bar.id %}">back to bar details</a>
+  <div class="d-flex flex-row justify-content-center gap-12 my-12">
+    <div class="d-flex flex-column gap-7 w-100 mw-sm-700px">
+
+      <header>
+        <h2 class="text-poppins">{{ bar.bar_name }} &mdash; Tables</h2>
+      </header>
+
+      {% for seating, form in seating_forms %}
+        <article class="card p-8 d-flex flex-column gap-4">
+          <div class="d-flex flex-row justify-content-between align-items-center">
+            <div>
+              <h4 class="m-0">{{ seating.seating }}</h4>
+              <span class="text-gray-600 fs-7">
+                {{ seating.table_set.count }} table{{ seating.table_set.count|pluralize }} &middot; seats {% if seating.capacity > 1 %}up to{% endif %} {{ seating.capacity }} pax
+              </span>
+            </div>
+            <div class="w-65px h-65px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center">
+              {% if seating.image %}
+                <img src="{{ seating.image.url }}" alt="{{ seating.seating }}" class="w-100 h-100" style="object-fit: cover;" />
+              {% else %}
+                <i class="ki-duotone ki-picture text-gray-800 fs-2x">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              {% endif %}
+            </div>
+          </div>
+
+          <form method="POST" enctype="multipart/form-data" class="m-0 d-flex flex-column gap-4">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_seating">
+            <input type="hidden" name="seating_id" value="{{ seating.id }}">
+            <div class="d-flex flex-row gap-4">
+              <div class="w-100">
+                <label class="form-label">Name</label>
+                {{ form.seating }}
+              </div>
+              <div class="w-100">
+                <label class="form-label">Capacity (pax)</label>
+                {{ form.capacity }}
+              </div>
+              <div class="w-100">
+                <label class="form-label">Quantity</label>
+                {{ form.quantity }}
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Image</label>
+              {{ form.image }}
+            </div>
+            <div class="d-flex flex-row justify-content-between mt-2">
+              <button type="submit" form="delete-form-{{ seating.id }}" class="btn btn-sm btn-light-danger border border-danger">
+                <i class="ki-duotone ki-trash fs-4">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+                Delete
+              </button>
+              <button type="submit" class="btn btn-sm btn-info">Save Changes</button>
+            </div>
+          </form>
+
+          <form method="POST" id="delete-form-{{ seating.id }}" class="m-0">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_seating">
+            <input type="hidden" name="seating_id" value="{{ seating.id }}">
+          </form>
+        </article>
+      {% endfor %}
+
+      <!-- add new seating type -->
+      <article class="card p-8 d-flex flex-column gap-4">
+        <h4 class="m-0">Add Seating Type</h4>
+        <form method="POST" enctype="multipart/form-data" class="m-0 d-flex flex-column gap-4">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="add_seating">
+          <div class="d-flex flex-row gap-4">
+            <div class="w-100">
+              <label class="form-label">Name</label>
+              {{ add_form.seating }}
+            </div>
+            <div class="w-100">
+              <label class="form-label">Capacity (pax)</label>
+              {{ add_form.capacity }}
+            </div>
+            <div class="w-100">
+              <label class="form-label">Quantity</label>
+              {{ add_form.quantity }}
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Image</label>
+            {{ add_form.image }}
+          </div>
+          {% comment %} TO-DO: add validation {% endcomment %}
+          <div class="d-flex justify-content-end mt-2">
+            <button type="submit" class="btn btn-sm btn-info">
+              <i class="ki-duotone ki-plus fs-4">
+                <span class="path1"></span>
+                <span class="path2"></span>
+              </i>
+              Add Seating Type
+            </button>
+          </div>
+        </form>
+      </article>
+
+    </div>
+  </div>
+{% endblock %}
