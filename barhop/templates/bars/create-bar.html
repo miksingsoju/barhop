@@ -115,9 +115,10 @@
     
         validator.validate().then((status) => {
           if (status === 'Valid') {
-            stepper.goNext()
-            uploadImages()
-            populatePreview()
+            uploadImages(barDropzone.files);
+            renderCarouselFromFiles(barDropzone.files);
+            populatePreview();
+            stepper.goNext();
           }
         })
       })
@@ -127,13 +128,14 @@
       });
     
       stepper.on('kt.stepper.click', function (stepper) {
-        if (!(validators[stepper.getCurrentStepIndex()-1])) stepper.goTo(stepper.getClickedStepIndex());
-        validators[stepper.getCurrentStepIndex()-1]?.validate().then(status => {
+        var validator = validators[stepper.getCurrentStepIndex() - 1]
+        if (!validator) stepper.goTo(stepper.getClickedStepIndex());
+        validator.validate().then(status => {
           if (status == "Valid") {
-            stepper.goTo(stepper.getClickedStepIndex());
             uploadImages(barDropzone.files);
             renderCarouselFromFiles(barDropzone.files);
             populatePreview();
+            stepper.goTo(stepper.getClickedStepIndex());
           }
         })
       })
@@ -255,6 +257,13 @@
       </div>
     {% endfor %}
   </div>
+    <ol class="breadcrumb breadcrumb-dot text-muted fs-6 fw-semibold px-6 px-sm-12 mt-6">
+    <li class="breadcrumb-item">
+      <i class="ki-solid ki-home"></i>
+    </li>
+    <li class="breadcrumb-item"><a href="{% url 'bars:bar-list' %}" class="text-muted">Bar List</a></li>
+    <li class="breadcrumb-item text-gray-600">Create Bar</li>
+  </ol>
 
   {% partialdef bar_form inline %}
   <div class="stepper stepper-pills stepper-column d-flex flex-column flex-md-row justify-content-center gap-8 gap-sm-12 mx-6 mx-lg-0 my-8 my-sm-12" id="form-stepper">

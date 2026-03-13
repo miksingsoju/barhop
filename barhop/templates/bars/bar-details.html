@@ -25,10 +25,15 @@
 {% endblock %}
 
 {% block content %}
-  <a href="{% url 'bars:bar-list' %}">back to bar list</a>
+  <ol class="breadcrumb breadcrumb-dot text-muted fs-6 fw-semibold px-6 px-sm-12 mt-6">
+    <li class="breadcrumb-item">
+      <i class="ki-solid ki-home"></i>
+    </li>
+    <li class="breadcrumb-item"><a href="{% url 'bars:bar-list' %}" class="text-muted">Bar List</a></li>
+    <li class="breadcrumb-item text-gray-600">{{ bar.bar_name }}</li>
+  </ol>
   {% if bar.bar_owner == request.user %}
     <br>
-    <a href="{% url 'reservations:bar-tables' bar_id=bar.id%}">check reservations</a>
   {% else %}
   {% endif %}
   <div class="d-flex flex-row justify-content-center gap-12 my-12">
@@ -189,6 +194,8 @@
               </article>
             {% endfor %}
             <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Manage Tables</a>
+            <hr class="border-gray-600">
+            <a href="{% url 'reservations:bar-tables' bar_id=bar.id%}" class="btn btn-sm btn-info">Check Reservations</a>
         </div>
       {% else %}
         {% include 'reservations/create-booking.html#booking_form_datetime' %}

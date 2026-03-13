@@ -5,6 +5,14 @@
 {% block title %} Update Bar Details {% endblock %}
 
 {% block content %}
+  <ol class="breadcrumb breadcrumb-dot text-muted fs-6 fw-semibold px-6 px-sm-12 mt-6">
+    <li class="breadcrumb-item">
+      <i class="ki-solid ki-home"></i>
+    </li>
+    <li class="breadcrumb-item"><a href="{% url 'bars:bar-list' %}" class="text-muted">Bar List</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'bars:bar-details' bar.id %}" class="text-muted">{{ bar.bar_name }}</a></li>
+    <li class="breadcrumb-item text-gray-600">Update {{ bar.bar_name }}</li>
+  </ol>
   {% include 'bars/create-bar.html#bar_form' %}  
 {% comment %}
   <div class="bar-update-form-container">
