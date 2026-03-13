@@ -136,15 +136,6 @@
 
         validator.validate().then(status => {
           if (status === 'Valid') {
-        var validator = validators[stepper.getCurrentStepIndex() - 1];
-
-        if (!validator) {
-          stepper.goTo(stepper.getClickedStepIndex());
-          return;
-        }
-
-        validator.validate().then(status => {
-          if (status === 'Valid') {
             stepper.goTo(stepper.getClickedStepIndex());
             uploadImages(barDropzone.files);
             renderCarouselFromFiles(barDropzone.files);
