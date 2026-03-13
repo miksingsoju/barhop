@@ -25,12 +25,11 @@
 {% endblock %}
 
 {% block content %}
+  <a href="{% url 'bars:bar-list' %}">back to bar list</a>
   {% if bar.bar_owner == request.user %}
-    <a href="{% url 'bars:bar-list' username=user.username %}">back to owned bars</a>
     <br>
     <a href="{% url 'reservations:bar-tables' bar_id=bar.id%}">check reservations</a>
   {% else %}
-    <a href="{% url 'bars:bar-list' %}">back to bar list</a>
   {% endif %}
   <div class="d-flex flex-row justify-content-center gap-12 my-12">
     {% partialdef bar_details inline %}
