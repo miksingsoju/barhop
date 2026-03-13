@@ -1,7 +1,9 @@
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Table, Seating, Reservation
+from .forms import SeatingForm
+from bars.models import Bar
 import json
 
 
@@ -162,6 +164,63 @@ def get_or_create_tables(request, bar):
     else:
         return tables
 
+@login_required
+def manage_tables(request, bar_id):
+    bar = get_object_or_404(Bar, id=bar_id)
+
+    if bar.bar_owner != request.user:
+        return redirect('bars:bar-details', pk=bar_id)
+
+    seatings = Seating.objects.filter(bar=bar).prefetch_related('table_set')
+    add_form = SeatingForm()
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'add_seating':
+            add_form = SeatingForm(request.POST, request.FILES)
+            if add_form.is_valid():
+                seating = add_form.save(commit=False)
+                seating.bar = bar
+                seating.save()
+                quantity = add_form.cleaned_data['quantity']
+                Table.objects.bulk_create([
+                    Table(table_type=seating) for _ in range(quantity)
+                ])
+                return redirect('reservations:manage-tables', bar_id=bar_id)
+
+        elif action == 'delete_seating':
+            seating_id = request.POST.get('seating_id')
+            Seating.objects.filter(id=seating_id, bar=bar).delete()
+            return redirect('reservations:manage-tables', bar_id=bar_id)
+
+        elif action == 'update_seating':
+            seating_id = request.POST.get('seating_id')
+            seating = get_object_or_404(Seating, id=seating_id, bar=bar)
+            form = SeatingForm(request.POST, request.FILES, instance=seating)
+            if form.is_valid():
+                form.save()
+                new_quantity = form.cleaned_data['quantity']
+                current_quantity = seating.table_set.count()
+                if new_quantity > current_quantity:
+                    Table.objects.bulk_create([
+                        Table(table_type=seating) for _ in range(new_quantity - current_quantity)
+                    ])
+                elif new_quantity < current_quantity:
+                    ids_to_delete = list(seating.table_set.values_list('id', flat=True)[:current_quantity - new_quantity])
+                    Table.objects.filter(id__in=ids_to_delete).delete()
+            return redirect('reservations:manage-tables', bar_id=bar_id)
+
+    seating_forms = [
+        (seating, SeatingForm(instance=seating, initial={'quantity': seating.table_set.count()}))
+        for seating in seatings
+    ]
+
+    return render(request, 'reservations/manage-table.html', {
+        'bar': bar,
+        'seating_forms': seating_forms,
+        'add_form': add_form,
+    })
 
 # @login_required
 def create_seating_form(request):
