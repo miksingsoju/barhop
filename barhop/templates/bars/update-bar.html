@@ -11,15 +11,14 @@
     {% if bar and bar.images.all %}
       <div class="mb-6">
         <h3>Existing Images</h3>
-        <div class="d-flex flex-row flex-wrap gap-4 my-4" id="existing-images-container">
+        <div class="d-flex flex-row flex-wrap gap-4 my-4">
           {% for bar_image in bar.images.all %}
-            <div class="bar-image-wrapper d-flex flex-column align-items-start gap-2" data-image-id="{{ bar_image.id }}">
-              <div class="position-relative">
-                <img src="{{ bar_image.image.url }}" alt="{{ bar.bar_name }} image {{ forloop.counter }}" class="img-fluid rounded mb-2" style="max-width: 200px; max-height: 200px; object-fit: cover;" />
-                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 remove-image-btn" data-image-id="{{ bar_image.id }}" title="Remove image">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
+            <div class="bar-image-wrapper d-flex flex-column align-items-start gap-2">
+              <img src="{{ bar_image.image.url }}" alt="{{ bar.bar_name }} image {{ forloop.counter }}" class="img-fluid rounded mb-2" style="max-width: 200px; max-height: 200px; object-fit: cover;" />
+              <label class="form-check d-flex align-items-center gap-2">
+                <!-- <input class="form-check-input" type="checkbox" name="delete_images" value="{{ bar_image.id }}"> -->
+                <!-- <span class="form-check-label">Remove this image</span> WILL DO THIS IN THE FUTURE-->
+              </label>
             </div>
           {% endfor %}
         </div>
@@ -27,7 +26,6 @@
     {% endif %}
     <form method="post" enctype="multipart/form-data" id="bar-form">
         {% csrf_token %}
-        <div id="delete-images-container"></div>
         {% for field in bar_form %}
           <div class="bar-form-field">
             <label class="bar-form-label">{{ field.label }}</label>
@@ -145,25 +143,6 @@
 
           reader.readAsDataURL(file);
         });
-      });
-
-      // Handle remove image buttons
-      document.addEventListener('click', function (event) {
-        if (event.target.closest('.remove-image-btn')) {
-          var btn = event.target.closest('.remove-image-btn');
-          var imageId = btn.getAttribute('data-image-id');
-          var wrapper = btn.closest('.bar-image-wrapper');
-
-          // Remove the image wrapper from DOM
-          wrapper.remove();
-
-          // Add hidden input for deletion
-          var hiddenInput = document.createElement('input');
-          hiddenInput.type = 'hidden';
-          hiddenInput.name = 'delete_images';
-          hiddenInput.value = imageId;
-          document.getElementById('delete-images-container').appendChild(hiddenInput);
-        }
       });
     });
   </script>
