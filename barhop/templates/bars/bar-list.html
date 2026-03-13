@@ -3,32 +3,142 @@
 
 {% block title %} Bars {% endblock %}
 
+{% block styles %}
+  <style>
+    .amenity-bg {
+      background-color: rgba(80, 205, 137, 0.30);
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
-  {% if request.user.is_authenticated and user.username in request.path %}
-  <h1>Owned Bars</h1>
-  <div class="bar-list-container">
-    {% for bar in bars %}
-      <div class="bar-element">
-        <h2>{{ bar.bar_name }}</h2>
-        <p>Activity: {{ bar.get_bar_status_display }}</p>
-        <a href="{% url 'bars:bar-details' bar_id=bar.id %}">more details</a>
-        <br><br>
+  <div class="h-300px d-flex flex-column justify-content-center">
+    <h1 class="text-poppins text-gray-800 fs-2hx text-center mt-3">Find active bars near you.</h1>
+    <span class="text-poppins fs-4 d-block text-center mb-3">Small tagline here, lorem ipsum.</span>
+    <div class="d-flex mt-14 flex-row gap-4 justify-content-center align-items-center">
+      <div class="input-group input-group-solid border border-gray-400 mw-600px">
+        <span class="input-group-text">
+          <i class="ki-duotone ki-magnifier fs-2">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+        </span>
+        <input type="text" class="form-control ps-0" placeholder="Search by Bar"/>
       </div>
-    {% endfor %}
-    <a href="{% url 'bars:create-bar' %}" class="btn btn-info">Create Bar</a>  
-    {% else %}
-    <h1>Bar List</h1>
-      <div class="bar-list-container">
-        {% for bar in bars %}
-        <div class="bar-element">
-          <h2>{{ bar.bar_name }}</h2>
-          <p>Activity: {{ bar.get_bar_status_display }}</p>
-        </div>
-        <a href="{% url 'bars:bar-details' bar_id=bar.id %}">more details</a>
-        <br><br>
-      {% endfor %}
+      <button type="button" onclick="showFilters();" class="btn btn-active-info btn-bg-secondary btn-color-gray-700 btn-icon border border-gray-400">
+        <i class="ki-duotone ki-filter fs-2">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      </button>
     </div>
   </div>
-  {% endif %}
+  <svg xmlns="http://www.w3.org/2000/svg" class="hero-img z-index-n1 d-block position-absolute top-0 w-100 text-gray-400" width="1280" height="306" viewBox="0 0 1280 306" fill="none">
+    <path d="M1280 -138H0V256.715C501.579 322.413 781.858 322.444 1280 256.715V-138Z" fill="currentColor"/>
+  </svg>
+  
+  <div class="d-flex flex-row justify-content-between align-items-center w-800px mx-auto">
+    <h2 class="text-poppins text-gray-800 m-0">All Bars</h2>
+    {% if request.user.is_authenticated and user.user_type == 'OWNER' %}
+      <a href="{% url 'bars:create-bar' %}" class="btn btn-sm btn-info w-fit">Create Bar</a>
+    {% endif %}
+  </div>
+  <div class="d-flex flex-row w-800px gap-12 mx-auto mt-6 mb-16">
+    <!-- left -->
+    <div class="d-flex flex-column flex-grow-1 gap-10">
+      {% for bar in bars %}
+        {% include 'bars/bar-list.html#bar_card' %}
+      {% endfor %}
+    </div>
 
+    <!-- right -->
+    <aside class="filters card p-6 w-250px d-none">
+      <h5 class="text-poppins text-gray-800">Filters</h5>
+      <span class="text-gray-700">TBA</span>
+    </aside>
+  </div>
 {% endblock %}
+
+{% block scripts %}
+  <script>
+    const showFilters = () => {
+      document.querySelector("aside.filters").classList.toggle("d-none");
+    }
+  </script>
+{% endblock %}
+
+{% partialdef bar_card %}
+  <article class="card p-6 d-flex flex-row w-100 gap-6">
+    <figure class="bg-gray-400 w-175px h-175px rounded m-0 d-flex justify-content-center align-items-center">
+      {% if bar.images.all %}
+        {% with bar_image=bar.images.all|first %}
+          <img src="{{ bar_image.image.url }}" alt="{{ bar.bar_name }} image {{ forloop.counter }}" class="d-block w-100 h-100"/>
+        {% endwith %}
+      {% else %}
+        <i class="ki-duotone ki-picture text-gray-600 fs-3x">
+          <span class="path1"></span>
+          <span class="path2"></span>
+        </i>
+      {% endif %}
+    </figure>
+    <figcaption class="d-flex flex-column justify-content-between flex-grow-1">
+      <div class="d-flex flex-row justify-content-between">
+        <!-- left -->
+        <div class="mt-3">
+          <h5>{{ bar.bar_name }}</h5>
+          <span class="text-gray-700 d-flex mb-1 align-items-center">
+            <i class="ki-duotone ki-geolocation fs-5 pe-2 text-gray-700">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span id="bar-address">{{ bar.bar_address }}</span>
+          </span>
+          <span class="text-gray-700 d-flex mb-1 align-items-center">
+            <i class="ki-duotone ki-time fs-5 pe-2 text-gray-700">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span id="bar-times">{{ bar.bar_start_time|time:'g:i A' }} - {{ bar.bar_end_time|time:'g:i A' }}</span>
+          </span>
+          <span class="text-gray-700 d-flex mb-1 align-items-center">
+            <i class="ki-outline ki-star fs-5 pe-2 text-gray-700"></i>
+            <!-- TODO: reviews -->
+            <span>0 Rating</span>
+          </span>
+        </div>
+
+        <!-- right -->
+         <div class="d-flex flex-column align-items-end">
+          <button class="btn btn-sm btn-icon btn-bg-secondary btn-active-danger rounded-pill">
+            <i class="ki-outline ki-heart fs-2"></i>
+          </button>
+          {% comment %}
+          <span class="fs-6 d-flex mt-1 align-items-center mt-2">
+            {% if bar.bar_status == 'COLD' %}
+              <span class="fs-8 pe-1">&#129482;</span>
+              <span class="fs-8 text-primary">{{ bar.get_bar_status_display }}</span>
+            {% elif bar.bar_status == 'FIRE' %}
+              <span class="fs-8 pe-1">&#128293;</span>
+              <span class="fs-8 text-danger">{{ bar.get_bar_status_display }}</span>
+            {% else %}
+              <span class="fs-8 pe-1">&#127777;</span>
+              <span class="fs-8 text-warning">{{ bar.get_bar_status_display }}</span>
+            {% endif %}
+            </span>
+            {% endcomment %}
+         </div>
+
+      </div>
+      {% if bar.bar_amenities.all %}
+        <div class="mb-3">
+          <h5 class="text-gray-800">Amenities</h5>
+          <div class="d-flex flex-row gap-3">
+            {% for amenity in bar.bar_amenities.all %}
+              <span class="badge badge-sm badge-light-success amenity-bg p-2 fs-semibold">{{ amenity.name }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </figcaption>
+  </article>
+{% endpartialdef  %}
