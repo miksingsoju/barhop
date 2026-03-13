@@ -11,6 +11,8 @@ from bars.models import Bar
 
 from django.contrib.auth import update_session_auth_hash
 
+from django.contrib.auth import update_session_auth_hash
+
 @login_required
 def update_profile(request):
     user = request.user # This is your Profile instance
@@ -18,42 +20,6 @@ def update_profile(request):
     my_bars = Bar.objects.filter(bar_owner=user) if user.user_type == "OWNER" else None
     
     if request.method == 'POST':
-        # 1. Check for 'Edit Profile' submission
-        if 'edit_profile' in request.POST:
-            user.first_name = request.POST.get('first_name')
-            user.last_name = request.POST.get('last_name')
-            user.bio = request.POST.get('bio')
-            user.save()
-            messages.success(request, "Display info updated!")
-
-        # 2. Check for 'Personal Info' submission
-        elif 'personal_info' in request.POST:
-            user.email = request.POST.get('email')
-            user.date_of_birth = request.POST.get('date_of_birth')
-            user.save()
-            messages.success(request, "Personal details updated!")
-
-        # 3. Check for 'Change Password' submission
-        elif 'change_password' in request.POST:
-            old_pass = request.POST.get('old_password')
-            new_pass = request.POST.get('new_password')
-
-            # 1. Verify the old password matches the database
-            if user.check_password(old_pass):
-                if len(new_pass) >= 8: # Basic length check
-                    # 2. Hash and save the new password
-                    user.set_password(new_pass)
-                    user.save()
-
-                    # 3. Update session so they stay logged in
-                    update_session_auth_hash(request, user)
-                    messages.success(request, "Password changed successfully!")
-                else:
-                    messages.error(request, "New password is too short (min 8 chars).")
-            else:
-                messages.error(request, "The 'Old Password' you entered is incorrect.")
-
-        return redirect('user_management:update_profile')
         # 1. Check for 'Edit Profile' submission
         if 'edit_profile' in request.POST:
             user.first_name = request.POST.get('first_name')
