@@ -11,21 +11,54 @@
   </style>
 {% endblock %}
 
+{% block scripts %}
+  <script>
+    const showFilters = () => {
+      document.querySelector("aside.filters").classList.toggle("d-none");
+      document.querySelector("#show-filters-btn").classList.toggle("active");
+    }
+
+    const swapSearchBy = () => {
+      btn = document.querySelector("#swap-search-by-btn");
+      search = document.querySelector("#search-by input");
+      btn.children.forEach(el => {
+        el.classList.toggle("d-none");
+      });
+      search.placeholder = search.placeholder == "Search by Bar" ? "Search by Location" :  "Search by Bar";
+    }
+
+    const searchForm = document.forms["search-by"];
+    searchForm.addEventListener("submit", e => {
+      e.preventDefault();
+      let inputEl = searchForm.search;
+      inputEl.name = inputEl.placeholder == "Search by Bar" ? "bar_name" : "bar_address";
+      searchForm.submit();
+    });
+  </script>
+{% endblock %}
+
 {% block content %}
   <div class="h-300px d-flex flex-column justify-content-center">
     <h1 class="text-poppins text-gray-800 fs-2hx text-center mt-3">Find active bars near you.</h1>
     <span class="text-poppins fs-4 d-block text-center mb-3">Small tagline here, lorem ipsum.</span>
     <div class="d-flex mt-14 flex-row gap-4 justify-content-center align-items-center">
-      <div class="input-group input-group-solid border border-gray-400 mw-600px">
-        <span class="input-group-text">
-          <i class="ki-duotone ki-magnifier fs-2">
-            <span class="path1"></span>
-            <span class="path2"></span>
-          </i>
-        </span>
-        <input type="text" class="form-control ps-0" placeholder="Search by Bar"/>
-      </div>
-      <button type="button" onclick="showFilters();" class="btn btn-active-info btn-bg-secondary btn-color-gray-700 btn-icon border border-gray-400">
+      <form action="{% url 'bars:bar-list' %}" id="search-by" method="get" class="w-600px m-0">
+        <div class="input-group input-group-solid w-100">
+          <button type="button" onclick="swapSearchBy();" class="input-group-text" id="swap-search-by-btn">
+            <i class="ki-duotone ki-magnifier fs-2" id="search-by-bar">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <i class="ki-duotone ki-geolocation fs-2 d-none" id="search-by-location">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+          </button>
+            <input type="text" name="search" class="form-control ps-0" placeholder="Search by Bar"/>
+        </div>
+        <input type="submit" value="Submit" class="d-none">
+      </form>
+      <button type="button" onclick="showFilters();" id="show-filters-btn" class="btn btn-active-info btn-bg-secondary btn-color-gray-700 btn-icon">
         <i class="ki-duotone ki-filter fs-2">
           <span class="path1"></span>
           <span class="path2"></span>
@@ -59,16 +92,8 @@
   </div>
 {% endblock %}
 
-{% block scripts %}
-  <script>
-    const showFilters = () => {
-      document.querySelector("aside.filters").classList.toggle("d-none");
-    }
-  </script>
-{% endblock %}
-
 {% partialdef bar_card %}
-  <article class="card p-6 d-flex flex-row w-100 gap-6">
+  <a class="card p-6 d-flex flex-row w-100 gap-6 cursor-pointer hover-elevate-up" href="{% url 'bars:bar-details' bar.id %}">
     <figure class="bg-gray-400 w-175px h-175px rounded m-0 d-flex justify-content-center align-items-center">
       {% if bar.images.all %}
         {% with bar_image=bar.images.all|first %}
@@ -141,5 +166,5 @@
         </div>
       {% endif %}
     </figcaption>
-  </article>
+  </a>
 {% endpartialdef  %}

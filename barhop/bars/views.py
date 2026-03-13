@@ -9,8 +9,10 @@ from django.db.models import Case, When, Value, IntegerField
 from django.contrib.auth.decorators import login_required
 
 
-def bar_list(request, username=None):
+def bar_list(request):
     user_profile = request.user if request.user.is_authenticated else None
+    bar_address = request.GET.get("bar_address")
+    bar_name = request.GET.get("bar_name")
     custom_order = Case(
         When(bar_status='FIRE', then=Value(0)),
         When(bar_status='LUKEWARM', then=Value(1)),
@@ -18,7 +20,13 @@ def bar_list(request, username=None):
         output_field=IntegerField()
     )
     
-    bars = Bar.objects.filter(bar_owner=request.user) if username else Bar.objects.all()
+    if bar_name:
+        bars = Bar.objects.filter(bar_name__icontains=bar_name)
+    elif bar_address:
+        bars = Bar.objects.filter(bar_address__icontains=bar_address)
+    else:
+        bars = Bar.objects.all()
+
     bars.annotate(status_order=custom_order).order_by('status_order')
     
     # if user_profile != None and username == None:
