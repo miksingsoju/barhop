@@ -41,8 +41,8 @@
   <div class="h-300px d-flex flex-column justify-content-center">
     <h1 class="text-poppins text-gray-800 fs-2hx text-center mt-3">Find active bars near you.</h1>
     <span class="text-poppins fs-4 d-block text-center mb-3">Small tagline here, lorem ipsum.</span>
-    <div class="d-flex mt-14 flex-row gap-4 justify-content-center align-items-center">
-      <form action="{% url 'bars:bar-list' %}" id="search-by" method="get" class="w-600px m-0">
+    <div class="d-flex mt-14 flex-row gap-4 align-items-center w-100 w-md-600px px-6 px-md-0 mx-auto">
+      <form action="{% url 'bars:bar-list' %}" id="search-by" method="get" class="flex-grow-1 m-0">
         <div class="input-group input-group-solid w-100">
           <button type="button" onclick="swapSearchBy();" class="input-group-text" id="swap-search-by-btn">
             <i class="ki-duotone ki-magnifier fs-2" id="search-by-bar">
@@ -66,17 +66,19 @@
       </button>
     </div>
   </div>
-  <svg xmlns="http://www.w3.org/2000/svg" class="hero-img z-index-n1 d-block position-absolute top-0 w-100 text-gray-400" width="1280" height="306" viewBox="0 0 1280 306" fill="none">
+  <svg xmlns="http://www.w3.org/2000/svg" class="hero-img z-index-n1 d-block position-absolute top-0 w-100 h-225px h-sm-300px text-gray-400" preserveAspectRatio="none" viewBox="0 0 1280 306" fill="none">
     <path d="M1280 -138H0V256.715C501.579 322.413 781.858 322.444 1280 256.715V-138Z" fill="currentColor"/>
   </svg>
   
-  <div class="d-flex flex-row justify-content-between align-items-center w-800px mx-auto">
+  <!-- header -->
+  <div class="d-flex flex-row justify-content-between align-items-center w-100 w-md-800px mx-auto px-6 px-md-0">
     <h2 class="text-poppins text-gray-800 m-0">All Bars</h2>
     {% if request.user.is_authenticated and user.user_type == 'OWNER' %}
       <a href="{% url 'bars:create-bar' %}" class="btn btn-sm btn-info w-fit">Create Bar</a>
     {% endif %}
   </div>
-  <div class="d-flex flex-row w-800px gap-12 mx-auto mt-6 mb-16">
+
+  <div class="d-flex flex-row w-100 w-md-800px gap-12 mx-auto px-6 p-sm-0 mt-6 mb-16">
     <!-- left -->
     <div class="d-flex flex-column flex-grow-1 gap-10">
       {% for bar in bars %}
