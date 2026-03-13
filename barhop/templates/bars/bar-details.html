@@ -25,10 +25,11 @@
 {% endblock %}
 
 {% block content %}
+  <a href="{% url 'bars:bar-list' %}">back to bar list</a>
   {% if bar.bar_owner == request.user %}
-    <a href="{% url 'bars:bar-list' username=user.username %}">back to owned bars</a>
+    <br>
+    <a href="{% url 'reservations:bar-tables' bar_id=bar.id%}">check reservations</a>
   {% else %}
-    <a href="{% url 'bars:bar-list' %}">back to bar list</a>
   {% endif %}
   <div class="d-flex flex-row justify-content-center gap-12 my-12">
     {% partialdef bar_details inline %}
@@ -163,7 +164,11 @@
           <span class="text-gray-700">No tables to show.</span>
           
           {% if request.user and request.user.user_type == 'OWNER' %}
+<<<<<<< david/reservations
+            <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Add Tables</a>
+=======
             <a href="#" class="btn btn-sm btn-info mt-4">Add Tables</a>
+>>>>>>> main
           {% endif %}
         </div>
       {% elif seating and request.user and request.user.user_type == 'OWNER' %}
@@ -187,7 +192,11 @@
                 </div>
               </article>
             {% endfor %}
+<<<<<<< david/reservations
+            <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Manage Tables</a>
+=======
             <a href="#" class="btn btn-sm btn-info mt-4">Manage Tables</a>
+>>>>>>> main
         </div>
       {% else %}
         {% include 'reservations/create-booking.html#booking_form_datetime' %}

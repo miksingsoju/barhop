@@ -182,13 +182,21 @@
 {% partialdef seatings %}
   <div data-kt-buttons="true" data-kt-buttons-target=".form-check-input"
     class="d-flex flex-column gap-4 w-100">
+<<<<<<< david/reservations
+    {% for s in avail_seating %}
+=======
     {% for s in avail_tables %}
+>>>>>>> main
       <label class="cursor-pointer d-flex flex-row w-100 align-items-center justify-content-between form-check form-check-custom form-check-solid">
         <!-- left -->
         <div class="d-flex flex-row gap-4 align-items-center">
           <div class="w-60px h-60px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center">
             {% if s.image %}
+<<<<<<< david/reservations
+              <img src="{{ s.image }}" alt="{{ s.seating }}" />
+=======
               <img src="s.image" alt="{{ s.seating }}" />
+>>>>>>> main
             {% else %}
               <i class="ki-duotone ki-picture text-gray-800 fs-2x">
                 <span class="path1"></span>

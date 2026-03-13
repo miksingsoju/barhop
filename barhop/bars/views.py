@@ -9,14 +9,35 @@ from django.db.models import Case, When, Value, IntegerField
 from django.contrib.auth.decorators import login_required
 
 
+<<<<<<< david/reservations
+def bar_list(request):
+=======
 def bar_list(request, username=None):
+>>>>>>> main
     user_profile = request.user if request.user.is_authenticated else None
+    bar_address = request.GET.get("bar_address")
+    bar_name = request.GET.get("bar_name")
     custom_order = Case(
         When(bar_status='FIRE', then=Value(0)),
         When(bar_status='LUKEWARM', then=Value(1)),
         When(bar_status='COLD', then=Value(2)),
         output_field=IntegerField()
     )
+<<<<<<< david/reservations
+    
+    if bar_name:
+        bars = Bar.objects.filter(bar_name__icontains=bar_name)
+    elif bar_address:
+        bars = Bar.objects.filter(bar_address__icontains=bar_address)
+    else:
+        bars = Bar.objects.all()
+
+    bars.annotate(status_order=custom_order).order_by('status_order')
+    
+    # if user_profile != None and username == None:
+    #         bars = Bar.objects.exclude(bar_owner=request.user).annotate(
+    #             status_order=custom_order).order_by('status_order')
+=======
     if username:
         bars = Bar.objects.filter(bar_owner=request.user).annotate(
         status_order=custom_order).order_by('status_order')
@@ -24,10 +45,8 @@ def bar_list(request, username=None):
     if user_profile != None and username == None:
             bars = Bar.objects.exclude(bar_owner=request.user).annotate(
                 status_order=custom_order).order_by('status_order')
+>>>>>>> main
 
-    if user_profile == None:
-         bars = Bar.objects.all().annotate(
-            status_order=custom_order).order_by('status_order')
 
     return render(request, 'bars/bar-list.html', {
         'bars': bars,

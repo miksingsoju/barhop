@@ -51,6 +51,26 @@
       <div>
         <h6 class="d-sm-none d-block text-gray-600">Settings</h6>
         <div class="card px-4 py-1">
+<<<<<<< david/reservations
+          {% if user.user_type == "OWNER" %}
+            <a href="javascript:void(0)" onclick="showSection('#my-bars-section')"
+              class="d-sm-flex d-none justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
+              <span class="d-flex gap-3 align-items-center">
+                <i class="ki-duotone ki-shop text-gray-700 fs-1">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+                My Bars
+              </span>
+              <i class="ki-solid ki-right text-gray-700 fs-2"></i>
+            </a>
+          {% endif %}
+          <hr class="m-0 d-sm-block d-none border-gray-600">
+=======
+>>>>>>> main
           <a href="javascript:void(0)" onclick="showSection('#edit-profile-section')"
             class="d-sm-flex d-none justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4">
             <span class="d-flex gap-3 align-items-center">
@@ -108,6 +128,21 @@
           {% comment %} <form method="post" action="{% url 'auth:delete' %}" class="m-0"> {% endcomment %}
             {% comment %} {% csrf_token %} {% endcomment %}
             <!-- TO-DO: delete user -->
+<<<<<<< david/reservations
+            <button type="button"
+              class="d-flex w-100 justify-content-between align-items-center fw-semibold text-danger px-2 py-4">
+              <span class="d-flex gap-3 align-items-center">
+                <i class="ki-duotone ki-trash text-danger fs-1">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                  <span class="path5"></span>
+                </i>
+                Delete My Account
+              </span>
+              <i class="ki-solid ki-right text-danger fs-2"></i>
+=======
             <button type="button" 
                     data-bs-toggle="modal" 
                     data-bs-target="#delete_account_modal"
@@ -119,11 +154,156 @@
             Delete My Account
             </span>
             <i class="ki-solid ki-right text-danger fs-2"></i>
+>>>>>>> main
             </button>
           {% comment %} </form> {% endcomment %}
         </div>
       </div>
     </div>
+<<<<<<< david/reservations
+
+    <!-- Right Column -->
+    <div class="mw-600px flex-grow-1">
+      <section class="settings-section" id="my-bars-section">
+        {% if my_bars %}
+          {% for bar in my_bars %}
+            {% include 'bars/bar-list.html#bar_card' %}
+          {% endfor %}
+        {% endif %}
+      </section>
+      <section class="settings-section card p-8 " id="edit-profile-section">
+        <!-- Form -->
+        <form method="POST" class="edit-field d-flex flex-column gap-10 m-0">
+          {% csrf_token %}
+          <h2 class="m-0">Edit Profile</h2>
+            
+          <!-- Profile Picture -->
+          <div class="fv-row">
+            <label class="d-block form-label mb-4">Profile Picture</label>
+            <div class="symbol symbol-circle symbol-100px">
+              {% if user.pfp %}
+                <img />
+              {% else %}
+                <div class="symbol-label fs-2 fw-semibold">{{ user.username|slice:"0:1" }}</div>
+              {% endif %}
+              <button type="button" class="symbol-badge badge badge-circle badge-bottom-right bg-info text-white">
+                <i class="ki-duotone ki-pencil text-white">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="fv-row w-100">
+            <label class="form-label">Name</label>
+            <div class="d-flex flex-row gap-4">
+                <input id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}"
+                  {% if user %}value="{{ user.first_name }}"{% endif %}
+                  type="text" class="form-control form-control-solid" placeholder="First Name" />
+                <input id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}"
+                  {% if user %}value="{{ user.last_name }}"{% endif %}
+                  type="text" class="form-control form-control-solid" placeholder="Last Name" />
+            </div>
+            <div class="invalid-feedback">
+              {% for error in form.first_name.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+              {% for error in form.last_name.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="fv-row w-100">
+            <label class="form-label" for="{{ form.bio.html_name }}">Biography</label>
+            <textarea id="{{ form.bio.id_for_label }}" name="{{ form.bio.html_name }}" 
+              type="textarea" class="form-control form-control-solid" placeholder="Tell us more about yourself!" data-kt-autosize="true" rows="3">{% if user %}{{ user.bio }}{% endif %}</textarea>
+            <div class="invalid-feedback">
+              {% for error in form.bar_description.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <button type="submit" name="edit_profile" class="btn btn-info">Save Changes</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="settings-section card p-8" id="personal-information-section">
+        <!-- Form -->
+        <form method="POST" class="edit-field d-flex flex-column gap-10 m-0">
+          {% csrf_token %}
+          <h2 class="m-0">Personal Information</h2>
+          
+          <div class="fv-row w-100">
+            <label class="form-label" for="{{ form.email.html_name }}">Email</label>
+            <input id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}"
+              {% if user %}value="{{ user.email }}"{% endif %}
+              type="text" class="form-control form-control-solid" placeholder="Email" />
+            <div class="invalid-feedback">
+              {% for error in form.email.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          
+          <div class="fv-row w-100">
+            <label class="form-label" for="{{ form.date_of_birth.html_name }}">Date of Birth</label>
+            <div class="input-group input-group-solid">
+              <span class="input-group-text">
+                <i class="ki-duotone ki-calendar fs-2">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                </i>
+              </span>
+                <input id="{{ form.date_of_birth.id_for_label }}" name="{{ form.date_of_birth.html_name }}"
+                value="{{ user.date_of_birth|date:'Y-m-d' }}" 
+                type="date" class="form-control ps-0" placeholder="Date of Birth" required />
+            </div>
+            <div class="invalid-feedback">
+              {% for error in form.date_of_birth.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          </div>
+
+          <button type="submit" name="personal_info" class="btn btn-info align-self-end">Save Changes</button>
+        </form>
+      </section>
+
+      <section class="settings-section card p-8" id="change-password-section">
+        <form method="POST" class="edit-field d-flex flex-column gap-10 m-0">
+          {% csrf_token %}
+          <h2 class="m-0">Change Password</h2>
+          
+          <div class="fv-row w-100">
+            <label class="form-label" for="{{ form.old_password.html_name }}">Old Password</label>
+            <input id="{{ form.old_password.id_for_label }}" name="{{ form.old_password.html_name }}"
+              type="password" class="form-control form-control-solid" placeholder="Current Password" />
+            <div class="invalid-feedback">
+              {% for error in form.old_password.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="fv-row w-100">
+            <label class="form-label" for="{{ form.new_password.html_name }}">New Password</label>
+            <input id="{{ form.new_password.id_for_label }}" name="{{ form.new_password.html_name }}"
+              type="password" class="form-control form-control-solid" placeholder="New Password" />
+            <div class="invalid-feedback">
+              {% for error in form.new_password.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          <button type="submit" name="change_password" class="btn btn-info align-self-end">Save Changes</button>
+        </form>
+      </section>
+=======
 
     <!-- Right Column -->
     <div class="mw-600px flex-grow-1">
@@ -286,6 +466,7 @@
           </form>
         </div>
       </div>
+>>>>>>> main
     </div>
   </div>
 {% endblock %}
