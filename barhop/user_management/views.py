@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -58,6 +58,20 @@ def update_profile(request):
         form = ProfileUpdateForm(instance=user)
 
     return render(request, "registration/update_profile.html", {'form': form, "my_bars": my_bars })
+
+@login_required
+def delete_user(request):
+    if request.method == 'POST':
+        user = request.user
+        # Log out first
+        logout(request) 
+        # Delete the User
+        user.delete()   
+        messages.success(request, "Your account has been successfully deleted.")
+        return redirect('bars:bar-list') # Redirect to home
+    
+    # If they just visit the page (GET), show a confirmation page
+    return render(request, 'registration/delete_confirm.html')
 
 
 def check_existing_username(request):

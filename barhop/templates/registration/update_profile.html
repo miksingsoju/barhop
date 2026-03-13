@@ -125,19 +125,17 @@
           {% comment %} <form method="post" action="{% url 'auth:delete' %}" class="m-0"> {% endcomment %}
             {% comment %} {% csrf_token %} {% endcomment %}
             <!-- TO-DO: delete user -->
-            <button type="button"
-              class="d-flex w-100 justify-content-between align-items-center fw-semibold text-danger px-2 py-4">
-              <span class="d-flex gap-3 align-items-center">
-                <i class="ki-duotone ki-trash text-danger fs-1">
-                  <span class="path1"></span>
-                  <span class="path2"></span>
-                  <span class="path3"></span>
-                  <span class="path4"></span>
-                  <span class="path5"></span>
-                </i>
-                Delete My Account
-              </span>
-              <i class="ki-solid ki-right text-danger fs-2"></i>
+            <button type="button" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#delete_account_modal"
+                    class="d-flex w-100 justify-content-between align-items-center fw-semibold text-danger px-2 py-4 border-0 bg-transparent">
+            <span class="d-flex gap-3 align-items-center">
+            <i class="ki-duotone ki-trash text-danger fs-1">
+            <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>
+            </i>
+            Delete My Account
+            </span>
+            <i class="ki-solid ki-right text-danger fs-2"></i>
             </button>
           {% comment %} </form> {% endcomment %}
         </div>
@@ -285,6 +283,31 @@
           <button type="submit" name="change_password" class="btn btn-info align-self-end">Save Changes</button>
         </form>
       </section>
+    </div>
+  </div>
+  <div class="modal fade" id="delete_account_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-400px">
+      <div class="modal-content">
+        <div class="modal-header justify-content-end border-0 pb-0">
+          <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+            <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+          </div>
+        </div>
+        <div class="modal-body pt-0 pb-15 px-10 px-lg-15 text-center">
+          <i class="ki-duotone ki-information-5 fs-5x text-danger mb-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+          <h2 class="fw-bolder text-gray-900 mb-2">Delete Account?</h2>
+          <div class="text-gray-600 fs-6 mb-10">
+            This action is permanent. All your data, bookings, and profile information will be deleted forever.
+          </div>
+          <form method="post" action="{% url 'user_management:delete_account' %}">
+            {% csrf_token %}
+            <div class="d-flex flex-stack gap-4">
+              <button type="button" class="btn btn-light w-100" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-danger w-100">Delete Permanently</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}
