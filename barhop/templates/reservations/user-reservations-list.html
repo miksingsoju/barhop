@@ -8,6 +8,9 @@
 {% for reservation in reservations %}
     <div class="reservation-block">
         <h3>Reservation id: {{ reservation.id }}</h3>
+        {% for table in reservation.tables.all|slice:":1" %}
+            <p>Bar: {{ table.table_type.bar.bar_name }}</p>
+        {% endfor %}
         <p>No. of guests: {{ reservation.guests }}</p>
         <p>{{ reservation.date }}</p>
         <p>{{ reservation.start_time }} - {{ reservation.end_time}}</p>

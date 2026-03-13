@@ -48,7 +48,7 @@
             <span class="fs-sm-6 fs-8 pt-1 p-sm-0">My Bars</span>
           </a>
         {% endif %}
-        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit{% if "/reservations" in request.path %} active{% endif %}" href="#">
+        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit{% if "/reservations" in request.path %} active{% endif %}" {% if request.user.is_authenticated and user.user_type == "HOPPER" %} href="{% url 'reservations:my-reservations' %}"{% else %} href="#" {% endif %}>
           <i class="ki-outline ki-cheque fs-2 d-sm-none"></i>
           {% if request.user.is_authenticated and user.user_type == "OWNER" %}
             <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Reservations</span>
