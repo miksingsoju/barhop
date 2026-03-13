@@ -14,6 +14,7 @@ class Profile(AbstractUser):
     password = models.CharField(max_length=128, validators=[validate_password_strength])
     date_of_birth = models.DateField(null=True, blank=True, validators=[validate_date_of_birth])
     bio = models.TextField(max_length=500, blank=True, default="No bio yet.")
+    profile_image = models.ImageField(upload_to="profile_images/", blank=True, null=True)
 
     user_type = models.CharField(
         max_length=10,

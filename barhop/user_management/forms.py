@@ -43,7 +43,8 @@ class ProfileUpdateForm(forms.ModelForm):
         'first_name',
         'last_name',
         'user_type',
-        'bio'
+        'bio',
+        'profile_image',
     ]
     widgets = {
         'username': forms.TextInput(attrs={'class': 'form-control'}),
@@ -52,7 +53,7 @@ class ProfileUpdateForm(forms.ModelForm):
         'first_name': forms.TextInput(attrs={'class': 'form-control'}),
         'last_name': forms.TextInput(attrs={'class': 'form-control'}),
         'bio': forms.TextInput(attrs={'class': 'form-control'}),
-
+        'profile_image': forms.FileInput(attrs={'class': 'form-control'}),
         'user_type': forms.Select(attrs={'class': 'form-control'}),
     }
 
@@ -64,5 +65,6 @@ class ProfileUpdateForm(forms.ModelForm):
             'first_name',
             'last_name',
             'bio',
-            'password'
+            'password',
+            'profile_image'
         ]

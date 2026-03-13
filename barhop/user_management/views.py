@@ -21,6 +21,8 @@ def update_profile(request):
             user.first_name = request.POST.get('first_name')
             user.last_name = request.POST.get('last_name')
             user.bio = request.POST.get('bio')
+            if 'profile_image' in request.FILES:
+                user.profile_image = request.FILES['profile_image']
             user.save()
             messages.success(request, "Display info updated!")
 

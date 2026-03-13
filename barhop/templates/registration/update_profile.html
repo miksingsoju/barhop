@@ -99,19 +99,33 @@ Update Profile
 
                     <!-- Profile Picture -->
                     <div class="mb-4x text-center">
-                        <div class="symbol symbol-100px">
-                            <div class="symbol-label fs-2 fw-semibold rounded-circle bg-gray-300">A</div>
+                        <div class="symbol symbol-100px position-relative">
+                            {% if user.profile_image %}
+                                <img src="{{ user.profile_image.url }}" 
+                                     alt="Profile picture" 
+                                     class="symbol-label rounded-circle object-fit-cover" 
+                                     style="width: 100px; height: 100px;">
+                            {% else %}
+                                <div class="symbol-label fs-2 fw-semibold rounded-circle bg-gray-300 d-flex align-items-center justify-content-center">
+                                    {{ user.first_name|default:user.username|first|upper }}
+                                </div>
+                            {% endif %}
+                    
+                            <input type="file" id="profile-image-input" name="profile_image" accept="image/*" class="d-none">
+                    
                             <span class="symbol-badge badge badge-circle bg-info text-white top-100 start-100">
-                                <button class="btn"><i class="ki-duotone ki-pencil text-white">
+                                <button type="button" id="profile-image-button" class="btn p-1">
+                                    <i class="ki-duotone ki-pencil text-white">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
-                                    </i></button></span>
+                                    </i>
+                                </button>
+                            </span>
                         </div>
-
                     </div>
 
                     <!-- Form -->
-                    <form method="POST" class="edit-field">
+                    <form method="POST" enctype="multipart/form-data" class="edit-field">
                         {% csrf_token %}
 
                         <h6 class="mb-3 "> Name </h6>
@@ -245,8 +259,41 @@ Update Profile
         }
     }
 
-    document.querySelector("#id_date_of_birth").flatpickr({
-        dateFormat: "j F, Y",
-    });
+    const dateOfBirthInput = document.querySelector("#id_date_of_birth");
+    if (dateOfBirthInput && dateOfBirthInput.flatpickr) {
+        dateOfBirthInput.flatpickr({
+            dateFormat: "j F, Y",
+        });
+    }
+
+    const profileImageButton = document.getElementById('profile-image-button');
+    const profileImageInput = document.getElementById('profile-image-input');
+
+    if (profileImageButton && profileImageInput) {
+        profileImageButton.addEventListener('click', function () {
+            profileImageInput.click();
+        });
+
+        profileImageInput.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const symbolImage = document.querySelector('.symbol img.symbol-label');
+                const symbolLabelDiv = document.querySelector('.symbol .symbol-label');
+
+                if (symbolImage) {
+                    symbolImage.src = e.target.result;
+                } else if (symbolLabelDiv) {
+                    symbolLabelDiv.style.backgroundImage = `url('${e.target.result}')`;
+                    symbolLabelDiv.style.backgroundSize = 'cover';
+                    symbolLabelDiv.style.backgroundPosition = 'center';
+                    symbolLabelDiv.textContent = '';
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 </script>
 {% endblock %}

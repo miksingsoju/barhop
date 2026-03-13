@@ -68,7 +68,9 @@
         {% if request.user.is_authenticated %}
           <div class="d-flex flex-row align-items-center gap-4" data-kt-menu-trigger="{default:'click', lg:'hover'}" data-kt-menu-placement="bottom" data-kt-menu-offset="0,20">
             <div class="w-40px h-40px d-flex align-items-center justify-content-center rounded-circle bg-gray-300">
-              {% if not user.profile_pic %}
+              {% if user.profile_image %}
+                <img src="{{ user.profile_image.url }}" alt="Profile" class="w-100 h-100 rounded-circle object-fit-cover" />
+              {% else %}
                 <span class="fs-2 fw-semibold text-gray-700 text-center">{{ user.username|slice:"0:1" }}</span>              
               {% endif %}
             </div>
