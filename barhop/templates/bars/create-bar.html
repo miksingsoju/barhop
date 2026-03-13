@@ -84,25 +84,30 @@
       var barDropzone = new Dropzone('#bar-dropzone', {
         url: "{% url 'bars:create-bar' %}",
         paramName: 'file',
+        acceptedFiles: 'image/*',
         maxFiles: 10,
         maxFilesize: 10, // MB
         autoProcessQueue: false,
         previewsContainer: '#image-preview-container',
         previewTemplate: document.querySelector('#image-preview-container .d-none').innerHTML,
       })
-      
-      /*
-      barDropzone.on('addedfile', (file) => {
+
+      const updateCarouselFromDropzone = () => renderCarouselFromFiles(barDropzone.files)
+
+      barDropzone.on('addedfile', () => {
         document.querySelector('#bar-dropzone i').style.display = 'none';
         document.querySelector('#bar-dropzone i + span').style.display = 'none';
+        updateCarouselFromDropzone()
       })
-      
-      barDropzone.on('reset', (file) => {
-        document.querySelector('#bar-dropzone i').style = '';
-        document.querySelector('#bar-dropzone i + span').style = '';
+
+      barDropzone.on('removedfile', () => {
+        updateCarouselFromDropzone()
       })
-      */
-    
+
+      document.querySelector('#bar-form').addEventListener('submit', () => {
+        uploadImages(barDropzone.files)
+      })
+
       var stepper = new KTStepper(document.querySelector('#form-stepper'))
     
       stepper.on('kt.stepper.next', function (stepper) {
@@ -161,55 +166,96 @@
       }
       
       const renderCarouselFromFiles = (files) => {
-        let carousel = document.querySelector('#bar-images .carousel-inner')
-        let indicators = document.querySelector('#bar-images ol.carousel-indicators')
-      
-        if (files.length > 0) {
-          carousel.innerHTML = ''
-          indicators.innerHTML = ''
-      
-          Array.from(files).forEach((file, index) => {
-            if (!file.type.startsWith('image/')) {
-              console.log("file is not an image!");
-              return;
-            };
+        const carouselInner = document.querySelector('#bar-images .carousel-inner')
+        const indicators = document.querySelector('#bar-images ol.carousel-indicators')
+        const carouselEl = document.querySelector('#bar-images')
 
-            let slide = document.createElement('div');
-            slide.className = 'carousel-item h-300px' + (index === 0 ? ' active' : '')
-    
-            let img = document.createElement('img');
-            img.src = file.dataURL;
-            img.alt = file.name;
-            img.className = 'd-block w-100 h-100'
-            img.style.objectFit = 'cover'
-    
-            slide.appendChild(img);
-            carousel.appendChild(slide);
-      
-            let li = document.createElement('li');
-            li.setAttribute('data-bs-target', '#bar-images');
-            li.setAttribute('data-bs-slide-to', String(index));
-            li.className = 'ms-1' + (index === 0 ? ' active' : '');
-            indicators.appendChild(li);
-          })
+        if (!carouselInner || !indicators || !carouselEl) {
+          return
         }
-        /*
-            if (!files || !files.length) {
-              // fallback empty slide
-              var emptySlide = document.createElement('div')
-              emptySlide.className = 'carousel-item h-300px bg-gray-300 active'
-              inner.appendChild(emptySlide)
-          
-              var li = document.createElement('li')
-              li.setAttribute('data-bs-target', '#kt_carousel_2_carousel')
-              li.setAttribute('data-bs-slide-to', '0')
-              li.className = 'ms-1 active'
-              indicators.appendChild(li)
-              return
-            }
-            */
+
+        carouselInner.innerHTML = ''
+        indicators.innerHTML = ''
+
+        const addSlide = (src, index) => {
+          const slide = document.createElement('div')
+          slide.className = 'carousel-item h-300px' + (index === 0 ? ' active' : '')
+
+          const img = document.createElement('img')
+          img.src = src
+          img.alt = `Selected image ${index + 1}`
+          img.className = 'd-block w-100 h-100'
+          img.style.objectFit = 'cover'
+
+          slide.appendChild(img)
+          carouselInner.appendChild(slide)
+
+          const li = document.createElement('li')
+          li.setAttribute('data-bs-target', '#bar-images')
+          li.setAttribute('data-bs-slide-to', String(index))
+          li.className = 'ms-1' + (index === 0 ? ' active' : '')
+          indicators.appendChild(li)
+        }
+
+        if (!files || !files.length) {
+          const emptySlide = document.createElement('div')
+          emptySlide.className = 'carousel-item h-300px bg-gray-300 active'
+          carouselInner.appendChild(emptySlide)
+
+          const emptyIndicator = document.createElement('li')
+          emptyIndicator.setAttribute('data-bs-target', '#bar-images')
+          emptyIndicator.setAttribute('data-bs-slide-to', '0')
+          emptyIndicator.className = 'ms-1 active'
+          indicators.appendChild(emptyIndicator)
+
+          // Re-init carousel to ensure Bootstrap updates to the DOM changes
+          if (typeof bootstrap !== 'undefined') {
+            const inst = bootstrap.Carousel.getInstance(carouselEl)
+            if (inst) inst.dispose()
+            new bootstrap.Carousel(carouselEl, { interval: 8000 })
+          }
+          return
+        }
+
+        Array.from(files).forEach((file, index) => {
+          if (!file.type || !file.type.startsWith('image/')) {
+            console.log('file is not an image!')
+            return
+          }
+
+          if (file.dataURL) {
+            addSlide(file.dataURL, index)
+            return
+          }
+
+          const reader = new FileReader()
+          reader.onload = (e) => addSlide(e.target.result, index)
+          reader.readAsDataURL(file)
+        })
+
+        if (typeof bootstrap !== 'undefined') {
+          const inst = bootstrap.Carousel.getInstance(carouselEl)
+          if (inst) inst.dispose()
+          new bootstrap.Carousel(carouselEl, { interval: 8000 })
+        }
       }
-      
+
+      /*
+          if (!files || !files.length) {
+            // fallback empty slide
+            var emptySlide = document.createElement('div')
+            emptySlide.className = 'carousel-item h-300px bg-gray-300 active'
+            inner.appendChild(emptySlide)
+        
+            var li = document.createElement('li')
+            li.setAttribute('data-bs-target', '#kt_carousel_2_carousel')
+            li.setAttribute('data-bs-slide-to', '0')
+            li.className = 'ms-1 active'
+            indicators.appendChild(li)
+            return
+          }
+          */
+
       const populatePreview = () => {
         let { bar_name, bar_address, bar_description, bar_start_time, bar_end_time } = document.forms['bar-form']
         document.querySelector('#bar-name').innerText = bar_name.value
@@ -378,9 +424,9 @@
                 {% for form in bar_image_formset %}
                   {{ form.as_p }}
                 {% endfor %}
-              {% else %}
-                <input type="file" multiple="" accept="image/*" class="d-none" name="{{ bar_form.images.html_name }}" id="{{ bar_form.images.id_for_label }}" />
               {% endif %}
+
+              <input type="file" multiple="" accept="image/*" class="d-none" name="{{ bar_form.images.html_name }}" id="{{ bar_form.images.id_for_label }}" />
 
               <!-- thumbnail preview container -->
               <div id="image-preview-container" class="d-flex flex-row flex-wrap gap-8 w-100">
@@ -406,7 +452,7 @@
               </div>
 
               <!-- dropzone -->
-              <div id="bar-dropzone" class="w-100 {% if bar and bar.images.all %}d-none{% else %}d-flex{% endif %} flex-column align-items-center gap-2 py-6 rounded bg-gray-300 border-2 border-dashed border-gray-400 text-gray-500 cursor-pointer">
+              <div id="bar-dropzone" class="w-100 d-flex flex-column align-items-center gap-2 py-6 rounded bg-gray-300 border-2 border-dashed border-gray-400 text-gray-500 cursor-pointer">
                 <i class="ki-duotone ki-file-up fs-3x text-gray-500">
                   <span class="path1"></span>
                   <span class="path2"></span>
