@@ -125,11 +125,19 @@
       stepper.on('kt.stepper.previous', function (stepper) {
         stepper.goPrevious();
       });
+        stepper.goPrevious();
+      });
     
       stepper.on('kt.stepper.click', function (stepper) {
-        if (!(validators[stepper.getCurrentStepIndex()-1])) stepper.goTo(stepper.getClickedStepIndex());
-        validators[stepper.getCurrentStepIndex()-1]?.validate().then(status => {
-          if (status == "Valid") {
+        var validator = validators[stepper.getCurrentStepIndex() - 1];
+
+        if (!validator) {
+          stepper.goTo(stepper.getClickedStepIndex());
+          return;
+        }
+
+        validator.validate().then(status => {
+          if (status === 'Valid') {
             stepper.goTo(stepper.getClickedStepIndex());
             uploadImages(barDropzone.files);
             renderCarouselFromFiles(barDropzone.files);
@@ -337,6 +345,7 @@
                   type="time" class="form-control form-control-solid" placeholder="00:00" />
                 <div class="invalid-feedback">
                   {% for error in bar_form.bar_start_time.errors %}
+                  {% for error in bar_form.bar_start_time.errors %}
                     <span>{{ error }}</span>
                   {% endfor %}
                 </div>
@@ -347,6 +356,7 @@
                   {% if bar %}value="{{ bar.bar_end_time|time:"H:i" }}"{% endif %}
                   type="time" class="form-control form-control-solid" placeholder="00:00" />
                 <div class="invalid-feedback">
+                  {% for error in bar_form.bar_end_time.errors %}
                   {% for error in bar_form.bar_end_time.errors %}
                     <span>{{ error }}</span>
                   {% endfor %}

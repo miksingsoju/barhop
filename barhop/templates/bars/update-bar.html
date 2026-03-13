@@ -6,7 +6,6 @@
 
 {% block content %}
   {% include 'bars/create-bar.html#bar_form' %}  
-{% comment %}
   <div class="bar-update-form-container">
     {% if bar and bar.images.all %}
       <div class="mb-6">
@@ -48,11 +47,10 @@
         <button type="submit">Update bar details</button>
     </form>
   </div>
- {% endcomment %}
 {% endblock %}
 
-{% block scripts %}
-  {% include 'bars/create-bar.html#bar_form_scripts' %}
+
+{% block scripts_2 %}
   {{ block.super }}
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -100,7 +98,7 @@
   </script>
 {% endblock %}
 
-{% block scripts_2 %}
+{% block scripts %}
   {{ block.super }}
   <script>
     document.addEventListener('DOMContentLoaded', function () {

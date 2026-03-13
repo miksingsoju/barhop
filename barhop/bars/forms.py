@@ -37,7 +37,11 @@ class CreateBarForm(forms.ModelForm):
             'bar_amenities': forms.SelectMultiple(),
         }
 
-    images = MultiImageField(required=False)
+    images = MultiImageField(label='Add bar images: (optional)', required=False)
+
+    def clean_bar_end_time(self):
+        bar_start_time = self.cleaned_data.get('bar_start_time')
+        bar_end_time = self.cleaned_data.get('bar_end_time')
 
 
 UpdateBarImageFormSet = forms.modelformset_factory(
