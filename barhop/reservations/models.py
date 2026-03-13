@@ -47,14 +47,7 @@ class Reservation(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     date = models.DateField()
-    
-    STATUS_CHOICES = [
-        ('CONFIRMED', 'Confirmed'),
-        ('PENDING', 'Pending'),
-        ('REJECTED', 'Rejected'),
-        ('CANCELLED', 'Cancelled'),
-    ]
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    # status = 
 
 
     def __str__(self):
