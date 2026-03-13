@@ -5,15 +5,14 @@
 
 {% block content %}
 <h1>Reservation list</h1>
+<h2>Bar: {{ bar.bar_name }}</h2>
 {% for reservation in reservations %}
 <form method="post">
     {% csrf_token %}
     <input type="hidden" name="rsv_id" value="{{ reservation.id }}">
     <div class="reservation-block">
         <h3>Reservation id: {{ reservation.id }}</h3>
-        {% for table in reservation.tables.all|slice:":1" %}
-            <p>Bar: {{ table.table_type.bar.bar_name }}</p>
-        {% endfor %}
+       
         <p>No. of guests: {{ reservation.guests }}</p>
         <p>{{ reservation.date }}</p>
         <p>{{ reservation.start_time }} - {{ reservation.end_time}}</p>

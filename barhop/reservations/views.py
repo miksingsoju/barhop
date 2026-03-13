@@ -2,6 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Table, Seating, Reservation
+from bars.models import Bar
 import json
 
 
@@ -14,6 +15,8 @@ def my_reservations(request):
         })
 
 def reservations_list(request, bar_id):
+    bar = Bar.objects.get(id=bar_id)
+    print(bar)
     seatings = Seating.objects.filter(bar__id=bar_id).distinct()
     tables = Table.objects.filter(table_type__in=seatings)
     reservations = Reservation.objects.filter(tables__in=tables).distinct()
@@ -27,6 +30,7 @@ def reservations_list(request, bar_id):
 
     return render(request, "reservations/manage-reservations.html", {
         'reservations': reservations,
+        'bar': bar,
     })
 
 @login_required
