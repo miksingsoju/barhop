@@ -7,7 +7,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .forms import RegistrationFormStep1, RegistrationFormStep2, ProfileUpdateForm
 from .models import Profile
-from bars.models import Bar
 
 from django.contrib.auth import update_session_auth_hash
 
@@ -15,7 +14,6 @@ from django.contrib.auth import update_session_auth_hash
 def update_profile(request):
     user = request.user # This is your Profile instance
     form = ProfileUpdateForm(instance=user)
-    my_bars = Bar.objects.filter(bar_owner=user) if user.user_type == "OWNER" else None
     
     if request.method == 'POST':
         # 1. Check for 'Edit Profile' submission
@@ -57,7 +55,7 @@ def update_profile(request):
     else:
         form = ProfileUpdateForm(instance=user)
 
-    return render(request, "registration/update_profile.html", {'form': form, "my_bars": my_bars })
+    return render(request, "registration/update_profile.html", {'form': form})
 
 @login_required
 def delete_user(request):

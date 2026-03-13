@@ -28,8 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
         }
 
-        // !document.querySelector("#owner-verified") && 
-        if (window.location.pathname.includes("bars") && window.location.pathname !== "/bars/") {
+        if (!document.querySelector("#owner-verified") && window.location.pathname.includes("bars")) {
             linkHover.style.opacity = "0";
             linkHover.style.width = "0";
             linkHover.style.border = "none";
