@@ -13,6 +13,8 @@ from django.contrib.auth import update_session_auth_hash
 
 from django.contrib.auth import update_session_auth_hash
 
+from django.contrib.auth import update_session_auth_hash
+
 @login_required
 def update_profile(request):
     user = request.user # This is your Profile instance
