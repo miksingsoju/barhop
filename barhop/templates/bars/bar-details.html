@@ -164,7 +164,7 @@
           <span class="text-gray-700">No tables to show.</span>
           
           {% if request.user and request.user.user_type == 'OWNER' %}
-            <a href="#" class="btn btn-sm btn-info mt-4">Add Tables</a>
+            <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Add Tables</a>
           {% endif %}
         </div>
       {% elif seating and request.user and request.user.user_type == 'OWNER' %}
@@ -188,7 +188,7 @@
                 </div>
               </article>
             {% endfor %}
-            <a href="#" class="btn btn-sm btn-info mt-4">Manage Tables</a>
+            <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Manage Tables</a>
         </div>
       {% else %}
         {% include 'reservations/create-booking.html#booking_form_datetime' %}
