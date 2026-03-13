@@ -143,7 +143,7 @@ def get_or_create_tables(request, bar):
 
     if request.method == "GET":
         return JsonResponse(tables, safe=False)
-    if request.method == "POST":
+    elif request.method == "POST":
         if not request.POST.get("bar_tables", ""):
             msg = "no tables to create"
             print(msg)

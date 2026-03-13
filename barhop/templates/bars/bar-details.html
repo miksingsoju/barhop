@@ -172,9 +172,9 @@
           <h4 class="m-0">Table Types</h4>
             {% for s in seating %}
               <article class="d-flex flex-row gap-4 w-100 align-items-center">
-                <div class="w-65px h-65px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center">
+                <div class="w-65px h-65px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center overflow-hidden">
                   {% if s.image %}
-                    <img src="s.image" alt="{{ s.seating }}" />
+                    <img src="{{ s.image.url }}" alt="{{ s.seating }}" class="w-100 h-100 object-fit-cover"/>
                   {% else %}
                     <i class="ki-duotone ki-picture text-gray-800 fs-2x">
                       <span class="path1"></span>
