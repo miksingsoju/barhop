@@ -241,7 +241,7 @@
               </span>
                 <input id="{{ form.date_of_birth.id_for_label }}" name="{{ form.date_of_birth.html_name }}"
                 value="{{ user.date_of_birth|date:'Y-m-d' }}" 
-                type="date" class="form-control ps-0" placeholder="Date of Birth" required />
+                type="text" class="form-control ps-0" disabled />
             </div>
             <div class="invalid-feedback">
               {% for error in form.date_of_birth.errors %}
