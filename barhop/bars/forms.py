@@ -1,5 +1,5 @@
 from django import forms
-from .models import Bar, Amenity
+from .models import Bar, BarImage, Amenity
 from django.core.exceptions import ValidationError
 
 
@@ -8,7 +8,6 @@ class MultiFileInput(forms.ClearableFileInput):
 
 
 class MultiImageField(forms.ImageField):
-
     widget = MultiFileInput
 
     def clean(self, data, initial=None):
@@ -38,13 +37,12 @@ class CreateBarForm(forms.ModelForm):
             'bar_amenities': forms.SelectMultiple(),
         }
 
-    images = MultiImageField(label='Add bar images: (optional)', required=False)
+    images = MultiImageField(required=False)
 
-    def clean_bar_end_time(self):
-        bar_start_time = self.cleaned_data.get('bar_start_time')
-        bar_end_time = self.cleaned_data.get('bar_end_time')
 
-        if bar_start_time and bar_end_time and bar_start_time > bar_end_time:
-            raise ValidationError("You can't end a bar before it started. How are we supposed to bar hop now...")
-
-        return bar_end_time
+UpdateBarImageFormSet = forms.modelformset_factory(
+    BarImage,
+    fields=('image',),
+    extra=0,
+    can_delete=True
+)

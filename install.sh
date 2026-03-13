@@ -8,7 +8,7 @@ sudo mysql -u root -e "DROP DATABASE IF EXISTS BARHOP; CREATE DATABASE barhop; D
 echo "MySQL Database setup successful. Installing packages..."
 python3 -m venv venv 
 cd barhop
-python3 manage.py makemigrations
+python3 manage.py makemigrations user_management bars reservations reviews
 python3 manage.py migrate
 echo "Migrations successful. Creating Superuser..."
 python3 manage.py createsuperuser

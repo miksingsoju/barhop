@@ -6,6 +6,6 @@ mysql -u afterhoursco -p -e "DROP DATABASE IF EXISTS barhop; CREATE DATABASE bar
 pause && exit &^
 echo Database created successfully. Making migrations... &&^
 ..\venv\scripts\activate &&^
-python manage.py makemigrations bars reservations reviews user_management &&^
+python manage.py makemigrations user_management bars reservations reviews &&^
 python manage.py migrate && python manage.py createsuperuser --no-input && deactivate &&^
 echo Migrations successful. && pause
