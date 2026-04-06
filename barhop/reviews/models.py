@@ -12,11 +12,14 @@ class Review(models.Model):
     review_user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
     review_bar = models.ForeignKey(Bar, on_delete=models.CASCADE, null=True)
     review_description = models.TextField()
+    review_date_created = models.DateTimeField(auto_now_add=True)
     review_rating = models.DecimalField(max_digits=2, decimal_places=1,
         validators=[
             MinValueValidator(Decimal('0.0')),
             MaxValueValidator(Decimal('5.0'))
         ])
+
+
     
 
     
