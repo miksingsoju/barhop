@@ -161,11 +161,17 @@
       </article>
       <!-- Review section -->
       <div class="review-form-section">
-        <form method="post">
-          {% csrf_token %}
-          {{ review_form.as_p }}
+        {% if can_review %}
+          <form method="POST">
+            {% csrf_token %}
+            {{ review_form.as_p }}
+          </form>
           <button type="submit">Submit Review</button>
-        </form>
+        {% elif next_review_at %}
+          <p>You can review again on {{ next_review_at|date:"N j, Y" }}.</p>
+        {% else %}
+          <p>Only Bar Hoppers can leave reviews.</p>
+        {% endif %}
       </div>
       <div class="review-list-section">
         {% for review in reviews %}
