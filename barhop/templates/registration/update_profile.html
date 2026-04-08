@@ -35,8 +35,15 @@ Update Profile
             <div class="card d-flex flex-column bg-gray-300 gap-3 px-4 py-4">
                 <div class="d-flex align-items-center mb-3">
                     <!--Profile Picture-->
-                    <img src="{% static 'media/profile.jpg' %}" class="rounded-circle me-3" width="60" height="60">
-
+                    {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" alt="Profile picture" class="rounded-circle me-3" width="60"
+                        height="60">
+                    {% else %}
+                    <div class="bg-gray-200 rounded-circle me-3 d-inline-flex align-items-center justify-content-center fs-2 fw-bold text-gray-700"
+                        style="width: 60px; height: 60px; min-width: 60px;">
+                        {{ user.username|slice:"0:1" }}
+                    </div>
+                    {% endif %}
                     <!--Full Name and User Name-->
                     <div>
                         <h5 class="mb-0 text-gray-900">{{user.first_name}} {{user.last_name}}</h5>
@@ -95,38 +102,37 @@ Update Profile
         <div class="col-lg-8">
             <div class="card p-6 bg-gray-400">
                 <section class="settings-section" id="edit-profile-section">
-                    <span class="mb-3 fs-5 fw-semibold ">Edit Profile</span>
-
-                    <!-- Profile Picture -->
-                    <div class="mb-4x text-center">
-                        <div class="symbol symbol-100px position-relative">
-                            {% if user.profile_image %}
-                                <img src="{{ user.profile_image.url }}" 
-                                     alt="Profile picture" 
-                                     class="symbol-label rounded-circle object-fit-cover" 
-                                     style="width: 100px; height: 100px;">
-                            {% else %}
-                                <div class="symbol-label fs-2 fw-semibold rounded-circle bg-gray-300 d-flex align-items-center justify-content-center">
-                                    {{ user.first_name|default:user.username|first|upper }}
-                                </div>
-                            {% endif %}
-                    
-                            <input type="file" id="profile-image-input" name="profile_image" accept="image/*" class="d-none">
-                    
-                            <span class="symbol-badge badge badge-circle bg-info text-white top-100 start-100">
-                                <button type="button" id="profile-image-button" class="btn p-1">
-                                    <i class="ki-duotone ki-pencil text-white">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                </button>
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Form -->
                     <form method="POST" enctype="multipart/form-data" class="edit-field">
                         {% csrf_token %}
+                        <span class="mb-3 fs-5 fw-semibold ">Edit Profile</span>
+
+                        <!-- Profile Picture -->
+                        <div class="mb-4x text-center">
+                            <div class="symbol symbol-100px position-relative">
+                                {% if user.profile_image %}
+                                <img src="{{ user.profile_image.url }}" alt="Profile picture"
+                                    class="symbol-label rounded-circle object-fit-cover"
+                                    style="width: 100px; height: 100px;">
+                                {% else %}
+                                <div
+                                    class="symbol-label fs-2 fw-semibold rounded-circle bg-gray-300 d-flex align-items-center justify-content-center">
+                                    {{ user.first_name|default:user.username|first|upper }}
+                                </div>
+                                {% endif %}
+
+                                <input type="file" id="profile-image-input" name="profile_image" accept="image/*"
+                                    class="d-none">
+
+                                <span class="symbol-badge badge badge-circle bg-info text-white top-100 start-100">
+                                    <button type="button" id="profile-image-button" class="btn p-1">
+                                        <i class="ki-duotone ki-pencil text-white">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
 
                         <h6 class="mb-3 "> Name </h6>
 

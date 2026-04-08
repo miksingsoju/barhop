@@ -42,3 +42,4 @@ migrations/
 
 # OS-specific
 .DS_Store
+/barhop/media/profile_images
