@@ -111,11 +111,11 @@ Update Profile
                             <div class="symbol symbol-100px position-relative">
                                 {% if user.profile_image %}
                                 <img src="{{ user.profile_image.url }}" alt="Profile picture"
-                                    class="symbol-label rounded-circle object-fit-cover"
+                                    class="symbol-label  object-fit-cover"
                                     style="width: 100px; height: 100px;">
                                 {% else %}
                                 <div
-                                    class="symbol-label fs-2 fw-semibold rounded-circle bg-gray-300 d-flex align-items-center justify-content-center">
+                                    class="symbol-label fs-2 fw-semibold  bg-gray-300 d-flex align-items-center justify-content-center">
                                     {{ user.first_name|default:user.username|first|upper }}
                                 </div>
                                 {% endif %}
