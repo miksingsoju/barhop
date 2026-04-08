@@ -119,19 +119,30 @@ def bar_details(request, bar_id):
     
     review_form = CreateReviewForm(request.POST or None)
     bar_user = request.user
+    
+    can_review = False
+    next_review_at = None
 
-    if bar_user.user_type != Profile.UserType.BARHOPPER:
-        review_form.add_error(None, "Only Bar Hoppers can make reviews")
-        messages.error(request, "Only Bar Hoppers can make reviews")
+    if request.user.is_authenticated and bar_user.user_type == Profile.UserType.BARHOPPER:
+        existing_review = Review.objects.filter(review_bar=bar_object, review_user=bar_user
+        ).order_by('-review_date_created').first()
+        if existing_review is None:
+            can_review = True
+            
+        else:
+            delta = timezone.now() - existing_review.review_date_created
+            if delta > timedelta(days=3):
+                can_review = True
+            else:
+                next_review_at = existing_review.review_date_created + timedelta(days=3)
+                
+    else: messages.error(request, "Only Bar Hoppers can make reviews")
 
     if request.method == "POST":
-        if Review.objects.filter(review_bar=bar_object, review_user=bar_user).exists():
-            newest_review = Review.objects.filter(review_bar=bar_object, review_user=bar_user).latest('review_date_created')
-            if timezone.now() - newest_review.review_date_created <= timedelta(days=3):
-                review_form.add_error(None, "You cannot make another review within less than 3 days")
-                messages.error(request, "Only Bar Hoppers can make reviews")
+        if not can_review:
+                messages.error(request, "You cannot make another review within less than 3 days")
 
-        if review_form.is_valid():
+        if can_review and review_form.is_valid():
             review = review_form.save(commit=False)
             review.review_user = bar_user
             review.review_bar = bar_object
