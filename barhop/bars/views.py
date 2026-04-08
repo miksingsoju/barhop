@@ -147,6 +147,7 @@ def bar_details(request, bar_id):
             review.review_user = bar_user
             review.review_bar = bar_object
             review.save()
+            return redirect('bars:bar-details', bar_id=bar_id)
 
     
     return render(request, 'bars/bar-details.html', {
@@ -155,6 +156,8 @@ def bar_details(request, bar_id):
         'seating': seating,
         'reviews': reviews,
         'review_form': review_form,
+        'can_review' : can_review,
+        'next_review_at' : next_review_at
     })
 
 
