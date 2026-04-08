@@ -165,8 +165,8 @@
           <form method="POST">
             {% csrf_token %}
             {{ review_form.as_p }}
+            <button type="submit">Submit Review</button>
           </form>
-          <button type="submit">Submit Review</button>
         {% elif next_review_at %}
           <p>You can review again on {{ next_review_at|date:"N j, Y" }}.</p>
         {% else %}
