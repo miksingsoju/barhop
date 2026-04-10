@@ -248,9 +248,10 @@
         if (hash) showSection(hash.substring(1) + "-section");
     });
 
-    // Profile Image Logic from miks
+    // Profile Image Logic - Updated to refresh all previews
     const btn = document.getElementById('profile-image-button');
     const input = document.getElementById('profile-image-input');
+    
     if (btn && input) {
         btn.addEventListener('click', () => input.click());
         input.addEventListener('change', (e) => {
@@ -258,8 +259,23 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    const img = document.querySelector('.symbol img');
-                    if(img) img.src = event.target.result;
+                    // Select all images inside .symbol containers to update 
+                    // both the sidebar and the edit section simultaneously
+                    const previews = document.querySelectorAll('.symbol img');
+                    previews.forEach(img => {
+                        img.src = event.target.result;
+                    });
+
+                    // Also handle the case where the user had no image (initials placeholder)
+                    // This finds the placeholder div and replaces it with an image if needed
+                    document.querySelectorAll('.symbol-label.bg-gray-300').forEach(placeholder => {
+                        const newImg = document.createElement('img');
+                        newImg.src = event.target.result;
+                        newImg.className = 'symbol-label object-fit-cover';
+                        newImg.style.width = '100px';
+                        newImg.style.height = '100px';
+                        placeholder.parentNode.replaceChild(newImg, placeholder);
+                    });
                 };
                 reader.readAsDataURL(file);
             }
