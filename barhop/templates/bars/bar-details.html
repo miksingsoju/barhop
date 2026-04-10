@@ -123,8 +123,12 @@
           <div class="w-100 text-warning d-flex gap-3 justify-content-center align-items-bottom">
             <a href="#"><i class="ki-outline ki-star fs-3x text-warning"></i></a>
             <div class="d-flex flex-column align-items-center justify-content-around">
-              <span class="fs-2 fw-bold lh-1">0</span>
-              <span class="fs-7 lh-1">Rating</span>
+              {% if avg_rating %}
+                <span class="fs-2 fw-bold lh-1">{{ avg_rating }}</span>
+              {% else %}
+                <span class="fs-2 fw-bold lh-1">—</span>
+              {% endif %}
+              <span class="fs-7 lh-1">{{ review_count }} review{{ review_count|pluralize }}</span>
             </div>
           </div>
         </article>
