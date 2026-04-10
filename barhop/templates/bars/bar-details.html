@@ -200,6 +200,41 @@
       {% else %}
         {% include 'reservations/create-booking.html#booking_form_datetime' %}
       {% endif %}
+      <!--EVENTS CARD -->
+      <div class="d-flex flex-column gap-4 p-8 border-top border-gray-300">
+        <h4 class="m-0">Events</h4>
+
+        {% if bar.events.all %}
+          {% for event in bar.events.all %}
+            <div class="bg-light rounded p-3">
+              <span class="fw-bold text-gray-800 d-block">{{ event.title }}</span>
+              <span class="text-gray-600 fs-7 d-block mb-1">
+                {{ event.event_date }} | {{ event.start_time }} - {{ event.end_time }}
+              </span>
+              <p class="text-gray-700 fs-7 mb-2">{{ event.description }}</p>
+
+              {% if bar_owner == request.user %}
+                <div class="d-flex gap-2">
+                  <a href="{% url 'bars:update-event' event.id %}" class="btn btn-sm btn-light-primary">
+                    Edit
+                  </a>
+                  <a href="{% url 'bars:delete-event' event.id %}" class="btn btn-sm btn-light-danger">
+                    Delete
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <span class="text-gray-500">No events yet.</span>
+        {% endif %}
+
+        {% if bar_owner == request.user %}
+          <a href="{% url 'bars:create-event' bar.id %}" class="btn btn-sm btn-info mt-2">
+            Add Event
+          </a>
+        {% endif %}
+      </div>
     </aside>
   </div>
 {% endblock %}

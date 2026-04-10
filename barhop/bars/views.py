@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .forms import CreateBarForm, UpdateBarImageFormSet
-from .models import Bar, Amenity, BarImage  # , Address
+from .forms import CreateBarForm, CreateEventForm, UpdateBarImageFormSet
+from .models import Bar, Amenity, BarImage, Event  # , Address
 from reservations.models import Seating
 from user_management.models import Profile
 from reservations.views import get_or_create_tables
@@ -162,3 +162,59 @@ def bar_update(request, bar_id):
 
     return render(request, 'bars/update-bar.html', ctx)
 
+@login_required
+def create_event(request, bar_id):
+    bar = Bar.objects.get(id=bar_id)
+
+    if bar.bar_owner != request.user:
+        return redirect('bars:bar-details', bar_id=bar_id)
+
+    form = CreateEventForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.bar = bar
+            event.save()
+            return redirect('bars:bar-details', bar_id=bar_id)
+
+    return render(request, 'bars/create-event.html', {
+        'form': form,
+        'bar': bar
+    })
+
+@login_required
+def update_event(request, event_id):
+    event = Event.objects.get(id=event_id)
+    bar = event.bar
+
+    if bar.bar_owner != request.user:
+        return redirect('bars:bar-details', bar_id=bar.id)
+
+    form = CreateEventForm(request.POST or None, instance=event)
+
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect('bars:bar-details', bar_id=bar.id)
+
+    return render(request, 'bars/update-event.html', {
+        'form': form,
+        'event': event
+    })
+
+@login_required
+def delete_event(request, event_id):
+    event = Event.objects.get(id=event_id)
+    bar_id = event.bar.id
+
+    if event.bar.bar_owner != request.user:
+        return redirect('bars:bar-details', bar_id=bar_id)
+
+    if request.method == "POST":
+        event.delete()
+        return redirect('bars:bar-details', bar_id=bar_id)
+
+    return render(request, 'bars/delete-event.html', {
+        'event': event
+    })
