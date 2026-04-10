@@ -1,5 +1,5 @@
 from django import forms
-from .models import Bar, BarImage, Amenity
+from .models import Bar, BarImage, Amenity, Event
 from django.core.exceptions import ValidationError
 
 
@@ -39,7 +39,18 @@ class CreateBarForm(forms.ModelForm):
 
     images = MultiImageField(required=False)
 
-
+class CreateEventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'description', 'event_date', 'start_time', 'end_time']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'event_date': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
+            'start_time': forms.TimeInput(format='%H:%M', attrs={'type': 'time', 'class': 'form-control'}),
+            'end_time': forms.TimeInput(format='%H:%M', attrs={'type': 'time', 'class': 'form-control'}),
+        }
+        
 UpdateBarImageFormSet = forms.modelformset_factory(
     BarImage,
     fields=('image',),
