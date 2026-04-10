@@ -27,6 +27,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 linkHover.style.transform = activeLink ? `translateX(${activeLink.offsetLeft}px)` : "translate(0px)";
                 break;
         }
+
+        // !document.querySelector("#owner-verified") && 
+        if (window.location.pathname.includes("bars") && window.location.pathname !== "/bars/") {
+            linkHover.style.opacity = "0";
+            linkHover.style.width = "0";
+            linkHover.style.border = "none";
+        }
+
     }
 
     hideBorder();

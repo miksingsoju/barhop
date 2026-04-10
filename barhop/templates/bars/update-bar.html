@@ -5,6 +5,16 @@
 {% block title %} Update Bar Details {% endblock %}
 
 {% block content %}
+  <ol class="breadcrumb breadcrumb-dot text-muted fs-6 fw-semibold px-6 px-sm-12 mt-6">
+    <li class="breadcrumb-item">
+      <i class="ki-solid ki-home"></i>
+    </li>
+    <li class="breadcrumb-item"><a href="{% url 'bars:bar-list' %}" class="text-muted">Bar List</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'bars:bar-details' bar.id %}" class="text-muted">{{ bar.bar_name }}</a></li>
+    <li class="breadcrumb-item text-gray-600">Update {{ bar.bar_name }}</li>
+  </ol>
+  {% include 'bars/create-bar.html#bar_form' %}  
+{% comment %}
   <div class="bar-update-form-container">
     {% if bar and bar.images.all %}
       <div class="mb-6">
@@ -46,9 +56,59 @@
         <button type="submit">Update bar details</button>
     </form>
   </div>
+ {% endcomment %}
 {% endblock %}
 
 {% block scripts %}
+  {% include 'bars/create-bar.html#bar_form_scripts' %}
+  {{ block.super }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var fileInput = document.querySelector('#bar-form input[type="file"][name="images"]');
+      var previewContainer = document.getElementById('image-preview-container');
+
+      if (!fileInput || !previewContainer) {
+        return;
+      }
+
+      fileInput.addEventListener('change', function (event) {
+        var files = event.target.files;
+        previewContainer.innerHTML = '';
+
+        if (!files || !files.length) {
+          return;
+        }
+
+        Array.from(files).forEach(function (file) {
+          if (!file.type.startsWith('image/')) {
+            return;
+          }
+
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = file.name;
+            img.className = 'img-fluid rounded';
+            img.style.maxWidth = '200px';
+            img.style.maxHeight = '200px';
+            img.style.objectFit = 'cover';
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'bar-image-preview-wrapper';
+            wrapper.appendChild(img);
+
+            previewContainer.appendChild(wrapper);
+          };
+
+          reader.readAsDataURL(file);
+        });
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block scripts_2 %}
   {{ block.super }}
   <script>
     document.addEventListener('DOMContentLoaded', function () {

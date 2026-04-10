@@ -54,6 +54,7 @@ class ProfileUpdateForm(forms.ModelForm):
         'last_name': forms.TextInput(attrs={'class': 'form-control'}),
         'bio': forms.TextInput(attrs={'class': 'form-control'}),
         'profile_image': forms.FileInput(attrs={'class': 'form-control'}),
+
         'user_type': forms.Select(attrs={'class': 'form-control'}),
     }
 

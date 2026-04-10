@@ -6,7 +6,7 @@ echo MySQL Database setup successful. Installing packages... &&^
 python -m venv venv && cd barhop &&^
 ..\venv\scripts\activate && pip install -r requirements.txt &&^
 echo Python environment setup successful. Making migrations... &&^
-python manage.py makemigrations && python manage.py migrate &&^
+python manage.py makemigrations user_management bars reservations reviews && python manage.py migrate &&^
 echo Migrations successful. Creating Superuser... &&^
 python manage.py createsuperuser --no-input && deactivate &&^
 echo Installation successful. && pause
