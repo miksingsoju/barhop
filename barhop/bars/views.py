@@ -163,6 +163,34 @@ def bar_details(request, bar_id):
         'review_count': reviews.count(),
     })
 
+def update_review(request, review_id):
+    review = Review.objects.get(id=review_id)
+
+    if review.review_user != request.user:
+        raise PermissionDenied
+
+    form = CreateReviewForm(request.POST or None, instance=review)
+
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect('bars:bar-details', bar_id=review.review_bar.id)
+
+    return render(request, 'reviews/update-review.html', {'form': form, 'review': review})
+
+
+def delete_review(request, review_id):
+    review = Review.objects.get(id=review_id)
+
+    if review.review_user != request.user:
+        raise PermissionDenied
+
+    if request.method == "POST":
+        bar_id = review.review_bar.id
+        review.delete()
+        return redirect('bars:bar-details', bar_id=bar_id)
+
+    return render(request, 'reviews/delete-review.html', {'review': review})
 
 def bar_update(request, bar_id):
     bar_object = Bar.objects.get(id=bar_id)
