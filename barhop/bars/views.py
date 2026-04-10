@@ -5,7 +5,7 @@ from .models import Bar, Amenity, BarImage  # , Address
 from reservations.models import Seating
 from user_management.models import Profile
 from reservations.views import get_or_create_tables
-from django.db.models import Case, When, Value, IntegerField
+from django.db.models import Case, When, Value, IntegerField, Avg
 from django.contrib.auth.decorators import login_required
 from reviews.models import Review
 from reviews.forms import CreateReviewForm
@@ -116,6 +116,7 @@ def bar_details(request, bar_id):
     bar_owner = bar_object.bar_owner
     seating = Seating.objects.filter(bar=bar_object)
     reviews = Review.objects.filter(review_bar=bar_object)
+    avg_rating = reviews.aggregate(Avg('review_rating'))['review_rating__avg']
     
     review_form = CreateReviewForm(request.POST or None)
     bar_user = request.user
@@ -157,7 +158,9 @@ def bar_details(request, bar_id):
         'reviews': reviews,
         'review_form': review_form,
         'can_review' : can_review,
-        'next_review_at' : next_review_at
+        'next_review_at' : next_review_at,
+        'avg_rating': round(avg_rating, 1) if avg_rating else None,
+        'review_count': reviews.count(),
     })
 
 
