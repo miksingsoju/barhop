@@ -7,6 +7,13 @@ from user_management.models import Profile
 from reservations.views import get_or_create_tables
 from django.db.models import Case, When, Value, IntegerField
 from django.contrib.auth.decorators import login_required
+from reviews.models import Review
+from reviews.forms import CreateReviewForm
+from django.utils import timezone
+from datetime import timedelta
+from django.core.exceptions import PermissionDenied
+from django.contrib import messages
+# https://stackoverflow.com/questions/62023710/django-how-to-restrict-a-user-to-put-review-only-once
 
 
 def bar_list(request):
@@ -108,11 +115,49 @@ def bar_details(request, bar_id):
     bar_object = Bar.objects.get(id=bar_id)
     bar_owner = bar_object.bar_owner
     seating = Seating.objects.filter(bar=bar_object)
+    reviews = Review.objects.filter(review_bar=bar_object)
+    
+    review_form = CreateReviewForm(request.POST or None)
+    bar_user = request.user
+    
+    can_review = False
+    next_review_at = None
+
+    if request.user.is_authenticated and bar_user.user_type == Profile.UserType.BARHOPPER:
+        existing_review = Review.objects.filter(review_bar=bar_object, review_user=bar_user
+        ).order_by('-review_date_created').first()
+        if existing_review is None:
+            can_review = True
+            
+        else:
+            delta = timezone.now() - existing_review.review_date_created
+            if delta > timedelta(days=3):
+                can_review = True
+            else:
+                next_review_at = existing_review.review_date_created + timedelta(days=3)
+                
+    else: messages.error(request, "Only Bar Hoppers can make reviews")
+
+    if request.method == "POST":
+        if not can_review:
+                messages.error(request, "You cannot make another review within less than 3 days")
+
+        if can_review and review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.review_user = bar_user
+            review.review_bar = bar_object
+            review.save()
+            return redirect('bars:bar-details', bar_id=bar_id)
+
     
     return render(request, 'bars/bar-details.html', {
         'bar': bar_object,
         'bar_owner': bar_owner,
         'seating': seating,
+        'reviews': reviews,
+        'review_form': review_form,
+        'can_review' : can_review,
+        'next_review_at' : next_review_at
     })
 
 

@@ -159,6 +159,31 @@
           </div>
         {% endif %}
       </article>
+      <!-- Review section -->
+      <div class="review-form-section">
+        {% if can_review %}
+          <form method="POST">
+            {% csrf_token %}
+            {{ review_form.as_p }}
+            <button type="submit">Submit Review</button>
+          </form>
+        {% elif next_review_at %}
+          <p>You can review again on {{ next_review_at|date:"N j, Y" }}.</p>
+        {% else %}
+          <p>Only Bar Hoppers can leave reviews.</p>
+        {% endif %}
+      </div>
+      <div class="review-list-section">
+        {% for review in reviews %}
+          <div>
+            <!-- <span class="fs-2 fw-semibold text-gray-700 text-center">{{ review.review_user.username|slice:"0:1" }}</span>               -->
+               Hopper: {{ review.review_user.first_name}} {{ review.review_user.last_name }}
+          </div>
+          <p>{{ review.review_date_created }}</p>
+          <p>Rating: {{ review.review_rating }}</p>
+          <p>{{ review.review_description }}</p>
+        {% endfor %}
+      </div>
     </section>
     {% endpartialdef %}
 
