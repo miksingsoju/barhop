@@ -32,13 +32,11 @@
     <li class="breadcrumb-item"><a href="{% url 'bars:bar-list' %}" class="text-muted">Bar List</a></li>
     <li class="breadcrumb-item text-gray-600">{{ bar.bar_name }}</li>
   </ol>
-  {% if bar.bar_owner == request.user %}
-    <br>
-  {% else %}
-  {% endif %}
+
   <div class="d-flex flex-row justify-content-center gap-12 my-12">
     {% partialdef bar_details inline %}
     <section class="d-flex flex-column gap-7 w-100 mw-sm-700px">
+
       <!-- image carousel -->
       <div id="bar-images" class="carousel carousel-custom slide" data-bs-ride="carousel" data-bs-interval="8000">
         <div class="carousel-inner rounded">
@@ -52,7 +50,6 @@
             <div class="carousel-item h-300px bg-gray-300 active"></div>
           {% endif %}
         </div>
-        <!-- indicators -->
         <ol class="p-0 m-0 carousel-indicators carousel-indicators-bullet position-absolute bottom-0 w-100">
           {% if bar.images.all %}
             {% for bar_image in bar.images.all %}
@@ -64,6 +61,7 @@
         </ol>
       </div>
 
+      <!-- bar header -->
       <header class="d-flex flex-row justify-content-between">
         <figcaption>
           <h2 id="bar-name" class="text-poppins">{{ bar.bar_name }}</h2>
@@ -107,6 +105,7 @@
         {% endif %}
       </header>
 
+      <!-- likes and rating -->
       {% if not preview %}
         <article class="border-gray-300 border-top border-bottom px-10 py-5 d-flex">
           <div class="w-100 text-danger d-flex gap-3 justify-content-center align-items-bottom">
@@ -121,19 +120,18 @@
             </div>
           </div>
           <div class="w-100 text-warning d-flex gap-3 justify-content-center align-items-bottom">
-            <a href="#"><i class="ki-outline ki-star fs-3x text-warning"></i></a>
+            <i class="ki-outline ki-star fs-3x text-warning"></i>
             <div class="d-flex flex-column align-items-center justify-content-around">
-              {% if avg_rating %}
-                <span class="fs-2 fw-bold lh-1">{{ avg_rating }}</span>
-              {% else %}
-                <span class="fs-2 fw-bold lh-1">—</span>
-              {% endif %}
+              <span class="fs-2 fw-bold lh-1">
+                {% if avg_rating %}{{ avg_rating }}{% else %}—{% endif %}
+              </span>
               <span class="fs-7 lh-1">{{ review_count }} review{{ review_count|pluralize }}</span>
             </div>
           </div>
         </article>
       {% endif %}
 
+      <!-- bar owner -->
       <article class="d-flex flex-row gap-4 align-items-center rounded bg-gray-200 bg-opacity-50 border border-gray-200 py-5 px-6 mb-4">
         <div class="symbol symbol-50px symbol-circle">
           <div class="symbol-label fs-2 fw-semibold bg-light-info text-info">
@@ -146,14 +144,13 @@
         </div>
         <div class="d-flex flex-column">
           <span class="fs-5 text-gray-700">Owned by <span class="fw-bold text-gray-800">{{ bar_owner.first_name }} {{ bar_owner.last_name }}</span></span>
-          {% comment %} <a href="{% url 'auth:profile' bar_owner.username %}" class="fs-7 fw-semibold text-gray-600">@ {{ bar_owner.username }}</a> {% endcomment %}
           <a href="#" class="fs-7 fw-semibold text-gray-600">@ {{ bar_owner.username }}</a>
         </div>
       </article>
 
+      <!-- description and amenities -->
       <article>
         <p id="bar-desc" class="fs-6 mb-8">{{ bar.bar_description }}</p>
-
         {% if bar.bar_amenities.length > 0 or preview %}
           <h5 class="text-poppins">Amenities</h5>
           <div class="d-flex flex-row gap-3 mt-4" id="amenities-container">
@@ -163,34 +160,69 @@
           </div>
         {% endif %}
       </article>
-      <!-- Review section -->
-      <div class="d-flex flex-row gap-4 rounded bg-gray-200 bg-opacity-50 border border-gray-200 py-5 px-6">
-        {% if can_review %}
-          <form class="d-flex flex-column justify-content-center gap-6 px-2 pb-8 m-0" method="POST">
-            {% csrf_token %}
-            {{ review_form.as_p }}
-            <button class="btn btn-sm btn-info" type="submit">Submit Review</button>
-          </form>
-        {% elif next_review_at %}
-          <p>You can review again on {{ next_review_at|date:"N j, Y" }}.</p>
+
+      <!-- review form -->
+      {% if not preview %}
+        <div class="review-form-section">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} mb-4">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+
+          {% if can_review %}
+            <h5 class="text-poppins mb-4">Leave a Review</h5>
+            <form method="POST">
+              {% csrf_token %}
+              {% if review_form.errors %}
+                <div class="alert alert-danger mb-4">{{ review_form.errors }}</div>
+              {% endif %}
+              {{ review_form.as_p }}
+              <button type="submit" class="btn btn-info mt-3">Submit Review</button>
+            </form>
+          {% elif next_review_at %}
+            <div class="alert alert-warning">
+              You can review again on {{ next_review_at|date:"N j, Y" }}.
+            </div>
+          {% else %}
+            <div class="alert alert-info">
+              Only Bar Hoppers can leave reviews.
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <!-- review list -->
+      <div class="review-list-section d-flex flex-column gap-5">
+        {% if reviews %}
+          <h5 class="text-poppins mb-2">Reviews</h5>
+          {% for review in reviews %}
+            <article class="d-flex flex-column gap-2 rounded border border-gray-200 py-5 px-6">
+              <div class="d-flex flex-row justify-content-between align-items-center">
+                <span class="fs-6 fw-bold text-gray-800">
+                  {{ review.review_user.first_name }} {{ review.review_user.last_name }}
+                </span>
+                <span class="fs-7 text-gray-500">{{ review.review_date_created|date:"N j, Y" }}</span>
+              </div>
+              <span class="fs-7 text-gray-600">Rating: {{ review.review_rating }}</span>
+              <p class="fs-6 text-gray-700 mb-0">{{ review.review_description }}</p>
+
+              {% if review.review_user == request.user %}
+                <div class="d-flex flex-row gap-3 mt-2">
+                  <a href="{% url 'bars:review-update' review.id %}" class="btn btn-sm btn-info">Edit</a>
+                  <form method="POST" action="{% url 'bars:review-delete' review.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                  </form>
+                </div>
+              {% endif %}
+            </article>
+          {% endfor %}
         {% else %}
-          <p>Only Bar Hoppers can leave reviews.</p>
+          <p class="text-gray-500 fs-6">No reviews yet. Be the first to leave one!</p>
         {% endif %}
       </div>
-      <h4 class="mb-0">Reviews</h4>
-      <div>
-        {% for review in reviews %}
-        <div class="rounded bg-gray-300 bg-opacity-50 border border-gray-200 py-5 px-6 my-5">
-          <div>
-            <!-- <span class="fs-2 fw-semibold text-gray-700 text-center">{{ review.review_user.username|slice:"0:1" }}</span>               -->
-               Hopper: {{ review.review_user.first_name}} {{ review.review_user.last_name }}
-          </div>
-          <p class="text-gray-700 fs-6 d-flex mb-1 align-items-center">{{ review.review_date_created }}</p>
-          <p class="text-gray-700 fs-6 d-flex mb-1 align-items-center">Rating: {{ review.review_rating }}</p>
-          <p>{{ review.review_description }}</p>
-        </div>
-        {% endfor %}
-      </div>
+
     </section>
     {% endpartialdef %}
 
@@ -199,7 +231,6 @@
         <div class="d-flex flex-column gap-4 p-8">
           <h4 class="m-0">Table Types</h4>
           <span class="text-gray-700">No tables to show.</span>
-          
           {% if request.user and request.user.user_type == 'OWNER' %}
             <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Add Tables</a>
           {% endif %}
@@ -207,27 +238,27 @@
       {% elif seating and request.user and request.user.user_type == 'OWNER' %}
         <div class="d-flex flex-column gap-4 p-8">
           <h4 class="m-0">Table Types</h4>
-            {% for s in seating %}
-              <article class="d-flex flex-row gap-4 w-100 align-items-center">
-                <div class="w-65px h-65px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center overflow-hidden">
-                  {% if s.image %}
-                    <img src="{{ s.image.url }}" alt="{{ s.seating }}" class="w-100 h-100 object-fit-cover"/>
-                  {% else %}
-                    <i class="ki-duotone ki-picture text-gray-800 fs-2x">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                  {% endif %}
-                </div>
-                <div>
-                  <span class="d-block fs-6 text-gray-800 fw-semibold">{{ s.seating }}</span>
-                  <span class="d-block fw-semibold text-gray-500">Seats {% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
-                </div>
-              </article>
-            {% endfor %}
-            <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Manage Tables</a>
-            <hr class="border-gray-600">
-            <a href="{% url 'reservations:bar-tables' bar_id=bar.id%}" class="btn btn-sm btn-info">Check Reservations</a>
+          {% for s in seating %}
+            <article class="d-flex flex-row gap-4 w-100 align-items-center">
+              <div class="w-65px h-65px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center overflow-hidden">
+                {% if s.image %}
+                  <img src="{{ s.image.url }}" alt="{{ s.seating }}" class="w-100 h-100 object-fit-cover"/>
+                {% else %}
+                  <i class="ki-duotone ki-picture text-gray-800 fs-2x">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                {% endif %}
+              </div>
+              <div>
+                <span class="d-block fs-6 text-gray-800 fw-semibold">{{ s.seating }}</span>
+                <span class="d-block fw-semibold text-gray-500">Seats {% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
+              </div>
+            </article>
+          {% endfor %}
+          <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Manage Tables</a>
+          <hr class="border-gray-600">
+          <a href="{% url 'reservations:bar-tables' bar_id=bar.id %}" class="btn btn-sm btn-info">Check Reservations</a>
         </div>
       {% else %}
         {% include 'reservations/create-booking.html#booking_form_datetime' %}
