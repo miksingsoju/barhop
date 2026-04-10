@@ -136,8 +136,6 @@ def bar_details(request, bar_id):
                 can_review = True
             else:
                 next_review_at = existing_review.review_date_created + timedelta(days=3)
-                
-    else: messages.error(request, "Only Bar Hoppers can make reviews")
 
     if request.method == "POST":
         if not can_review:
