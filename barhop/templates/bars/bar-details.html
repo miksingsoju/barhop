@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load tags %}
 
 {% block title %}
   Bar Details
@@ -36,9 +37,9 @@
     <br>
   {% else %}
   {% endif %}
-  <div class="d-flex flex-row justify-content-center gap-12 my-12">
+  <div class="d-flex flex-column flex-md-row justify-content-center gap-12 my-12 mx-sm-12">
     {% partialdef bar_details inline %}
-    <section class="d-flex flex-column gap-7 w-100 mw-sm-700px">
+    <section class="d-flex flex-column gap-7 flex-grow-1 mw-sm-700px">
       <!-- image carousel -->
       <div id="bar-images" class="carousel carousel-custom slide" data-bs-ride="carousel" data-bs-interval="8000">
         <div class="carousel-inner rounded">
@@ -64,7 +65,7 @@
         </ol>
       </div>
 
-      <header class="d-flex flex-row justify-content-between">
+      <header class="d-flex flex-row justify-content-between px-8 px-md-0">
         <figcaption>
           <h2 id="bar-name" class="text-poppins">{{ bar.bar_name }}</h2>
           <span class="text-gray-700 fs-6 d-flex mb-1 align-items-center">
@@ -108,7 +109,7 @@
       </header>
 
       {% if not preview %}
-        <article class="border-gray-300 border-top border-bottom px-10 py-5 d-flex">
+        <article class="border-gray-300 border-top border-bottom mx-8 mx-md-0 px-10 py-5 d-flex">
           <div class="w-100 text-danger d-flex gap-3 justify-content-center align-items-bottom">
             <input type="checkbox" class="btn-check" name="like-button" value="true" id="like-button" />
             <label class="cursor-pointer" for="like-button">
@@ -130,7 +131,7 @@
         </article>
       {% endif %}
 
-      <article class="d-flex flex-row gap-4 align-items-center rounded bg-gray-200 bg-opacity-50 border border-gray-200 py-5 px-6 mb-4">
+      <article class="d-flex flex-row gap-4 mx-8 mx-md-0 align-items-center rounded bg-gray-200 bg-opacity-50 border border-gray-200 py-5 px-6 mb-4">
         <div class="symbol symbol-50px symbol-circle">
           <div class="symbol-label fs-2 fw-semibold bg-light-info text-info">
             {% if bar_owner.pfp %}
@@ -147,7 +148,7 @@
         </div>
       </article>
 
-      <article>
+      <article class="mx-8 mx-md-0">
         <p id="bar-desc" class="fs-6 mb-8">{{ bar.bar_description }}</p>
 
         {% if bar.bar_amenities.length > 0 or preview %}
@@ -159,35 +160,99 @@
           </div>
         {% endif %}
       </article>
+      <hr class="text-gray-300 opacity-100 mx-8 mx-md-0 mb-0">
+
       <!-- Review section -->
-      <div class="review-form-section">
-        {% if can_review %}
-          <form method="POST">
-            {% csrf_token %}
-            {{ review_form.as_p }}
-            <button type="submit">Submit Review</button>
-          </form>
-        {% elif next_review_at %}
-          <p>You can review again on {{ next_review_at|date:"N j, Y" }}.</p>
-        {% else %}
-          <p>Only Bar Hoppers can leave reviews.</p>
-        {% endif %}
-      </div>
-      <div class="review-list-section">
-        {% for review in reviews %}
-          <div>
-            <!-- <span class="fs-2 fw-semibold text-gray-700 text-center">{{ review.review_user.username|slice:"0:1" }}</span>               -->
-               Hopper: {{ review.review_user.first_name}} {{ review.review_user.last_name }}
+      {% if not preview %}
+        <section class="mx-8 mx-md-0">
+          <h2>Reviews</h2>
+          <!-- TODO: aggregate stats -->
+          <div class="review-form-section my-8">
+            {% if can_review %}
+              <form method="POST" class="d-flex flex-column gap-4">
+                {% csrf_token %}
+                <h5 class="text-gray-800 mb-0">How was your experience?</h5>
+                <div class="rating">
+                  <input class="rating-input" name="rating" value="0" checked type="radio" id="rate_0"/>
+                  <label class="rating-label" for="rate_1">
+                      <i class="ki-duotone ki-star fs-3"></i>
+                  </label>
+                  <input class="rating-input" name="rating" value="1" type="radio" id="rate_1"/>
+                  <label class="rating-label" for="rate_2">
+                      <i class="ki-duotone ki-star fs-3"></i>
+                  </label>
+                  <input class="rating-input" name="rating" value="2" type="radio" id="rate_2"/>
+                  <label class="rating-label" for="rate_3">
+                      <i class="ki-duotone ki-star fs-3"></i>
+                  </label>
+                  <input class="rating-input" name="rating" value="3" type="radio" id="rate_3"/>
+                  <label class="rating-label" for="rate_4">
+                      <i class="ki-duotone ki-star fs-3"></i>
+                  </label>
+                  <input class="rating-input" name="rating" value="4" type="radio" id="rate_4"/>
+                  <label class="rating-label" for="rate_5">
+                      <i class="ki-duotone ki-star fs-3"></i>
+                  </label>
+                  <input class="rating-input" name="rating" value="5" type="radio" id="rate_5"/>
+              </div>
+                <textarea id="{{ review_form.review_description.id_for_label }}" name="{{ review_form.review_description.html_name }}" 
+                type="textarea" class="form-control form-control-solid" placeholder="Anything you'd like us to know?" data-kt-autosize="true" rows="3"></textarea>
+                <button type="submit" class="btn btn-sm btn-info w-fit align-self-end mt-2">Submit Review</button>
+              </form>
+            {% elif next_review_at %}
+              <p>You can review again on {{ next_review_at|date:"N j, Y" }}.</p>
+            {% else %}
+              <p>Only Bar Hoppers can leave reviews.</p>
+            {% endif %}
           </div>
-          <p>{{ review.review_date_created }}</p>
-          <p>Rating: {{ review.review_rating }}</p>
-          <p>{{ review.review_description }}</p>
-        {% endfor %}
-      </div>
+          <div class="review-list-section d-flex flex-row flex-sm-column gap-8 gap-sm-12">
+            {% for review in reviews %}
+              <article class="d-flex flex-column gap-4">
+                <header class="d-flex flex-row gap-4 align-items-center">
+                  <figure class="symbol symbol-circle symbol-40px bg-gray-300 mb-0">
+                    {% if review.review_user.profile_image %}
+                      <img src="{{ review.review_user.profile_image.url }}" alt="Profile picture" class="symbol-label bg-transparent" width="60" height="60" />
+                    {% else %}
+                      <div class="symbol-label pfp-placeholder fs-2 fw-semibold bg-transparent text-gray-700">{{ review.review_user.username|first|upper }}</div>
+                    {% endif %}
+                  </figure>
+                  <figcaption class="d-flex flex-column">
+                    <span class="text-gray-800 fw-semibold">{{ review.review_user.first_name}} {{ review.review_user.last_name }}</span>
+                    <span class="text-gray-600 fs-8">Hopped on {{ review.review_date_created }}</span>
+                  </figcaption>
+                </header>
+                <div class="rating">
+                    <!-- checked stars -->
+                    {% if review.review_rating > 0 %}
+                      {% for _ in "x"|ljust:review.review_rating %}
+                        <div class="rating-label checked">
+                          <i class="ki-duotone ki-star fs-3"></i>
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+
+                    <!-- unchecked stars -->
+                    {% if review.review_rating < 5 %}
+                      {% with rm=review.review_rating|subtractBA:"5" %}
+                        {% for _ in "x"|ljust:rm %}
+                          <div class="rating-label">
+                            <i class="ki-duotone ki-star fs-3"></i>
+                          </div>
+                        {% endfor %}
+                      {% endwith %}
+                    {% endif %}
+                </div>
+                <p class="text-gray-700 mb-0">{{ review.review_description }}</p>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
     </section>
     {% endpartialdef %}
 
-    <aside class="w-100 w-sm-350px h-fit card d-flex">
+    <aside class="flex-shrink-0 w-sm-350px m-sm-0 mx-12 h-fit card d-flex">
       {% if not seating %}
         <div class="d-flex flex-column gap-4 p-8">
           <h4 class="m-0">Table Types</h4>

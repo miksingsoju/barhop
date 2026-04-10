@@ -5,9 +5,9 @@ from .models import Review
 class CreateReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['review_description','review_rating']
+        fields = ['review_description']
         widgets = {
             'review_description':forms.TextInput(attrs={'class': 'form-control'}),
-            'review_rating': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '5'}),
+            # 'review_rating': forms.NumberInput(attrs={'step': '0.5', 'min': '0', 'max': '5'}),
         }
     
