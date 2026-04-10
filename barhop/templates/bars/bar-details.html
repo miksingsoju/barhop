@@ -164,12 +164,12 @@
         {% endif %}
       </article>
       <!-- Review section -->
-      <div class="review-form-section">
+      <div class="d-flex flex-row gap-4 rounded bg-gray-200 bg-opacity-50 border border-gray-200 py-5 px-6">
         {% if can_review %}
-          <form method="POST">
+          <form class="d-flex flex-column justify-content-center gap-6 px-2 pb-8 m-0" method="POST">
             {% csrf_token %}
             {{ review_form.as_p }}
-            <button type="submit">Submit Review</button>
+            <button class="btn btn-sm btn-info" type="submit">Submit Review</button>
           </form>
         {% elif next_review_at %}
           <p>You can review again on {{ next_review_at|date:"N j, Y" }}.</p>
@@ -177,15 +177,18 @@
           <p>Only Bar Hoppers can leave reviews.</p>
         {% endif %}
       </div>
-      <div class="review-list-section">
+      <h4 class="mb-0">Reviews</h4>
+      <div>
         {% for review in reviews %}
+        <div class="rounded bg-gray-300 bg-opacity-50 border border-gray-200 py-5 px-6 my-5">
           <div>
             <!-- <span class="fs-2 fw-semibold text-gray-700 text-center">{{ review.review_user.username|slice:"0:1" }}</span>               -->
                Hopper: {{ review.review_user.first_name}} {{ review.review_user.last_name }}
           </div>
-          <p>{{ review.review_date_created }}</p>
-          <p>Rating: {{ review.review_rating }}</p>
+          <p class="text-gray-700 fs-6 d-flex mb-1 align-items-center">{{ review.review_date_created }}</p>
+          <p class="text-gray-700 fs-6 d-flex mb-1 align-items-center">Rating: {{ review.review_rating }}</p>
           <p>{{ review.review_description }}</p>
+        </div>
         {% endfor %}
       </div>
     </section>
