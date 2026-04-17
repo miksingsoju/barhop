@@ -124,11 +124,11 @@
       {% if not preview %}
         <article class="border-gray-300 border-top border-bottom mx-8 mx-md-0 px-10 py-5 d-flex">
           <div class="w-100 text-danger d-flex gap-3 justify-content-center align-items-bottom">
-            <input type="checkbox" class="btn-check" name="like-button" value="true" id="like-button" />
+            {% comment %} <input type="checkbox" class="btn-check" name="like-button" value="true" id="like-button" />
             <label class="cursor-pointer" for="like-button">
               <i class="ki-solid ki-heart fs-3x text-danger"></i>
               <i class="ki-outline ki-heart fs-3x text-danger"></i>
-            </label>
+            </label> {% endcomment %}
             <div class="w-100 text-danger d-flex gap-3 justify-content-center align-items-bottom">
               <form method="POST" action="{% url 'bars:toggle-like' bar.id %}">
                 {% csrf_token %}
