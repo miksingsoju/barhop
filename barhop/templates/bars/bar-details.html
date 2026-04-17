@@ -176,7 +176,7 @@
 
       <article class="mx-8 mx-md-0">
         <p id="bar-desc" class="fs-6 mb-8">{{ bar.bar_description }}</p>
-        {% if bar.bar_amenities.length > 0 or preview %}
+        {% if bar.bar_amenities.all or preview %}
           <h5 class="text-poppins">Amenities</h5>
           <div class="d-flex flex-row gap-3 mt-4" id="amenities-container">
             {% for amenity in bar.bar_amenities.all %}
