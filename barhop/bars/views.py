@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from .forms import CreateBarForm, CreateEventForm, UpdateBarImageFormSet
-from .models import Bar, Amenity, BarImage, Event  # , Address
+from .models import Bar, Amenity, BarImage, Event, BarLike  # , Address
 from reservations.models import Seating
 from user_management.models import Profile
 from reservations.views import get_or_create_tables
