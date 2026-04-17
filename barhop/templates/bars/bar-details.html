@@ -129,9 +129,21 @@
               <i class="ki-solid ki-heart fs-3x text-danger"></i>
               <i class="ki-outline ki-heart fs-3x text-danger"></i>
             </label>
-            <div class="d-flex flex-column align-items-center justify-content-around">
-              <span class="fs-2 fw-bold lh-1">0</span>
-              <span class="fs-7 lh-1">Likes</span>
+            <div class="w-100 text-danger d-flex gap-3 justify-content-center align-items-bottom">
+              <form method="POST" action="{% url 'bars:toggle-like' bar.id %}">
+                {% csrf_token %}
+                <button type="submit" class="border-0 bg-transparent cursor-pointer">
+                  {% if user_has_liked %}
+                    <i class="ki-solid ki-heart fs-3x text-danger"></i>
+                  {% else %}
+                    <i class="ki-outline ki-heart fs-3x text-danger"></i>
+                  {% endif %}
+                </button>
+              </form>
+              <div class="d-flex flex-column align-items-center justify-content-around">
+                <span class="fs-2 fw-bold lh-1">{{ like_count }}</span>
+                <span class="fs-7 lh-1">Likes</span>
+              </div>
             </div>
           </div>
           <div class="w-100 text-warning d-flex gap-3 justify-content-center align-items-bottom">
@@ -248,6 +260,41 @@
       {% else %}
         {% include 'reservations/create-booking.html#booking_form_datetime' %}
       {% endif %}
+      <!--EVENTS CARD -->
+      <div class="d-flex flex-column gap-4 p-8 border-top border-gray-300">
+        <h4 class="m-0">Events</h4>
+
+        {% if bar.events.all %}
+          {% for event in bar.events.all %}
+            <div class="bg-light rounded p-3">
+              <span class="fw-bold text-gray-800 d-block">{{ event.title }}</span>
+              <span class="text-gray-600 fs-7 d-block mb-1">
+                {{ event.event_date }} | {{ event.start_time }} - {{ event.end_time }}
+              </span>
+              <p class="text-gray-700 fs-7 mb-2">{{ event.description }}</p>
+
+              {% if bar_owner == request.user %}
+                <div class="d-flex gap-2">
+                  <a href="{% url 'bars:update-event' event.id %}" class="btn btn-sm btn-light-primary">
+                    Edit
+                  </a>
+                  <a href="{% url 'bars:delete-event' event.id %}" class="btn btn-sm btn-light-danger">
+                    Delete
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <span class="text-gray-500">No events yet.</span>
+        {% endif %}
+
+        {% if bar_owner == request.user %}
+          <a href="{% url 'bars:create-event' bar.id %}" class="btn btn-sm btn-info mt-2">
+            Add Event
+          </a>
+        {% endif %}
+      </div>
     </aside>
   </div>
 {% endblock %}

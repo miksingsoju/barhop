@@ -1,14 +1,14 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-
-from reviews.forms import ReviewForm
-from .forms import CreateBarForm, UpdateBarImageFormSet
-from .models import Bar, Amenity, BarImage  # , Address
+from django.utils import timezone
+from .forms import CreateBarForm, CreateEventForm, UpdateBarImageFormSet
+from .models import Bar, Amenity, BarImage, Event, BarLike  # , Address
 from reservations.models import Seating
 from user_management.models import Profile
 from reservations.views import get_or_create_tables
 from django.db.models import Case, When, Value, IntegerField, Avg
 from django.contrib.auth.decorators import login_required
+from reviews.forms import ReviewForm
 from reviews.models import Review
 from reviews.views import create_or_update_review
 from django.utils import timezone
@@ -139,8 +139,10 @@ def bar_details(request, bar_id):
     review_form = ReviewForm(request.POST or None)
     if not can_review:
         messages.error(request, "You cannot make another review within less than 3 days")
-    # else:
-    #     create_or_update_review(request=request, form=review_form, bar=bar_object)
+
+    active_likes = BarLike.objects.filter(bar=bar_object, expires_at__gt=timezone.now())
+    user_has_liked = active_likes.filter(user=request.user).exists() if request.user.is_authenticated else False
+
     
     return render(request, 'bars/bar-details.html', {
         'bar': bar_object,
@@ -152,6 +154,8 @@ def bar_details(request, bar_id):
         'next_review_at' : next_review_at,
         'avg_rating': round(avg_rating, 1) if avg_rating else 0,
         'review_count': reviews.count(),
+        'like_count': active_likes.count(),
+        'user_has_liked': user_has_liked,
     })
 
 
@@ -201,3 +205,74 @@ def bar_update(request, bar_id):
 
     return render(request, 'bars/update-bar.html', ctx)
 
+
+def toggle_like(request, bar_id):
+    if not request.user.is_authenticated:
+        return redirect('bars:bar-details', bar_id=bar_id)
+
+    bar_object = Bar.objects.get(id=bar_id)
+
+    existing = BarLike.objects.filter(user=request.user, bar=bar_object).first()
+
+    if existing:
+        existing.delete()  # unlike
+    else:
+        BarLike.objects.create(user=request.user, bar=bar_object)  # like
+
+    return redirect('bars:bar-details', bar_id=bar_id)
+@login_required
+def create_event(request, bar_id):
+    bar = Bar.objects.get(id=bar_id)
+
+    if bar.bar_owner != request.user:
+        return redirect('bars:bar-details', bar_id=bar_id)
+
+    form = CreateEventForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.bar = bar
+            event.save()
+            return redirect('bars:bar-details', bar_id=bar_id)
+
+    return render(request, 'bars/create-event.html', {
+        'form': form,
+        'bar': bar
+    })
+
+@login_required
+def update_event(request, event_id):
+    event = Event.objects.get(id=event_id)
+    bar = event.bar
+
+    if bar.bar_owner != request.user:
+        return redirect('bars:bar-details', bar_id=bar.id)
+
+    form = CreateEventForm(request.POST or None, instance=event)
+
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect('bars:bar-details', bar_id=bar.id)
+
+    return render(request, 'bars/update-event.html', {
+        'form': form,
+        'event': event
+    })
+
+@login_required
+def delete_event(request, event_id):
+    event = Event.objects.get(id=event_id)
+    bar_id = event.bar.id
+
+    if event.bar.bar_owner != request.user:
+        return redirect('bars:bar-details', bar_id=bar_id)
+
+    if request.method == "POST":
+        event.delete()
+        return redirect('bars:bar-details', bar_id=bar_id)
+
+    return render(request, 'bars/delete-event.html', {
+        'event': event
+    })
