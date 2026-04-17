@@ -1,7 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.utils import timezone
 from .forms import CreateBarForm, CreateEventForm, UpdateBarImageFormSet
-from .models import Bar, Amenity, BarImage, Event  # , Address
+from .models import Bar, Amenity, BarImage, Event, BarLike  # , Address
 from reservations.models import Seating
 from user_management.models import Profile
 from reservations.views import get_or_create_tables
@@ -108,11 +109,16 @@ def bar_details(request, bar_id):
     bar_object = Bar.objects.get(id=bar_id)
     bar_owner = bar_object.bar_owner
     seating = Seating.objects.filter(bar=bar_object)
+    active_likes = BarLike.objects.filter(bar=bar_object, expires_at__gt=timezone.now())
+    user_has_liked = active_likes.filter(user=request.user).exists() if request.user.is_authenticated else False
+
     
     return render(request, 'bars/bar-details.html', {
         'bar': bar_object,
         'bar_owner': bar_owner,
         'seating': seating,
+        'like_count': active_likes.count(),
+        'user_has_liked': user_has_liked,
     })
 
 
@@ -162,6 +168,21 @@ def bar_update(request, bar_id):
 
     return render(request, 'bars/update-bar.html', ctx)
 
+
+def toggle_like(request, bar_id):
+    if not request.user.is_authenticated:
+        return redirect('bars:bar-details', bar_id=bar_id)
+
+    bar_object = Bar.objects.get(id=bar_id)
+
+    existing = BarLike.objects.filter(user=request.user, bar=bar_object).first()
+
+    if existing:
+        existing.delete()  # unlike
+    else:
+        BarLike.objects.create(user=request.user, bar=bar_object)  # like
+
+    return redirect('bars:bar-details', bar_id=bar_id)
 @login_required
 def create_event(request, bar_id):
     bar = Bar.objects.get(id=bar_id)

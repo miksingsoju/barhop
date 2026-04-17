@@ -1,5 +1,10 @@
 from django.db import models
 from user_management.models import Profile
+from django.utils import timezone
+from datetime import timedelta
+
+def default_expiry():
+    return timezone.now() + timedelta(hours=4)
 
 # class City(models.Model): 
 #     name = models.CharField(max_length=200)
@@ -68,6 +73,17 @@ class BarImage(models.Model):
     def __str__(self):
         return f"Image for {self.bar.bar_name}"
 
+class BarLike(models.Model):
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    bar = models.ForeignKey(Bar, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(default=default_expiry)
+
+    class Meta:
+        unique_together = ('user', 'bar')  # one active like per user per bar
+
+    def is_expired(self):
+        return timezone.now() >= self.expires_at
 class Event(models.Model):
     bar = models.ForeignKey(Bar, on_delete=models.CASCADE, related_name='events')
     title = models.CharField(max_length=100)

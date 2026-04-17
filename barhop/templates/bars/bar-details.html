@@ -115,9 +115,21 @@
               <i class="ki-solid ki-heart fs-3x text-danger"></i>
               <i class="ki-outline ki-heart fs-3x text-danger"></i>
             </label>
-            <div class="d-flex flex-column align-items-center justify-content-around">
-              <span class="fs-2 fw-bold lh-1">0</span>
-              <span class="fs-7 lh-1">Likes</span>
+            <div class="w-100 text-danger d-flex gap-3 justify-content-center align-items-bottom">
+              <form method="POST" action="{% url 'bars:toggle-like' bar.id %}">
+                {% csrf_token %}
+                <button type="submit" class="border-0 bg-transparent cursor-pointer">
+                  {% if user_has_liked %}
+                    <i class="ki-solid ki-heart fs-3x text-danger"></i>
+                  {% else %}
+                    <i class="ki-outline ki-heart fs-3x text-danger"></i>
+                  {% endif %}
+                </button>
+              </form>
+              <div class="d-flex flex-column align-items-center justify-content-around">
+                <span class="fs-2 fw-bold lh-1">{{ like_count }}</span>
+                <span class="fs-7 lh-1">Likes</span>
+              </div>
             </div>
           </div>
           <div class="w-100 text-warning d-flex gap-3 justify-content-center align-items-bottom">
