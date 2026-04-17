@@ -4,6 +4,9 @@
 echo Begin reset database. && echo Recreating database... &&^
 mysql -u afterhoursco -p -e "DROP DATABASE IF EXISTS barhop; CREATE DATABASE barhop;" ||^
 pause && exit &^
+echo Begin populating data. &&^
+mysql -u afterhoursco -p barhop < barhop_data.sql ||^
+pause && exit &^
 echo Database created successfully. Making migrations... &&^
 ..\venv\scripts\activate &&^
 python manage.py makemigrations user_management bars reservations reviews &&^
