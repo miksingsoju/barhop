@@ -18,11 +18,22 @@
     input[name='like-button']:checked + label i.ki-solid {
       display: block;
     }
+
+    .review-list-section {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox, Safari 18.2+, Chromium 121+ */
+    }
+
+    .review-list-section::-webkit-scrollbar { 
+        display: none;  /* Older Safari and Chromium */
+    }
   </style>
 {% endblock %}
 
 {% block scripts %}
-  {% include 'reservations/create-booking.html#booking_form_datetime_scripts' %}
+  {% if seating and request.user and request.user.user_type == 'HOPPER' %}
+    {% include 'reservations/create-booking.html#booking_form_datetime_scripts' %}
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -37,9 +48,11 @@
     <br>
   {% else %}
   {% endif %}
-  <div class="d-flex flex-column flex-md-row justify-content-center gap-12 my-12 mx-sm-12">
+
+  <div class="d-flex flex-column flex-md-row justify-content-center gap-12 my-12">
     {% partialdef bar_details inline %}
-    <section class="d-flex flex-column gap-7 flex-grow-1 mw-sm-700px">
+    <section class="d-flex flex-column gap-7 w-100 mw-md-700px">
+
       <!-- image carousel -->
       <div id="bar-images" class="carousel carousel-custom slide" data-bs-ride="carousel" data-bs-interval="8000">
         <div class="carousel-inner rounded">
@@ -53,7 +66,6 @@
             <div class="carousel-item h-300px bg-gray-300 active"></div>
           {% endif %}
         </div>
-        <!-- indicators -->
         <ol class="p-0 m-0 carousel-indicators carousel-indicators-bullet position-absolute bottom-0 w-100">
           {% if bar.images.all %}
             {% for bar_image in bar.images.all %}
@@ -108,6 +120,7 @@
         {% endif %}
       </header>
 
+      <!-- likes and rating -->
       {% if not preview %}
         <article class="border-gray-300 border-top border-bottom mx-8 mx-md-0 px-10 py-5 d-flex">
           <div class="w-100 text-danger d-flex gap-3 justify-content-center align-items-bottom">
@@ -122,10 +135,12 @@
             </div>
           </div>
           <div class="w-100 text-warning d-flex gap-3 justify-content-center align-items-bottom">
-            <a href="#"><i class="ki-outline ki-star fs-3x text-warning"></i></a>
+            <i class="ki-outline ki-star fs-3x text-warning"></i>
             <div class="d-flex flex-column align-items-center justify-content-around">
-              <span class="fs-2 fw-bold lh-1">0</span>
-              <span class="fs-7 lh-1">Rating</span>
+              <span class="fs-2 fw-bold lh-1">
+                {{ avg_rating }}
+              </span>
+              <span class="fs-7 lh-1">{{ review_count }} review{{ review_count|pluralize }}</span>
             </div>
           </div>
         </article>
@@ -143,14 +158,12 @@
         </div>
         <div class="d-flex flex-column">
           <span class="fs-5 text-gray-700">Owned by <span class="fw-bold text-gray-800">{{ bar_owner.first_name }} {{ bar_owner.last_name }}</span></span>
-          {% comment %} <a href="{% url 'auth:profile' bar_owner.username %}" class="fs-7 fw-semibold text-gray-600">@ {{ bar_owner.username }}</a> {% endcomment %}
           <a href="#" class="fs-7 fw-semibold text-gray-600">@ {{ bar_owner.username }}</a>
         </div>
       </article>
 
       <article class="mx-8 mx-md-0">
         <p id="bar-desc" class="fs-6 mb-8">{{ bar.bar_description }}</p>
-
         {% if bar.bar_amenities.length > 0 or preview %}
           <h5 class="text-poppins">Amenities</h5>
           <div class="d-flex flex-row gap-3 mt-4" id="amenities-container">
@@ -160,104 +173,49 @@
           </div>
         {% endif %}
       </article>
-      <hr class="text-gray-300 opacity-100 mx-8 mx-md-0 mb-0">
 
       <!-- Review section -->
       {% if not preview %}
-        <section class="mx-8 mx-md-0">
+        <hr class="text-gray-300 opacity-100 mx-8 mx-md-0 mb-0">
+        <section class="mx-8 mx-md-0 d-flex flex-column gap-4">
           <h2>Reviews</h2>
           <!-- TODO: aggregate stats -->
-          <div class="review-form-section my-8">
-            {% if can_review %}
-              <form method="POST" class="d-flex flex-column gap-4">
-                {% csrf_token %}
-                <h5 class="text-gray-800 mb-0">How was your experience?</h5>
-                <div class="rating">
-                  <input class="rating-input" name="rating" value="0" checked type="radio" id="rate_0"/>
-                  <label class="rating-label" for="rate_1">
-                      <i class="ki-duotone ki-star fs-3"></i>
-                  </label>
-                  <input class="rating-input" name="rating" value="1" type="radio" id="rate_1"/>
-                  <label class="rating-label" for="rate_2">
-                      <i class="ki-duotone ki-star fs-3"></i>
-                  </label>
-                  <input class="rating-input" name="rating" value="2" type="radio" id="rate_2"/>
-                  <label class="rating-label" for="rate_3">
-                      <i class="ki-duotone ki-star fs-3"></i>
-                  </label>
-                  <input class="rating-input" name="rating" value="3" type="radio" id="rate_3"/>
-                  <label class="rating-label" for="rate_4">
-                      <i class="ki-duotone ki-star fs-3"></i>
-                  </label>
-                  <input class="rating-input" name="rating" value="4" type="radio" id="rate_4"/>
-                  <label class="rating-label" for="rate_5">
-                      <i class="ki-duotone ki-star fs-3"></i>
-                  </label>
-                  <input class="rating-input" name="rating" value="5" type="radio" id="rate_5"/>
-              </div>
-                <textarea id="{{ review_form.review_description.id_for_label }}" name="{{ review_form.review_description.html_name }}" 
-                type="textarea" class="form-control form-control-solid" placeholder="Anything you'd like us to know?" data-kt-autosize="true" rows="3"></textarea>
-                <button type="submit" class="btn btn-sm btn-info w-fit align-self-end mt-2">Submit Review</button>
-              </form>
-            {% elif next_review_at %}
-              <p>You can review again on {{ next_review_at|date:"N j, Y" }}.</p>
+
+          {% if can_review %}
+            <button type="button" class="btn btn-info btn-sm w-fit align-self-end" data-bs-toggle="modal" data-bs-target="#create_review_modal">
+              Leave a Review
+            </button>
+            {% include 'reviews/review-form.html#review_form' %}
+          {% elif next_review_at %}
+            <div class="alert alert-warning">
+              You can review again on {{ next_review_at|date:"N j, Y" }}.
+            </div>
+          {% else %}
+            <div class="alert alert-info">
+              Only Bar Hoppers can leave reviews.
+            </div>
+          {% endif %}
+
+          <div class="review-list-section d-flex flex-row flex-sm-column gap-8 gap-sm-12 overflow-x-scroll">
+            {% if reviews %}
+              {% for review in reviews %}
+                {% include 'reviews/review-detail.html#review_detail' %}
+              {% endfor %}
             {% else %}
-              <p>Only Bar Hoppers can leave reviews.</p>
+              <p class="text-gray-500 fs-6">No reviews yet. Be the first to leave one!</p>
             {% endif %}
           </div>
-          <div class="review-list-section d-flex flex-row flex-sm-column gap-8 gap-sm-12">
-            {% for review in reviews %}
-              <article class="d-flex flex-column gap-4">
-                <header class="d-flex flex-row gap-4 align-items-center">
-                  <figure class="symbol symbol-circle symbol-40px bg-gray-300 mb-0">
-                    {% if review.review_user.profile_image %}
-                      <img src="{{ review.review_user.profile_image.url }}" alt="Profile picture" class="symbol-label bg-transparent" width="60" height="60" />
-                    {% else %}
-                      <div class="symbol-label pfp-placeholder fs-2 fw-semibold bg-transparent text-gray-700">{{ review.review_user.username|first|upper }}</div>
-                    {% endif %}
-                  </figure>
-                  <figcaption class="d-flex flex-column">
-                    <span class="text-gray-800 fw-semibold">{{ review.review_user.first_name}} {{ review.review_user.last_name }}</span>
-                    <span class="text-gray-600 fs-8">Hopped on {{ review.review_date_created }}</span>
-                  </figcaption>
-                </header>
-                <div class="rating">
-                    <!-- checked stars -->
-                    {% if review.review_rating > 0 %}
-                      {% for _ in "x"|ljust:review.review_rating %}
-                        <div class="rating-label checked">
-                          <i class="ki-duotone ki-star fs-3"></i>
-                        </div>
-                      {% endfor %}
-                    {% endif %}
 
-                    <!-- unchecked stars -->
-                    {% if review.review_rating < 5 %}
-                      {% with rm=review.review_rating|subtractBA:"5" %}
-                        {% for _ in "x"|ljust:rm %}
-                          <div class="rating-label">
-                            <i class="ki-duotone ki-star fs-3"></i>
-                          </div>
-                        {% endfor %}
-                      {% endwith %}
-                    {% endif %}
-                </div>
-                <p class="text-gray-700 mb-0">{{ review.review_description }}</p>
-              </article>
-            {% endfor %}
-          </div>
         </section>
       {% endif %}
-
     </section>
-    {% endpartialdef %}
+    {% endpartialdef bar_details %}
 
     <aside class="flex-shrink-0 w-sm-350px m-sm-0 mx-12 h-fit card d-flex">
       {% if not seating %}
         <div class="d-flex flex-column gap-4 p-8">
           <h4 class="m-0">Table Types</h4>
           <span class="text-gray-700">No tables to show.</span>
-          
           {% if request.user and request.user.user_type == 'OWNER' %}
             <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Add Tables</a>
           {% endif %}
@@ -265,27 +223,27 @@
       {% elif seating and request.user and request.user.user_type == 'OWNER' %}
         <div class="d-flex flex-column gap-4 p-8">
           <h4 class="m-0">Table Types</h4>
-            {% for s in seating %}
-              <article class="d-flex flex-row gap-4 w-100 align-items-center">
-                <div class="w-65px h-65px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center overflow-hidden">
-                  {% if s.image %}
-                    <img src="{{ s.image.url }}" alt="{{ s.seating }}" class="w-100 h-100 object-fit-cover"/>
-                  {% else %}
-                    <i class="ki-duotone ki-picture text-gray-800 fs-2x">
-                      <span class="path1"></span>
-                      <span class="path2"></span>
-                    </i>
-                  {% endif %}
-                </div>
-                <div>
-                  <span class="d-block fs-6 text-gray-800 fw-semibold">{{ s.seating }}</span>
-                  <span class="d-block fw-semibold text-gray-500">Seats {% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
-                </div>
-              </article>
-            {% endfor %}
-            <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Manage Tables</a>
-            <hr class="border-gray-600">
-            <a href="{% url 'reservations:bar-tables' bar_id=bar.id%}" class="btn btn-sm btn-info">Check Reservations</a>
+          {% for s in seating %}
+            <article class="d-flex flex-row gap-4 w-100 align-items-center">
+              <div class="w-65px h-65px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center overflow-hidden">
+                {% if s.image %}
+                  <img src="{{ s.image.url }}" alt="{{ s.seating }}" class="w-100 h-100 object-fit-cover"/>
+                {% else %}
+                  <i class="ki-duotone ki-picture text-gray-800 fs-2x">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                {% endif %}
+              </div>
+              <div>
+                <span class="d-block fs-6 text-gray-800 fw-semibold">{{ s.seating }}</span>
+                <span class="d-block fw-semibold text-gray-500">Seats {% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
+              </div>
+            </article>
+          {% endfor %}
+          <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Manage Tables</a>
+          <hr class="border-gray-600">
+          <a href="{% url 'reservations:bar-tables' bar_id=bar.id %}" class="btn btn-sm btn-info">Check Reservations</a>
         </div>
       {% else %}
         {% include 'reservations/create-booking.html#booking_form_datetime' %}

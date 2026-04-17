@@ -2,7 +2,7 @@
 from django import forms
 from .models import Review
 # https://stackoverflow.com/questions/31691041/how-do-you-make-django-decimal-field-widgets-numberinput-increment-differently
-class CreateReviewForm(forms.ModelForm):
+class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
         fields = ['review_description']
