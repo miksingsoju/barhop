@@ -111,6 +111,21 @@
       }
     }
 
+    document.addEventListener("change", (e) => {
+      if (e.target.name === "selected_tables") {
+        const checked = document.querySelectorAll(
+        "#create-reservation-form input[name='selected_tables']:checked"
+      );
+
+      const button = document.getElementById("book-table-submit");
+      
+      if (checked.length > 0) {
+        button.classList.remove("d-none");
+      } else {
+        button.classList.add("d-none");
+      }
+    }
+  });
     document.querySelector("#id_booking_date").addEventListener("change", async e => validateForm(e));
     document.querySelector("#id_start_time").addEventListener("change", async e => validateForm(e));
     document.querySelector("#id_end_time").addEventListener("change", async e => validateForm(e));
@@ -175,7 +190,7 @@
       {% include 'reservations/create-booking.html#seatings' %}
     </div>
 
-    <button type="submit" id="book-table-submit" class="btn btn-info mt-8 w-100">Book Table</button>
+    <button type="submit" id="book-table-submit" class="btn btn-info mt-8 w-100 d-none">Book Table</button>
   </form>
 {% endpartialdef %}
 
