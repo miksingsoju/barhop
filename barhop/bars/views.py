@@ -5,10 +5,9 @@ from .forms import CreateBarForm, CreateEventForm, UpdateBarImageFormSet
 from .models import Bar, Amenity, BarImage, Event, BarLike  # , Address
 from reservations.models import Seating
 from user_management.models import Profile
-from reservations.views import get_or_create_tables
+from reservations.views import get_or_create_events, get_or_create_tables
 from django.db.models import Case, When, Value, IntegerField
 from django.contrib.auth.decorators import login_required
-
 
 def bar_list(request):
     user_profile = request.user if request.user.is_authenticated else None
@@ -62,6 +61,10 @@ def create_bar(request):
                 return HttpResponse("error with creating tables", status_code=400)
 
             bar_form.save_m2m()
+
+            get_or_create_events(request, bar)
+
+            print(request.POST)
 
             images = request.FILES.getlist('images')
             for image_file in images:
@@ -117,6 +120,7 @@ def bar_details(request, bar_id):
         'bar': bar_object,
         'bar_owner': bar_owner,
         'seating': seating,
+        'events': bar_object.events.all(),
         'like_count': active_likes.count(),
         'user_has_liked': user_has_liked,
     })
@@ -183,6 +187,7 @@ def toggle_like(request, bar_id):
         BarLike.objects.create(user=request.user, bar=bar_object)  # like
 
     return redirect('bars:bar-details', bar_id=bar_id)
+
 @login_required
 def create_event(request, bar_id):
     bar = Bar.objects.get(id=bar_id)

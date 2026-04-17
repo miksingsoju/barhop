@@ -216,7 +216,7 @@
       <div class="d-flex flex-column gap-4 p-8 border-top border-gray-300">
         <h4 class="m-0">Events</h4>
 
-        {% if bar.events.all %}
+        {% if bar.events.exists %}
           {% for event in bar.events.all %}
             <div class="bg-light rounded p-3">
               <span class="fw-bold text-gray-800 d-block">{{ event.title }}</span>

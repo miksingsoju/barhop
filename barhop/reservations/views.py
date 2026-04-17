@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Table, Seating, Reservation
 from .forms import SeatingForm
-from bars.models import Bar
+from bars.models import Bar, Event
 import json
 
 
@@ -163,6 +163,33 @@ def get_or_create_tables(request, bar):
         return HttpResponse("tables created", status=201)
     else:
         return tables
+
+def get_or_create_events(request, bar):
+    event_list = request.POST.get("event-form-list")
+
+    events = request.POST
+
+    i = 0
+    while True:
+        prefix = f'event-form-list[{i}]'
+
+        title = events.get(f'{prefix}[title]')
+        event_date = events.get(f'{prefix}[event_date]')
+
+        if not title and not event_date:
+            break  
+
+        if title and event_date:
+            Event.objects.create(
+                bar=bar,
+                title=title,
+                description=events.get(f'{prefix}[description]', ''),
+                event_date=event_date,
+                start_time=events.get(f'{prefix}[start_time]') or None,
+                end_time=events.get(f'{prefix}[end_time]') or None,
+            )
+
+        i += 1
 
 @login_required
 def manage_tables(request, bar_id):

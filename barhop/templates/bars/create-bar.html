@@ -79,6 +79,17 @@
       */
       
       const validators = [validateBarForm, ]
+      $('#event-form-list').repeater({
+        initEmpty: false,
+
+        show: function () {
+          $(this).slideDown();
+        },
+
+        hide: function (deleteElement) {
+          $(this).slideUp(deleteElement);
+        }
+      });
 
       // image upload dropzone
       var barDropzone = new Dropzone('#bar-dropzone', {
@@ -421,19 +432,76 @@
               {% endfor %}
             </div>
 
-            <!-- hidden input for tables -->
+            <!-- hidden input for tables and events-->
             <input type="hidden" id="id_bar_tables" name="bar_tables">
           </form>
         </article>
       </section>
       
-      {% if not bar %}
-        <section class="flex-column gap-8" data-kt-stepper-element="content">
+      <section class="flex-column gap-8" id="event-form-list" data-kt-stepper-element="content">
           <header class="flex-row justify-content-between align-items-center card p-8">
             <h2 class="m-0">Add Events</h2>
+            <button type="button" class="btn btn-sm btn-info" data-repeater-create>
+              <span>Add Event</span>
+            </button>
           </header>
-        </section>
 
+          <div data-repeater-list="event-form-list" class="d-flex flex-column gap-8 mt-6">
+            <div data-repeater-item class="card p-6 d-flex flex-column gap-6">
+
+              <!-- Title + Date -->
+              <div class="d-flex flex-row gap-6">
+                <div class="w-100 fv-row">
+                  <label class="form-label">Event Title</label>
+                  <input type="text" name="title"
+                    class="form-control form-control-solid"
+                    placeholder="e.g. Emo Night" />
+                </div>
+
+                <div class="w-100 fv-row">
+                  <label class="form-label">Event Date</label>
+                  <input type="date" name="event_date"
+                    class="form-control form-control-solid" />
+                </div>
+              </div>
+
+              <!-- Start + End Time -->
+              <div class="d-flex flex-row gap-6">
+                <div class="w-100 fv-row">
+                  <label class="form-label">Start Time</label>
+                  <input type="time" name="start_time"
+                    class="form-control form-control-solid" />
+                </div>
+
+                <div class="w-100 fv-row">
+                  <label class="form-label">End Time</label>
+                  <input type="time" name="end_time"
+                    class="form-control form-control-solid" />
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="fv-row">
+                <label class="form-label">Description</label>
+                <textarea name="description"
+                  class="form-control form-control-solid"
+                  rows="3"
+                  placeholder="Tell people about the event..."></textarea>
+              </div>
+
+              <!-- Delete button -->
+              <div class="d-flex justify-content-end">
+                <button type="button" data-repeater-delete
+                  class="btn btn-sm btn-light-danger">
+                  Remove Event
+                </button>
+              </div>
+
+            </div>
+          </div>
+      </section>
+
+      {% if not bar %}
         <section class="flex-column gap-8" id="table-form-list" data-kt-stepper-element="content">
           <header class="flex-row justify-content-between align-items-center card p-8">
             <h2 class="m-0">Add Tables</h2>
@@ -449,7 +517,7 @@
         <header class="flex-row justify-content-between align-items-center card p-8">
           <h2 class="m-0">Publish Your Bar</h2>
         </header>
-        {% with preview='true' bar_owner=request.user %}
+        {% with preview='true' bar=bar bar_owner=request.user %}
           {% include 'bars/bar-details.html#bar_details' %}
         {% endwith %}
         <br />

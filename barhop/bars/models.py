@@ -84,6 +84,7 @@ class BarLike(models.Model):
 
     def is_expired(self):
         return timezone.now() >= self.expires_at
+    
 class Event(models.Model):
     bar = models.ForeignKey(Bar, on_delete=models.CASCADE, related_name='events')
     title = models.CharField(max_length=100)
