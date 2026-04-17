@@ -18,14 +18,14 @@
     input[name='like-button']:checked + label i.ki-solid {
       display: block;
     }
-
+    
     .review-list-section {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox, Safari 18.2+, Chromium 121+ */
+      -ms-overflow-style: none; /* Internet Explorer 10+ */
+      scrollbar-width: none; /* Firefox, Safari 18.2+, Chromium 121+ */
     }
-
-    .review-list-section::-webkit-scrollbar { 
-        display: none;  /* Older Safari and Chromium */
+    
+    .review-list-section::-webkit-scrollbar {
+      display: none; /* Older Safari and Chromium */
     }
   </style>
 {% endblock %}
@@ -34,6 +34,7 @@
   {% if seating and request.user and request.user.user_type == 'HOPPER' %}
     {% include 'reservations/create-booking.html#booking_form_datetime_scripts' %}
   {% endif %}
+  {% include 'events/event.html#event_card_scripts' %}
 {% endblock %}
 
 {% block content %}
@@ -41,18 +42,20 @@
     <li class="breadcrumb-item">
       <i class="ki-solid ki-home"></i>
     </li>
-    <li class="breadcrumb-item"><a href="{% url 'bars:bar-list' %}" class="text-muted">Bar List</a></li>
+    <li class="breadcrumb-item">
+      <a href="{% url 'bars:bar-list' %}" class="text-muted">Bar List</a>
+    </li>
     <li class="breadcrumb-item text-gray-600">{{ bar.bar_name }}</li>
   </ol>
   {% if bar.bar_owner == request.user %}
-    <br>
+    <br />
   {% else %}
+
   {% endif %}
 
   <div class="d-flex flex-column flex-md-row justify-content-center gap-12 my-12">
     {% partialdef bar_details inline %}
     <section class="d-flex flex-column gap-7 w-100 mw-md-700px">
-
       <!-- image carousel -->
       <div id="bar-images" class="carousel carousel-custom slide" data-bs-ride="carousel" data-bs-interval="8000">
         <div class="carousel-inner rounded">
@@ -149,9 +152,7 @@
           <div class="w-100 text-warning d-flex gap-3 justify-content-center align-items-bottom">
             <i class="ki-outline ki-star fs-3x text-warning"></i>
             <div class="d-flex flex-column align-items-center justify-content-around">
-              <span class="fs-2 fw-bold lh-1">
-                {{ avg_rating }}
-              </span>
+              <span class="fs-2 fw-bold lh-1">{{ avg_rating }}</span>
               <span class="fs-7 lh-1">{{ review_count }} review{{ review_count|pluralize }}</span>
             </div>
           </div>
@@ -186,26 +187,41 @@
         {% endif %}
       </article>
 
-      <!-- Review section -->
+      <!-- EVENTS -->
+      <hr class="text-gray-300 opacity-100 mx-8 mx-md-0 mb-0" />
+      <section class="mx-8 mx-md-0 d-flex flex-column gap-4">
+        <header class="d-flex justify-content-between align-items-center">
+          <h2 class="m-0 text-poppins">Events</h2>
+          {% if bar_owner == request.user %}
+            <a href="{% url 'bars:create-event' bar.id %}" class="btn btn-sm btn-info w-fit">Add Event</a>
+          {% endif %}
+        </header>
+
+        <div class="d-flex gap-8">
+          {% if bar.events.all %}
+            {% for event in bar.events.all %}
+              {% include 'events/event.html#event_card' %}
+            {% endfor %}
+          {% else %}
+            <span class="text-gray-500">No events yet.</span>
+          {% endif %}
+        </div>
+      </section>
+
+      <!-- REVIEWS -->
       {% if not preview %}
-        <hr class="text-gray-300 opacity-100 mx-8 mx-md-0 mb-0">
+        <hr class="text-gray-300 opacity-100 mx-8 mx-md-0 mb-0" />
         <section class="mx-8 mx-md-0 d-flex flex-column gap-4">
-          <h2>Reviews</h2>
+          <h2 class="text-poppins">Reviews</h2>
           <!-- TODO: aggregate stats -->
 
           {% if can_review %}
-            <button type="button" class="btn btn-info btn-sm w-fit align-self-end" data-bs-toggle="modal" data-bs-target="#create_review_modal">
-              Leave a Review
-            </button>
+            <button type="button" class="btn btn-info btn-sm w-fit align-self-end" data-bs-toggle="modal" data-bs-target="#create_review_modal">Leave a Review</button>
             {% include 'reviews/review-form.html#review_form' %}
           {% elif next_review_at %}
-            <div class="alert alert-warning">
-              You can review again on {{ next_review_at|date:"N j, Y" }}.
-            </div>
+            <div class="alert alert-warning">You can review again on {{ next_review_at|date:'N j, Y' }}.</div>
           {% else %}
-            <div class="alert alert-info">
-              Only Bar Hoppers can leave reviews.
-            </div>
+            <div class="alert alert-info">Only Bar Hoppers can leave reviews.</div>
           {% endif %}
 
           <div class="review-list-section d-flex flex-row flex-sm-column gap-8 gap-sm-12 overflow-x-scroll">
@@ -217,7 +233,6 @@
               <p class="text-gray-500 fs-6">No reviews yet. Be the first to leave one!</p>
             {% endif %}
           </div>
-
         </section>
       {% endif %}
     </section>
@@ -239,7 +254,7 @@
             <article class="d-flex flex-row gap-4 w-100 align-items-center">
               <div class="w-65px h-65px rounded bg-gray-600 d-flex flex-column justify-content-center align-items-center overflow-hidden">
                 {% if s.image %}
-                  <img src="{{ s.image.url }}" alt="{{ s.seating }}" class="w-100 h-100 object-fit-cover"/>
+                  <img src="{{ s.image.url }}" alt="{{ s.seating }}" class="w-100 h-100 object-fit-cover" />
                 {% else %}
                   <i class="ki-duotone ki-picture text-gray-800 fs-2x">
                     <span class="path1"></span>
@@ -249,52 +264,17 @@
               </div>
               <div>
                 <span class="d-block fs-6 text-gray-800 fw-semibold">{{ s.seating }}</span>
-                <span class="d-block fw-semibold text-gray-500">Seats {% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
+                <span class="d-block fw-semibold text-gray-500">Seats{% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
               </div>
             </article>
           {% endfor %}
           <a href="{% url 'reservations:manage-tables' bar_id=bar.id %}" class="btn btn-sm btn-info mt-4">Manage Tables</a>
-          <hr class="border-gray-600">
+          <hr class="border-gray-600" />
           <a href="{% url 'reservations:bar-tables' bar_id=bar.id %}" class="btn btn-sm btn-info">Check Reservations</a>
         </div>
       {% else %}
         {% include 'reservations/create-booking.html#booking_form_datetime' %}
       {% endif %}
-      <!--EVENTS CARD -->
-      <div class="d-flex flex-column gap-4 p-8 border-top border-gray-300">
-        <h4 class="m-0">Events</h4>
-
-        {% if bar.events.all %}
-          {% for event in bar.events.all %}
-            <div class="bg-light rounded p-3">
-              <span class="fw-bold text-gray-800 d-block">{{ event.title }}</span>
-              <span class="text-gray-600 fs-7 d-block mb-1">
-                {{ event.event_date }} | {{ event.start_time }} - {{ event.end_time }}
-              </span>
-              <p class="text-gray-700 fs-7 mb-2">{{ event.description }}</p>
-
-              {% if bar_owner == request.user %}
-                <div class="d-flex gap-2">
-                  <a href="{% url 'bars:update-event' event.id %}" class="btn btn-sm btn-light-primary">
-                    Edit
-                  </a>
-                  <a href="{% url 'bars:delete-event' event.id %}" class="btn btn-sm btn-light-danger">
-                    Delete
-                  </a>
-                </div>
-              {% endif %}
-            </div>
-          {% endfor %}
-        {% else %}
-          <span class="text-gray-500">No events yet.</span>
-        {% endif %}
-
-        {% if bar_owner == request.user %}
-          <a href="{% url 'bars:create-event' bar.id %}" class="btn btn-sm btn-info mt-2">
-            Add Event
-          </a>
-        {% endif %}
-      </div>
     </aside>
   </div>
 {% endblock %}

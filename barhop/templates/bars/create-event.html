@@ -6,81 +6,75 @@
 {% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column flex-column-fluid py-10">
+  <div class="d-flex flex-column flex-column-fluid py-10">
     <div class="container-xxl">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 col-xl-6">
-                
-                <div class="card shadow-sm">
-                    <div class="card-header border-0 pt-10">
-                        <h2 class="card-title align-items-start flex-column">
-                            <span class="card-label fw-bold fs-2 text-gray-800">Create Event</span>
-                            <span class="text-muted mt-1 fw-semibold fs-7">Hosting an event at {{ bar.bar_name }}</span>
-                        </h2>
-                    </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+          <div class="card shadow-sm">
+            <div class="card-header border-0 pt-10">
+              <h2 class="card-title align-items-start flex-column">
+                <span class="card-label fw-bold fs-2 text-gray-800">Create Event</span>
+                <span class="text-muted mt-1 fw-semibold fs-7">Hosting an event at {{ bar.bar_name }}</span>
+              </h2>
+            </div>
 
-                    <div class="card-body py-10">
-                        <form method="POST" class="form d-flex flex-column gap-7">
-                            {% csrf_token %}
+            <div class="card-body py-10">
+              <form method="POST" class="form d-flex flex-column gap-7">
+                {% csrf_token %}
 
-                            {% if form.non_field_errors %}
-                                <div class="alert alert-danger">
-                                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
-                                </div>
-                            {% endif %}
+                {% if form.non_field_errors %}
+                  <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                      {{ error }}
+                    {% endfor %}
+                  </div>
+                {% endif %}
 
-                            {% for field in form %}
-                                <div class="fv-row">
-                                    <label class="form-label fs-6 fw-bold text-gray-900 mb-2">
-                                        {{ field.label }}
-                                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                                    </label>
-                                    
-                                    {% if field.name == 'description' %}
-                                        {# Special handling for TextAreas #}
-                                        <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" 
-                                                  class="form-control form-control-solid {% if field.errors %}is-invalid{% endif %}" 
-                                                  rows="4" placeholder="Enter {{ field.label|lower }}...">{{ field.value|default_if_none:'' }}</textarea>
-                                    {% else %}
-                                        {# Standard Input #}
-                                        <input type="{{ field.field.widget.input_type }}" 
-                                               name="{{ field.name }}" 
-                                               id="{{ field.id_for_label }}"
-                                               class="form-control form-control-lg form-control-solid {% if field.errors %}is-invalid{% endif %}" 
-                                               placeholder="Enter {{ field.label|lower }}..."
-                                               value="{{ field.value|default_if_none:'' }}">
-                                    {% endif %}
+                {% for field in form %}
+                  <div class="fv-row">
+                    <label class="form-label fs-6 fw-bold text-gray-900 mb-2">
+                      {{ field.label }}
+                      {% if field.field.required %}
+                        <span class="text-danger">*</span>
+                      {% endif %}
+                    </label>
 
-                                    {% if field.errors %}
-                                        <div class="invalid-feedback d-block mt-2">
-                                            {% for error in field.errors %}
-                                                <span class="badge badge-light-danger fw-semibold">{{ error }}</span>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                    
-                                    {% if field.help_text %}
-                                        <div class="text-muted fs-7 mt-2">{{ field.help_text }}</div>
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
+                    {% if field.name == 'description' %}
+                      {# Special handling for TextAreas #}
+                      <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control form-control-solid {% if field.errors %}is-invalid{% endif %}" rows="4" placeholder="Enter {{ field.label|lower }}...">{{ field.value|default_if_none:'' }}</textarea>
+                    {% else %}
+                      {# Standard Input #}
+                      <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control form-control-lg form-control-solid {% if field.errors %}is-invalid{% endif %}" placeholder="Enter {{ field.label|lower }}..." value="{{ field.value|default_if_none:'' }}" />
+                    {% endif %}
 
-                            <div class="d-flex justify-content-end pt-5">
-                                <a href="{% url 'bars:bar-details' bar.id %}" class="btn btn-light-info me-3">
-                                    Cancel
-                                </a>
-                                <button type="submit" class="btn btn-info px-10">
-                                    <span class="indicator-label">
-                                        Create Event 
-                                        <i class="ki-solid ki-calendar-add fs-4 ms-2"></i>
-                                    </span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                    {% if field.errors %}
+                      <div class="invalid-feedback d-block mt-2">
+                        {% for error in field.errors %}
+                          <span class="badge badge-light-danger fw-semibold">{{ error }}</span>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+
+                    {% if field.help_text %}
+                      <div class="text-muted fs-7 mt-2">{{ field.help_text }}</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+
+                <div class="d-flex justify-content-end pt-5">
+                  <a href="{% url 'bars:bar-details' bar.id %}" class="btn btn-light-info me-3">Cancel</a>
+                  <button type="submit" class="btn btn-info px-10">
+                    <span class="indicator-label">
+                      Create Event
+                      <i class="ki-solid ki-calendar-add fs-4 ms-2"></i>
+                    </span>
+                  </button>
                 </div>
-                </div>
+              </form>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock %}
