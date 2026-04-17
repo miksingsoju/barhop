@@ -26,7 +26,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('bars/', include('bars.urls', namespace="bars")),
-    path('reviews/', include('reviews.urls', namespace="reviews")),
     path('reservations/', include('reservations.urls', namespace="reservations")),
 
 ]

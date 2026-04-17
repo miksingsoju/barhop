@@ -1,11 +1,13 @@
-from django.urls import path
+from django.urls import include, path
 from . import views
+from reviews import views as rv
 
 urlpatterns = [
     path('', views.bar_list, name='bar-list'),
     path('create/', views.create_bar, name='create-bar'),
     path('<int:bar_id>/', views.bar_details, name='bar-details'),
     path('<int:bar_id>/update', views.bar_update, name='bar-update'),
+    path('<int:bar_id>/reviews/', include('reviews.urls', namespace="reviews")),
     path('bars/<int:bar_id>/like/', views.toggle_like, name='toggle-like'),
     path('bar/<int:bar_id>/event/create/', views.create_event, name='create-event'),
     path('event/<int:event_id>/update/', views.update_event, name='update-event'),

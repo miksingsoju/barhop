@@ -1,0 +1,127 @@
+{% load static %}
+{% load tags %}
+
+{% partialdef review_detail %}
+<article class="d-flex flex-column gap-4 w-sm-100 min-w-250px">
+  <header class="d-flex flex-row justify-content-between align-items-center">
+    <aside class="d-flex flex-row gap-4 align-items-center">
+        <figure class="symbol symbol-circle symbol-40px bg-gray-300 mb-0">
+        {% if review.review_user.profile_image %}
+          <img src="{{ review.review_user.profile_image.url }}" alt="Profile picture" class="symbol-label bg-transparent" width="60" height="60" />
+        {% else %}
+          <div class="symbol-label pfp-placeholder fs-2 fw-semibold bg-transparent text-gray-700">{{ review.review_user.username|first|upper }}</div>
+        {% endif %}
+      </figure>
+      <figcaption class="d-flex flex-column">
+        <span class="text-gray-800 fw-semibold">{{ review.review_user.first_name }} {{ review.review_user.last_name }}</span>
+        <span class="text-gray-600 fs-8">Hopped on {{ review.review_date_created|date:"N j, Y" }} at {{ review.review_date_created|date:"G:i A" }}</span>
+      </figcaption>
+    </aside>
+    <aside class="d-md-flex d-none flex-row gap-2 h-fit">
+      <button type="button" class="btn btn-sm btn-light-info" data-bs-toggle="modal" data-bs-target="#edit_review_{{ review.id }}_modal">
+        Edit
+      </button>
+      <button type="button"
+              class="btn btn-sm btn-light-danger"
+              data-bs-toggle="modal"
+              data-bs-target="#delete_review_modal_{{ review.id }}">
+        Delete
+      </button>
+    </aside>
+
+    <!-- mobile menu -->
+    <div class="d-md-none menu menu-column menu-gray-600 fw-semibold w-100px" data-kt-menu="true">
+    <div class="menu-item" data-kt-menu-trigger="click"
+      data-kt-menu-offset="-120, 10"
+      data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+      <a href="#" class="menu-link">
+        <span class="menu-icon">
+          <i class="ki-solid ki-dots-vertical fs-2"></i>
+        </span>
+      </a>
+
+      <div class="menu-sub menu-sub-dropdown p-2">
+        <div class="menu-item bg-hover-light-info text-gray-600 text-hover-info rounded">
+          <button class="menu-link w-100" type="button" data-bs-toggle="modal"
+              data-bs-target="#edit_review_{{ review.id }}_modal">
+            <span class="menu-icon">
+              <i class="ki-duotone ki-chart-simple-2 fs-3"><span class="path1"></span><span class="path2"></span><span
+                  class="path3"></span><span class="path4"></span></i>
+            </span>
+            <span class="menu-title">Edit</span>
+          </button>
+        </div>
+        <div class="menu-item bg-hover-light-danger text-gray-600 text-hover-danger rounded">
+          <button class="menu-link w-100" type="button" data-bs-toggle="modal"
+              data-bs-target="#delete_review_modal_{{ review.id }}">
+            <span class="menu-icon">
+              <i class="ki-duotone ki-chart-simple-2 fs-3"><span class="path1"></span><span class="path2"></span><span
+                  class="path3"></span><span class="path4"></span></i>
+            </span>
+            <span class="menu-title">Delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </header>
+  <div class="rating">
+    <!-- checked stars -->
+    {% if review.review_rating > 0 %}
+      {% for _ in 'x'|ljust:review.review_rating %}
+        <div class="rating-label checked">
+          <i class="ki-duotone ki-star fs-3"></i>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- unchecked stars -->
+    {% if review.review_rating < 5 %}
+      {% with rm=review.review_rating|subtractBA:'5' %}
+        {% for _ in 'x'|ljust:rm %}
+          <div class="rating-label">
+            <i class="ki-duotone ki-star fs-3"></i>
+          </div>
+        {% endfor %}
+      {% endwith %}
+    {% endif %}
+  </div>
+  <p class="text-gray-700 mb-0">{{ review.review_description }}</p>
+</article>
+
+<!-- delete and edit modal per review -->
+{% if review.review_user == request.user %}
+  <div class="modal fade" id="delete_review_modal_{{ review.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mx-auto mw-400px">
+      <div class="modal-content">
+        <div class="modal-header justify-content-end border-0 pb-0">
+          <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+            <i class="ki-solid ki-cross fs-2x"></i>
+          </div>
+        </div>
+        <div class="modal-body pt-0 p-10 text-center">
+          <i class="ki-duotone ki-information-5 fs-5x text-danger mb-5">
+            <span class="path1"></span>
+            <span class="path2"></span>
+            <span class="path3"></span>
+          </i>
+          <h2 class="fw-bolder text-gray-900 mb-2">Delete Review?</h2>
+          <div class="text-gray-600 fs-6 mb-10">
+            This action is permanent and cannot be undone.
+          </div>
+          <form method="POST" action="{% url 'bars:reviews:review-delete' bar.id review.id %}" class="m-0">
+            {% csrf_token %}
+            <div class="d-flex flex-stack gap-4">
+              <button type="button" class="btn btn-dark w-100" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-danger w-100">Delete</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include "reviews/review-form.html#review_form" %}
+{% endif %}
+
+{% endpartialdef review_detail %}

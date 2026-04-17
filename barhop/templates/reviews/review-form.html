@@ -1,0 +1,59 @@
+{% load static %}
+{% partialdef review_form %}
+<div class="modal fade" tabindex="-1" data-bs-backdrop="static" 
+  {% if review %}
+    id="edit_review_{{ review.id }}_modal"
+  {% else %}
+    id="create_review_modal"
+  {% endif %}
+  >
+  <form method="POST"
+    {% if review %}
+      action="{% url 'bars:reviews:review-update' bar.id review.id %}"
+    {% else %}
+      action="{% url 'bars:reviews:review-create' bar.id %}"
+    {% endif %}
+    class="modal-dialog"
+  >
+    {% csrf_token %}
+    
+    {% if review %}
+      <input type="hidden" name="action" value="PUT">
+    {% else %}
+      <input type="hidden" name="action" value="POST">
+    {% endif %}
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Leave a Review</h3>
+        <div class="btn btn-icon btn-sm btn-active-color-info ms-2" data-bs-dismiss="modal" aria-label="Close">
+          <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+        </div>
+      </div>
+
+      <div class="modal-body d-flex flex-column gap-2 pt-0">
+        <h2 class="text-gray-800 text-center mb-4">How was your experience?</h2>
+        <div class="rating align-self-center mb-8">
+          <input class="rating-input" name="rating" value="0" type="radio" id="rate_0"
+            {% if not review or review.review_rating == 0 %}checked{% endif %}
+          />
+          {% for i in "12345" %}
+            <label class="rating-label" for="rate_{{i}}"><i class="ki-duotone ki-star fs-2x"></i></label>
+            <input class="rating-input" name="rating" value="{{i}}" type="radio" id="rate_{{i}}" 
+              {% if review.review_rating == i|add:0 %}checked{% endif %}
+            />
+          {% endfor %}
+        </div>
+        <label class="text-gray-800 fs-semibold" for="{{ review_form.review_description.html_name }}">
+          Add a Detailed Review
+        </label>
+        <textarea id="{{ review_form.review_description.id_for_label }}" name="{{ review_form.review_description.html_name }}" type="textarea" class="form-control form-control-solid" placeholder="Anything you'd like us to know?" data-kt-autosize="true" rows="3">{% if review %}{{ review.review_description }}{% endif %}</textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-active-light-info bg-gray-300 btn-text-gray-600" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-info">Submit Review</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endpartialdef review_form %}

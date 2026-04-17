@@ -6,8 +6,15 @@ from .models import Bar, Amenity, BarImage, Event, BarLike  # , Address
 from reservations.models import Seating
 from user_management.models import Profile
 from reservations.views import get_or_create_tables
-from django.db.models import Case, When, Value, IntegerField
+from django.db.models import Case, When, Value, IntegerField, Avg
 from django.contrib.auth.decorators import login_required
+from reviews.forms import ReviewForm
+from reviews.models import Review
+from reviews.views import create_or_update_review
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib import messages
+# https://stackoverflow.com/questions/62023710/django-how-to-restrict-a-user-to-put-review-only-once
 
 
 def bar_list(request):
@@ -109,6 +116,30 @@ def bar_details(request, bar_id):
     bar_object = Bar.objects.get(id=bar_id)
     bar_owner = bar_object.bar_owner
     seating = Seating.objects.filter(bar=bar_object)
+    reviews = Review.objects.filter(review_bar=bar_object)
+    avg_rating = reviews.aggregate(Avg('review_rating'))['review_rating__avg']    
+    bar_user = request.user
+    
+    can_review = False
+    next_review_at = None
+
+    if request.user.is_authenticated and bar_user.user_type == Profile.UserType.BARHOPPER:
+        existing_review = Review.objects.filter(review_bar=bar_object, review_user=bar_user
+        ).order_by('-review_date_created').first()
+        if existing_review is None:
+            can_review = True
+            
+        else:
+            delta = timezone.now() - existing_review.review_date_created
+            if delta > timedelta(days=3):
+                can_review = True
+            else:
+                next_review_at = existing_review.review_date_created + timedelta(days=3)
+
+    review_form = ReviewForm(request.POST or None)
+    if not can_review:
+        messages.error(request, "You cannot make another review within less than 3 days")
+
     active_likes = BarLike.objects.filter(bar=bar_object, expires_at__gt=timezone.now())
     user_has_liked = active_likes.filter(user=request.user).exists() if request.user.is_authenticated else False
 
@@ -117,6 +148,12 @@ def bar_details(request, bar_id):
         'bar': bar_object,
         'bar_owner': bar_owner,
         'seating': seating,
+        'reviews': reviews,
+        'review_form': review_form,
+        'can_review' : can_review,
+        'next_review_at' : next_review_at,
+        'avg_rating': round(avg_rating, 1) if avg_rating else 0,
+        'review_count': reviews.count(),
         'like_count': active_likes.count(),
         'user_has_liked': user_has_liked,
     })
