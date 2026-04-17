@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -171,6 +172,10 @@ def bar_update(request, bar_id):
 
 def toggle_like(request, bar_id):
     if not request.user.is_authenticated:
+        return redirect('bars:bar-details', bar_id=bar_id)
+
+    if request.user.user_type != Profile.UserType.BARHOPPER:
+        messages.error(request, "Only Bar Hoppers can like bars.")
         return redirect('bars:bar-details', bar_id=bar_id)
 
     bar_object = Bar.objects.get(id=bar_id)
