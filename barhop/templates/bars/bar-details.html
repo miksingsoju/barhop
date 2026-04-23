@@ -192,7 +192,7 @@
       <section class="mx-8 mx-md-0 d-flex flex-column gap-4">
         <header class="d-flex justify-content-between align-items-center">
           <h2 class="m-0 text-poppins">Events</h2>
-          {% if bar_owner == request.user %}
+          {% if bar_owner == request.user and not preview %}
             <a href="{% url 'bars:create-event' bar.id %}" class="btn btn-sm btn-info w-fit">Add Event</a>
           {% endif %}
         </header>
