@@ -21,6 +21,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('__reload__/', include('django_browser_reload.urls')),
     path('', RedirectView.as_view(url='/bars/', permanent=False)),
     path('accounts/', include('user_management.urls', namespace="auth")),
     path('accounts/', include('django.contrib.auth.urls')),
