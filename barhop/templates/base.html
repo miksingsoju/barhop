@@ -42,11 +42,13 @@
           <i class="ki-outline ki-home fs-2 d-sm-none"></i>
           <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Home</span>
         </a>
-        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit{% if "/reservations" in request.path %} active{% endif %}" href="#">
-          <i class="ki-outline ki-cheque fs-2 d-sm-none"></i>
+        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit{% if "/reservations" in request.path %} active{% endif %}" 
+          href="{% url 'reservations:reservations-list' %}">
           {% if request.user.is_authenticated and user.user_type == "OWNER" %}
+            <i class="ki-outline ki-cheque fs-2 d-sm-none"></i>
             <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Reservations</span>
           {% else %}
+            <i class="ki-outline ki-cheque fs-2 d-sm-none"></i>
             <span class="fs-sm-6 fs-8 pt-1 p-sm-0">My Bookings</span>
           {% endif %}
         </a>
