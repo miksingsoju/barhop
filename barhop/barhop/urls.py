@@ -23,8 +23,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('__reload__/', include('django_browser_reload.urls')),
     path('', RedirectView.as_view(url='/bars/', permanent=False)),
-    path('accounts/', include('user_management.urls', namespace="auth")),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('', include('django.contrib.auth.urls')),
+    path('user/', include('user_management.urls', namespace="auth")),
     path('admin/', admin.site.urls),
     path('bars/', include('bars.urls', namespace="bars")),
     path('reservations/', include('reservations.urls', namespace="reservations")),
