@@ -242,7 +242,7 @@ def create_event(request, bar_id):
     })
 
 @login_required
-def update_event(request, event_id):
+def update_event(request, bar_id, event_id):
     event = Event.objects.get(id=event_id)
     bar = event.bar
 
@@ -262,7 +262,7 @@ def update_event(request, event_id):
     })
 
 @login_required
-def delete_event(request, event_id):
+def delete_event(request, bar_id, event_id):
     event = Event.objects.get(id=event_id)
     bar_id = event.bar.id
 

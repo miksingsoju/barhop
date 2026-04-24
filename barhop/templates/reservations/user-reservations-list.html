@@ -4,23 +4,48 @@
 {% block title %} Reservations {% endblock %}
 
 {% block content %}
-<h1>My Reservations</h1>
-{% for reservation in reservations %}
-    <div class="reservation-block">
-        <h3>Reservation id: {{ reservation.id }}</h3>
-        <p>No. of guests: {{ reservation.guests }}</p>
-        <p>{{ reservation.date }}</p>
-        <p>{{ reservation.start_time }} - {{ reservation.end_time}}</p>
-        <p>status: {{ reservation.status }}</p>
-        {% for table in reservation.tables.all %}
-        <ul>
-            <li>
-                <p>{{ table.id }}</p>
-                <p>Table type: {{ table.table_type.seating }}</p>
-                <p>Table capacity: {{ table.table_type.capacity }}</p>
-            </li>
-        </ul>            
-        {% endfor %}
-    </div>
-{% endfor %}
+  <header class="mobile-header d-sm-none d-block w-100 top-0 position-absolute bg-gray-100 pt-12 pb-6 z-index-3 border border-bottom border-gray-200">
+    <h2 class="text-center text-poppins">My Reservations</h2>
+  </header>
+
+  <div class="d-flex flex-column px-6 py-8 py-sm-0 gap-8">
+    {% for reservation in reservations %}
+      {% partialdef reservation_card inline %}
+        <article class="card w-100 d-flex flex-column py-8 gap-6 border-gray-300">
+          <header class="px-6">
+            <h2>{{ reservation.tables.all.0.table_type.bar.bar_name }}</h2>
+            <span class="d-flex align-items-center text-gray-700 fs-semibold gap-2">
+              <i class="ki-duotone ki-geolocation fs-1 text-gray-700">
+              <span class="path1"></span>
+              <span class="path2"></span>
+              </i>
+              <span class="fs-6">{{ reservation.tables.all.0.table_type.bar.bar_address }}</span>
+            </span>
+          </header>
+          <section class="d-flex justify-content-between align-items-center px-6">
+            <div>
+              <span class="d-block fw-semibold">{{ reservation.id|stringformat:"06d" }}</span>
+              <span class="d-block fs-7 text-gray-700">Reservation ID</span>
+            </div>
+            <div class="text-end">
+              <span class="d-block fw-semibold">{{ reservation.date }}</span>
+              <span class="d-block fs-7 text-gray-700">Reservation Date</span>
+            </div>
+          </section>
+          <section class="d-flex justify-content-between align-items-center px-6">
+            <div>
+              <span class="d-block fw-semibold">{{ reservation.start_time|time:'h:i A' }}</span>
+              <span class="d-block fs-7 text-gray-700">Start Time</span>
+            </div>
+            <div class="text-end">
+              <span class="d-block fw-semibold">{{ reservation.end_time|time:'h:i A' }}</span>
+              <span class="d-block fs-7 text-gray-700">End Time</span>
+            </div>
+          </section>
+          <hr class="ticket-divider border-4 border-gray-100 border-top-dashed opacity-100">
+          <a href="#" class="btn btn-info mx-6">View Reservation Details</a>
+        </article>
+      {% endpartialdef reservation_card %}
+    {% endfor %}
+  </div>
 {% endblock %}

@@ -102,6 +102,12 @@
   nav { top: 0; }
 }
 
+@media (max-width: 575px) {
+  .mobile-header + div, .mobile-header + section {
+    margin-top: 82px;
+  }
+}
+
 nav { bottom: -1; }
 
 .rotate-180 { transform: rotate(180deg); }
@@ -161,4 +167,27 @@ a.nav-link.active, a.nav-link.active i {
 
 .activity-card {
   flex-basis: 30%;
+}
+
+.ticket-divider::before,
+.ticket-divider::after {
+  position: absolute;
+  content: '';
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 100px;
+  margin-top: -11px;
+  background-color: var(--bs-gray-100);
+}
+
+.ticket-divider::before {
+  left: -0.75rem;
+  border: 1px solid var(--bs-gray-300);
+  clip-path: inset(0 0 0 44%);
+}
+
+.ticket-divider::after {
+  right: -0.75rem;
+  border: 1px solid var(--bs-gray-300);
+  clip-path: inset(0 44% 0 0);
 }
