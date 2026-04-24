@@ -73,14 +73,18 @@
       $("#{{ bar_form.bar_start_time.id_for_label }}").flatpickr({
         enableTime: true,
         noCalendar: true,
-        dateFormat: "h:i K",
+        altInput: true,
+        dateFormat: "H:i",
+        altFormat: "h:i K",
         minuteIncrement: 30,
       });
 
       $("#{{ bar_form.bar_end_time.id_for_label }}").flatpickr({
         enableTime: true,
         noCalendar: true,
-        dateFormat: "h:i K",
+        altInput: true,
+        dateFormat: "H:i",
+        altFormat: "h:i K",
         minuteIncrement: 30,
       });
 
