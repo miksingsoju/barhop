@@ -62,6 +62,14 @@
   </ol>
   <div class="d-sm-flex d-none flex-column mw-700px mx-auto mt-8 mb-16 px-md-0 px-sm-12 gap-8 accordion accordion-icon-toggle" id="my-reservations">
     <h2 class="text-poppins">My Reservations</h2>
+    {% if not reservations.all %}
+      <a href="{% url 'bars:bar-list' %}" class="text-center">
+        <img src="{% static 'media/bunny.svg' %}" alt="No Reservations to show." class="mw-300px opacity-75"/>
+        <h2 class="text-gray-600">You have no reservations.</h2>
+        <span class="fs-4 text-gray-500">Book one now!</span>
+      </a>
+    {% endif %}
+
     {% for reservation in reservations %}
       {% partialdef reservation_card inline %}
       {% with bar=reservation.tables.all.0.table_type.bar %}
