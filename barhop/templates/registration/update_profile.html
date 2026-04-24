@@ -89,6 +89,7 @@
           <hr class="m-0 d-sm-block d-none border-gray-600">
           
           <form method="POST" action="{% url 'logout' %}" class="m-0">
+            {% csrf_token %}
             <button type="submit" class="d-flex w-100 justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4 border-0 bg-transparent">
               <span class="d-flex gap-3 align-items-center">
                 <i class="ki-duotone ki-exit-right text-gray-700 fs-1">
