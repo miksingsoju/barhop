@@ -11,5 +11,4 @@ echo Migrations successful. Begin populating data. &&^
 echo Please login to the MySQL AfterHoursCo account. &&^
 mysql -u afterhoursco -p barhop < barhop_data.sql ||^
 pause && exit &^
-echo Database setup complete.
-&& pause
+echo Database setup complete. && pause
