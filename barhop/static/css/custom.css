@@ -103,7 +103,7 @@
 }
 
 @media (max-width: 575px) {
-  .mobile-header + div, .mobile-header + section {
+  .mobile-header + div, .mobile-header + section, .mobile-header + .mobile-main {
     margin-top: 82px;
   }
 }

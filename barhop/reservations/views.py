@@ -14,6 +14,16 @@ def my_reservations(request):
         return render(request, "reservations/user-reservations-list.html", {
             'reservations': reservations,
         })
+    
+@login_required
+def reservation_details(request, rsv_id):
+    rsv = Reservation.objects.get(id=rsv_id)
+    if rsv and request.user == rsv.hopper:
+        return render(request, "reservations/reservation-details.html", {
+            'rsv': rsv,
+        })
+    else:
+        return redirect('reservations:reservations-list')
 
 @login_required
 def reservations_list(request, bar_id=None):
@@ -37,6 +47,14 @@ def reservations_list(request, bar_id=None):
         return render(request, "reservations/user-reservations-list.html", {
             'reservations': reservations,
         })
+    
+@login_required
+def cancel_reservation(request, rsv_id):
+    rsv = Reservation.objects.get(id=rsv_id)
+    if request.method == "POST":
+        rsv.status = "CANCELLED"
+        rsv.save()
+        return redirect("reservations:reservations-list")
 
 @login_required
 def create_reservation(request, bar_id):
