@@ -102,6 +102,12 @@
   nav { top: 0; }
 }
 
+@media (max-width: 575px) {
+  .mobile-header + div, .mobile-header + section {
+    margin-top: 82px;
+  }
+}
+
 nav { bottom: -1; }
 
 .rotate-180 { transform: rotate(180deg); }
@@ -161,4 +167,69 @@ a.nav-link.active, a.nav-link.active i {
 
 .activity-card {
   flex-basis: 30%;
+}
+
+hr.ticket-divider::before,
+hr.ticket-divider::after {
+  position: absolute;
+  content: '';
+  height: 1.5rem;
+  width: 1.5rem;
+  margin-top: -11px;
+  border-radius: 100px;
+  background-color: var(--bs-gray-100);
+  display: block;
+}
+
+div.ticket-divider .start-bullet,
+div.ticket-divider .end-bullet {
+  transition: 0.2s linear;
+  transition-delay: -0.1s;
+  position: absolute;
+  width: 1.5rem;
+  border-radius: 100px;
+  background-color: var(--bs-gray-100);
+  display: block;
+}
+
+.collapse:not(.show) div.ticket-divider .start-bullet,
+.collapse:not(.show) div.ticket-divider .end-bullet {
+  height: 0;
+  opacity: 0;
+}
+
+.collapse.show div.ticket-divider .start-bullet,
+.collapse.show div.ticket-divider .end-bullet {
+  height: 1.5rem;
+  opacity: 100%;
+}
+
+hr.ticket-divider::before,
+div.ticket-divider .start-bullet {
+  left: -0.75rem;
+  border: 1px solid var(--bs-gray-300);
+  clip-path: inset(0 0 0 44%);
+}
+
+div.ticket-divider .start-bullet { margin-top: -8px; }
+div.ticket-divider .end-bullet { margin-top: -11px; }
+
+hr.ticket-divider::after,
+div.ticket-divider .end-bullet {
+  right: -0.75rem;
+  border: 1px solid var(--bs-gray-300);
+  clip-path: inset(0 43% 0 0);
+}
+
+.collapsing div.ticket-divider .start-bullet{
+  margin-top: -3px;
+}
+
+.collapsing div.ticket-divider .end-bullet{
+  margin-top: -5px;
+}
+
+.collapsing div.ticket-divider .start-bullet, .collapsing div.ticket-divider .end-bullet{
+  height: 0.5rem;
+  opacity: 20%;
 }

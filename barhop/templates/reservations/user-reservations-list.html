@@ -1,29 +1,159 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %} Reservations {% endblock %}
+{% block title %}
+  Reservations
+{% endblock %}
 
 {% block content %}
-<h1>My Reservations</h1>
-{% for reservation in reservations %}
-    <div class="reservation-block">
-        <h3>Reservation id: {{ reservation.id }}</h3>
-        {% for table in reservation.tables.all|slice:":1" %}
-            <p>Bar: {{ table.table_type.bar.bar_name }}</p>
-        {% endfor %}
-        <p>No. of guests: {{ reservation.guests }}</p>
-        <p>{{ reservation.date }}</p>
-        <p>{{ reservation.start_time }} - {{ reservation.end_time}}</p>
-        <p>status: {{ reservation.status }}</p>
-        {% for table in reservation.tables.all %}
-        <ul>
-            <li>
-                <p>{{ table.id }}</p>
-                <p>Table type: {{ table.table_type.seating }}</p>
-                <p>Table capacity: {{ table.table_type.capacity }}</p>
-            </li>
-        </ul>            
-        {% endfor %}
-    </div>
-{% endfor %}
+  <!-- MOBILE VIEW -->
+  <header class="mobile-header d-sm-none d-block w-100 top-0 position-absolute bg-gray-100 pt-12 pb-6 z-index-3 border border-bottom border-gray-200">
+    <h2 class="text-center text-poppins">My Reservations</h2>
+  </header>
+  <div class="mobile-main d-flex d-sm-none flex-column px-6 py-8 py-sm-0 gap-8">
+    {% for reservation in reservations %}
+      {% partialdef reservation_card_mobile inline %}
+      <article class="card w-100 d-flex flex-column py-8 gap-6 border-gray-300">
+        <header class="px-6">
+          <h2>{{ reservation.tables.all.0.table_type.bar.bar_name }}</h2>
+          <span class="d-flex align-items-center text-gray-700 fs-semibold gap-2">
+            <i class="ki-duotone ki-geolocation fs-1 text-gray-700">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fs-6">{{ reservation.tables.all.0.table_type.bar.bar_address }}</span>
+          </span>
+        </header>
+        <section class="d-flex justify-content-between align-items-center px-6">
+          <div>
+            <span class="d-block fw-semibold">{{ reservation.id|stringformat:'06d' }}</span>
+            <span class="d-block fs-7 text-gray-700">Reservation ID</span>
+          </div>
+          <div class="text-end">
+            <span class="d-block fw-semibold">{{ reservation.date }}</span>
+            <span class="d-block fs-7 text-gray-700">Reservation Date</span>
+          </div>
+        </section>
+        <section class="d-flex justify-content-between align-items-center px-6">
+          <div>
+            <span class="d-block fw-semibold">{{ reservation.start_time|time:'g:i A' }}</span>
+            <span class="d-block fs-7 text-gray-700">Start Time</span>
+          </div>
+          <div class="text-end">
+            <span class="d-block fw-semibold">{{ reservation.end_time|time:'g:i A' }}</span>
+            <span class="d-block fs-7 text-gray-700">End Time</span>
+          </div>
+        </section>
+        <hr class="ticket-divider border-4 border-gray-100 border-top-dashed opacity-100" />
+        <a href="#" class="btn btn-info mx-6">View Reservation Details</a>
+      </article>
+      {% endpartialdef reservation_card_mobile %}
+    {% endfor %}
+  </div>
+
+  <!-- DESKTOP VIEW -->
+  <ol class="d-none d-sm-flex breadcrumb breadcrumb-dot text-muted fs-6 fw-semibold px-6 px-sm-12 mt-6">
+    <li class="breadcrumb-item">
+      <a href="{% url 'bars:bar-list' %}"><i class="ki-solid ki-home"></i></a>
+    </li>
+    <li class="breadcrumb-item text-gray-600">
+      <span>My Reservations</span>
+    </li>
+  </ol>
+  <div class="d-sm-flex d-none flex-column mw-700px mx-auto mt-8 mb-16 px-md-0 px-sm-12 gap-8 accordion accordion-icon-toggle" id="my-reservations">
+    <h2 class="text-poppins">My Reservations</h2>
+    {% if not reservations.all %}
+      <a href="{% url 'bars:bar-list' %}" class="text-center">
+        <img src="{% static 'media/bunny.svg' %}" alt="No Reservations to show." class="mw-300px opacity-75"/>
+        <h2 class="text-gray-600">You have no reservations.</h2>
+        <span class="fs-4 text-gray-500">Book one now!</span>
+      </a>
+    {% endif %}
+
+    {% for reservation in reservations %}
+      {% partialdef reservation_card inline %}
+      {% with bar=reservation.tables.all.0.table_type.bar %}
+        <article class="card w-100 d-flex flex-column border-gray-300">
+          <header class="accordion-header collapsed d-flex flex-column mb-2" data-bs-toggle="collapse" data-bs-target="#my-reservations_item_{{ reservation.id }}">
+            {% if bar.images.all %}
+              <figure class="ticket-header w-100 h-50px rounded-top overflow-hidden m-0" style="background-image: linear-gradient(0deg,rgba(43, 43, 64, 1) 0%, rgba(43, 43, 64, 0.25) 100%),
+                  url('{{ bar.images.all.0.image.url }}');
+                  background-size: cover;
+                  background-position: center;">
+                <span class="d-block fs-8 text-gray-600 fw-semibold m-4">ID {{ reservation.id|stringformat:'06d' }}</span>
+              </figure>
+            {% else %}
+              <figure class="ticket-header w-100 h-50px rounded-top overflow-hidden m-0">
+                <span class="d-block fs-8 text-gray-600 fw-semibold m-4">ID {{ reservation.id|stringformat:'06d' }}</span>
+              </figure>
+            {% endif %}
+            <section class="d-flex align-items-center justify-content-between px-4 pb-4">
+              <div class="mw-400px">
+                <h5 class="m-1 text-gray-800">{{ bar.bar_name }}</h5>
+                <span class="d-flex align-items-start text-gray-700 fs-semibold gap-2">
+                  <i class="ki-duotone ki-geolocation fs-5 text-gray-700 mt-1">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                  <span>{{ bar.bar_address }}</span>
+                </span>
+              </div>
+              <div class="text-end">
+                <span class="d-block fw-semibold text-gray-800">{{ reservation.date }}</span>
+                <span class="d-block fs-8 text-gray-600">Reservation Date</span>
+              </div>
+            </section>
+          </header>
+
+          <!-- accordion -->
+          <div id="my-reservations_item_{{ reservation.id }}" class="collapse px-4" data-bs-parent="#my-reservations">
+            <div class="ticket-divider">
+              <span class="start-bullet"></span>
+              <hr class="border-4 border-gray-100 border-top-dashed opacity-100 m-0">
+              <span class="end-bullet"></span>
+            </div>
+            <section class="d-flex align-items-center px-4 pt-4 pb-6 justify-content-between">
+              <div class="d-flex align-items-center">
+                <i class="ki-duotone ki-profile-user fs-3 text-gray-600 gap-1">
+                  <span class="path1"></span>
+                  <span class="path2"></span>
+                  <span class="path3"></span>
+                  <span class="path4"></span>
+                </i>
+                <span class="d-block fw-semibold text-gray-800">{{ reservation.guests }} pax</span>
+              </div>
+              <div>
+                <div class="d-flex gap-1 mb-1">
+                  {% for table in reservation.tables.all %}
+                    <span class="badge badge-lg badge-secondary border-info">{{ table.table_type }}</span>
+                  {% endfor %}
+                </div>
+                <span class="fs-8 text-gray-600 ms-1">Booked Tables</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center gap-8">
+                <div>
+                  <span class="d-block fw-semibold text-gray-800">{{ reservation.start_time|time:'g:i A' }}</span>
+                  <span class="d-block fs-8 text-gray-600">Start Time</span>
+                </div>
+                <div class="d-flex gap-2 text-gray-600 align-items-center">
+                  <hr class="w-20px" />
+                  <i class="fa-solid fa-martini-glass-citrus fs-3"></i>
+                  <hr class="w-20px" />
+                </div>
+                <div class="text-end">
+                  <span class="d-block fw-semibold text-gray-800">{{ reservation.end_time|time:'g:i A' }}</span>
+                  <span class="d-block fs-8 text-gray-600">End Time</span>
+                </div>
+              </div>
+              {% comment %} <button type="button" class="btn btn-light-info border border-info btn-sm d-flex">
+                View Details
+                <span class="accordion-icon"><i class="ki-duotone ki-arrow-right fs-4"><span class="path1"></span><span class="path2"></span></i></span>
+              </button> {% endcomment %}
+            </section>
+          </div>
+        </article>
+      {% endwith %}
+      {% endpartialdef reservation_card %}
+    {% endfor %}
+  </div>
 {% endblock %}

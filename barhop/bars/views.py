@@ -166,6 +166,9 @@ def bar_update(request, bar_id):
         return redirect('bars:bar-details', bar_id=bar_id)
     if request.method == 'POST':
         bar_form = CreateBarForm(request.POST, request.FILES, instance=bar_object)
+        if bar_images:
+            bar_image_formset = UpdateBarImageFormSet(queryset=bar_images)
+
         if bar_form.is_valid():
             bar = bar_form.save()
 
@@ -178,6 +181,8 @@ def bar_update(request, bar_id):
                 BarImage.objects.create(bar=bar, image=image_file)
 
             return redirect('bars:bar-details', bar_id=bar_id)
+        else:
+            print(bar_form.errors)
     else:
         bar_form = CreateBarForm(instance=bar_object)
         if bar_images:
@@ -242,7 +247,7 @@ def create_event(request, bar_id):
     })
 
 @login_required
-def update_event(request, event_id):
+def update_event(request, bar_id, event_id):
     event = Event.objects.get(id=event_id)
     bar = event.bar
 
@@ -262,7 +267,7 @@ def update_event(request, event_id):
     })
 
 @login_required
-def delete_event(request, event_id):
+def delete_event(request, bar_id, event_id):
     event = Event.objects.get(id=event_id)
     bar_id = event.bar.id
 

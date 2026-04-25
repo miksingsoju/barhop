@@ -15,21 +15,28 @@ def my_reservations(request):
             'reservations': reservations,
         })
 
-def reservations_list(request, bar_id):
-    seatings = Seating.objects.filter(bar__id=bar_id).distinct()
-    tables = Table.objects.filter(table_type__in=seatings)
-    reservations = Reservation.objects.filter(tables__in=tables).distinct()
-    if request.method == "POST":
-        status=request.POST.get("rsv_status")
-        rsv_id=request.POST.get("rsv_id")
-        if rsv_id and status:
-            reservation = Reservation.objects.get(id=rsv_id)
-            reservation.status = status
-            reservation.save()
+@login_required
+def reservations_list(request, bar_id=None):
+    if bar_id:
+        seatings = Seating.objects.filter(bar__id=bar_id).distinct()
+        tables = Table.objects.filter(table_type__in=seatings)
+        reservations = Reservation.objects.filter(tables__in=tables).distinct()
+        if request.method == "POST":
+            status=request.POST.get("rsv_status")
+            rsv_id=request.POST.get("rsv_id")
+            if rsv_id and status:
+                reservation = Reservation.objects.get(id=rsv_id)
+                reservation.status = status
+                reservation.save()
 
-    return render(request, "reservations/manage-reservations.html", {
-        'reservations': reservations,
-    })
+        return render(request, "reservations/manage-reservations.html", {
+            'reservations': reservations,
+        })
+    else:
+        reservations = Reservation.objects.filter(hopper=request.user)
+        return render(request, "reservations/user-reservations-list.html", {
+            'reservations': reservations,
+        })
 
 @login_required
 def create_reservation(request, bar_id):
@@ -63,7 +70,7 @@ def create_reservation(request, bar_id):
         print(selected_seating_ids, selected_tables)
         r.tables.add(*selected_tables)
 
-        return redirect('reservations:my-reservations')
+        return redirect('reservations:reservations-list')
 
 
 def get_avail_tables(request, bar_id):
@@ -192,12 +199,12 @@ def manage_tables(request, bar_id):
                 Table.objects.bulk_create([
                     Table(table_type=seating) for _ in range(quantity)
                 ])
-                return redirect('reservations:manage-tables', bar_id=bar_id)
+                return redirect('bars:reservations:manage-tables', bar_id=bar_id)
 
         elif action == 'delete_seating':
             seating_id = request.POST.get('seating_id')
             Seating.objects.filter(id=seating_id, bar=bar).delete()
-            return redirect('reservations:manage-tables', bar_id=bar_id)
+            return redirect('bars:reservations:manage-tables', bar_id=bar_id)
 
         elif action == 'update_seating':
             seating_id = request.POST.get('seating_id')
@@ -214,7 +221,7 @@ def manage_tables(request, bar_id):
                 elif new_quantity < current_quantity:
                     ids_to_delete = list(seating.table_set.values_list('id', flat=True)[:current_quantity - new_quantity])
                     Table.objects.filter(id__in=ids_to_delete).delete()
-            return redirect('reservations:manage-tables', bar_id=bar_id)
+            return redirect('bars:reservations:manage-tables', bar_id=bar_id)
 
     seating_forms = [
         (seating, SeatingForm(instance=seating, initial={'quantity': seating.table_set.count()}))

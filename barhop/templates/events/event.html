@@ -1,0 +1,109 @@
+{% load static %}
+
+{% partialdef event_card %}
+<article class="w-200px cursor-pointer hover-elevate-up" data-bs-toggle="modal" data-bs-target="#event_{{ event.id }}_detail">
+  <figure class="bg-gray-300 rounded overflow-hidden w-100 h-150px d-flex align-items-center justify-content-center">
+    {% if event.image %}
+      <img src="event.image.url" alt="{{ event.title }} promotional image" />
+    {% else %}
+      <i class="ki-duotone ki-picture fs-4x">
+        <span class="path1"></span>
+        <span class="path2"></span>
+      </i>
+    {% endif %}
+  </figure>
+
+  <span class="fw-bold text-gray-800 d-block mb-1">{{ event.title }}</span>
+  <span class="text-gray-600 fs-8 d-block">{{ event.event_date }}</span>
+  <span class="text-gray-600 fs-8 d-block">{{ event.start_time }} - {{ event.end_time }}</span>
+</article>
+<div class="modal fade" tabindex="-1" id="event_{{ event.id }}_detail">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header p-0 overflow-hidden">
+        <figure class="bg-gray-300 w-100 min-h-300px h-fit d-flex align-items-center justify-content-center">
+          {% if event.image %}
+            <img src="event.image.url" alt="{{ event.title }} promotional image" />
+          {% else %}
+            <i class="ki-duotone ki-picture fs-4x">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+          {% endif %}
+        </figure>
+        <div class="btn btn-icon btn-sm btn-active-light-info ms-2 position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close">
+          <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+        </div>
+      </div>
+
+      <div class="modal-body pt-2">
+        <h4 class="mb-3">{{ event.title }}</h4>
+        <span class="text-gray-700 fw-semibold d-flex align-items-center gap-1">
+          <i class="ki-duotone ki-calendar fs-6 text-gray-700">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <span>{{ event.event_date }}</span>
+        </span>
+        <span class="text-gray-700 fw-semibold d-flex align-items-center gap-1">
+          <i class="ki-duotone ki-time fs-6 text-gray-700">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+          <span>{{ event.start_time }} - {{ event.end_time }}</span>
+        </span>
+        <p class="text-gray-700 fs-6 mt-3">{{ event.description }}</p>
+      </div>
+
+      {% if bar_owner == request.user and not preview %}
+        <div class="modal-footer gap-2">
+          <a href="{% url 'bars:update-event' bar.id event.id %}" class="btn btn-primary">Edit</a>
+          <button type="button" onclick="deleteAlert({{event.id}})" class="btn btn-danger">Delete</button>
+        </div>
+          
+        <form method="POST" class="d-none" id="delete_event_{{ event.id }}_form"
+          action="{% url "bars:delete-event" bar.id event.id %}">
+          {% csrf_token %}
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endpartialdef event_card %}
+
+{% partialdef event_card_scripts %}
+<template id="delete-event-swal-template">
+  <swal-title>
+    Are you sure you wish to delete this event?
+  </swal-title>
+  <swal-icon type="warning" color="red"></swal-icon>
+  <swal-button type="cancel">
+    Cancel
+  </swal-button>
+  <swal-button type="confirm">
+    Yes, Delete Event
+  </swal-button>
+  <swal-param name="allowEscapeKey" value="true" />
+  <swal-param
+    name="customClass"
+    value='{ "popup": "my-popup" }' />
+  <swal-function-param
+    name="didOpen"
+    value="popup => console.log(popup)" />
+</template>
+<script>
+  const deleteAlert = async (id) => {
+    let swalRes = await Swal.fire({
+      template: "#delete-event-swal-template",
+      customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "swal2-cancel btn btn-color-gray-600 btn-bg-secondary btn-active-light-primary"
+      }
+    });
+    
+    if (swalRes.isConfirmed) {
+      document.forms[`delete_event_${id}_form`].submit();
+    }
+  }
+</script>
+{% endpartialdef event_card_scripts %}

@@ -17,55 +17,64 @@
         <span class="text-gray-600 fs-8">Hopped on {{ review.review_date_created|date:"N j, Y" }} at {{ review.review_date_created|date:"G:i A" }}</span>
       </figcaption>
     </aside>
-    <aside class="d-md-flex d-none flex-row gap-2 h-fit">
-      <button type="button" class="btn btn-sm btn-light-info" data-bs-toggle="modal" data-bs-target="#edit_review_{{ review.id }}_modal">
-        Edit
-      </button>
-      <button type="button"
-              class="btn btn-sm btn-light-danger"
-              data-bs-toggle="modal"
-              data-bs-target="#delete_review_modal_{{ review.id }}">
-        Delete
-      </button>
-    </aside>
-
-    <!-- mobile menu -->
-    <div class="d-md-none menu menu-column menu-gray-600 fw-semibold w-100px" data-kt-menu="true">
-    <div class="menu-item" data-kt-menu-trigger="click"
-      data-kt-menu-offset="-120, 10"
-      data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
-      <a href="#" class="menu-link">
-        <span class="menu-icon">
-          <i class="ki-solid ki-dots-vertical fs-2"></i>
-        </span>
-      </a>
-
-      <div class="menu-sub menu-sub-dropdown p-2">
-        <div class="menu-item bg-hover-light-info text-gray-600 text-hover-info rounded">
-          <button class="menu-link w-100" type="button" data-bs-toggle="modal"
-              data-bs-target="#edit_review_{{ review.id }}_modal">
+    {% if review.review_user == request.user %}
+      <aside class="d-md-flex d-none flex-row gap-2 h-fit">
+        <button type="button" class="btn btn-sm btn-light-info" data-bs-toggle="modal" data-bs-target="#edit_review_{{ review.id }}_modal">
+          Edit
+        </button>
+        
+        <button type="button"
+                class="btn btn-sm btn-light-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#delete_review_modal_{{ review.id }}">
+          Delete
+        </button>
+      </aside>
+      <!-- mobile menu -->
+      <div class="d-md-none menu menu-column menu-gray-600 fw-semibold w-100px" data-kt-menu="true">
+        <div class="menu-item" data-kt-menu-trigger="click"
+          data-kt-menu-offset="-50, 10"
+          data-kt-menu-placement="bottom-end" data-kt-menu-overflow="true">
+          <a href="#" class="menu-link">
             <span class="menu-icon">
-              <i class="ki-duotone ki-chart-simple-2 fs-3"><span class="path1"></span><span class="path2"></span><span
-                  class="path3"></span><span class="path4"></span></i>
+              <i class="ki-solid ki-dots-vertical fs-2"></i>
             </span>
-            <span class="menu-title">Edit</span>
-          </button>
-        </div>
-        <div class="menu-item bg-hover-light-danger text-gray-600 text-hover-danger rounded">
-          <button class="menu-link w-100" type="button" data-bs-toggle="modal"
-              data-bs-target="#delete_review_modal_{{ review.id }}">
-            <span class="menu-icon">
-              <i class="ki-duotone ki-chart-simple-2 fs-3"><span class="path1"></span><span class="path2"></span><span
-                  class="path3"></span><span class="path4"></span></i>
-            </span>
-            <span class="menu-title">Delete</span>
-          </button>
+          </a>
+
+          <div class="menu-sub menu-sub-dropdown p-2">
+            <div class="menu-item bg-hover-light-info text-gray-600 text-hover-info rounded">
+              <button class="menu-link w-100 ps-3" type="button" data-bs-toggle="modal"
+                  data-bs-target="#edit_review_{{ review.id }}_modal">
+                <span class="menu-icon">
+                  <i class="ki-duotone ki-pencil fs-3">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>
+                </span>
+                <span class="menu-title">Edit</span>
+              </button>
+            </div>
+            <div class="menu-item bg-hover-light-danger text-gray-600 text-hover-danger rounded">
+              <button class="menu-link w-100 ps-3" type="button" data-bs-toggle="modal"
+                  data-bs-target="#delete_review_modal_{{ review.id }}">
+                <span class="menu-icon">
+                  <i class="ki-duotone ki-trash fs-3">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                    <span class="path4"></span>
+                    <span class="path5"></span>
+                  </i>
+                </span>
+                <span class="menu-title">Delete</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-
+    {% endif %}
   </header>
+
   <div class="rating">
     <!-- checked stars -->
     {% if review.review_rating > 0 %}

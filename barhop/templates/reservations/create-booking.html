@@ -102,7 +102,7 @@
         console.log(formObject);
         
         $("#booking-form-tables").load(
-          "{% url 'reservations:get-avail-tables' bar_id=bar.id %}",
+          "{% url 'bars:reservations:get-avail-tables' bar_id=bar.id %}",
           formObject,
           (res, status, xhr) => {
             console.log(status, xhr);
@@ -137,7 +137,7 @@
 {% partialdef booking_form_datetime %}
   <h4 class="m-8 mb-0 text-poppins">Book a Table</h4>
   <form id="booking-form-datetime" method="post" 
-    action="{% url 'reservations:get-avail-tables' bar_id=bar.id %}"
+    action="{% url 'bars:reservations:get-avail-tables' bar_id=bar.id %}"
     class="d-flex flex-column justify-content-center gap-6 px-2 pb-8 m-0">
     {% csrf_token %}
 
@@ -149,12 +149,12 @@
       <div class="fv-row">
         <label class="form-label" for="start_time">Start Time</label>
         <input id="id_start_time" name="start_time"
-          type="time" class="form-control form-control-solid" value="{{ bar.bar_start_time|time:'h:i A' }}" />
+          type="text" class="form-control form-control-solid" value="{{ bar.bar_start_time|time:'h:i A' }}" />
       </div>
       <div class="fv-row">
         <label class="form-label" for="end_time">End Time</label>
         <input id="id_end_time" name="end_time" 
-          type="time" class="form-control form-control-solid" value="{{ bar.bar_start_time|time:'h:i A' }}" />
+          type="text" class="form-control form-control-solid" value="{{ bar.bar_start_time|time:'h:i A' }}" />
       </div>
     </div>
   </form>
@@ -167,7 +167,7 @@
     KTDialer.createInstances();
   </script>
   <form class="w-100 pt-0 p-8 m-0" method="post" id="create-reservation-form"
-    action="{% url 'reservations:create-reservation' bar_id=bar_id %}">
+    action="{% url 'bars:reservations:create-reservation' bar_id=bar_id %}">
     {% csrf_token %}
     <label class="form-label" for="pax">No. of Guests</label>
     <div class="input-group input-group-solid w-100" data-kt-dialer="true" data-kt-dialer-min="0" data-kt-dialer-max="100" data-kt-dialer-step="1">

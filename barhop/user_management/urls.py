@@ -1,7 +1,7 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from reservations import views as rsv
 from . import views
-
 
 urlpatterns = [
     path('register/', views.register_view, name='register'),
@@ -11,8 +11,9 @@ urlpatterns = [
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-    path('profile/update/', views.update_profile, name="update_profile"),
-    path('delete/', views.delete_user, name='delete_account'),
+    path('account', views.update_profile, name="update_profile"),
+    path('delete', views.delete_user, name='delete_account'),
+    # path('reservations', rsv.my_reservations, name='my-reservations')
 ]
 
 app_name = "user_management"
