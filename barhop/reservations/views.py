@@ -194,12 +194,12 @@ def manage_tables(request, bar_id):
                 Table.objects.bulk_create([
                     Table(table_type=seating) for _ in range(quantity)
                 ])
-                return redirect('reservations:manage-tables', bar_id=bar_id)
+                return redirect('bars:reservations:manage-tables', bar_id=bar_id)
 
         elif action == 'delete_seating':
             seating_id = request.POST.get('seating_id')
             Seating.objects.filter(id=seating_id, bar=bar).delete()
-            return redirect('reservations:manage-tables', bar_id=bar_id)
+            return redirect('bars:reservations:manage-tables', bar_id=bar_id)
 
         elif action == 'update_seating':
             seating_id = request.POST.get('seating_id')
@@ -216,7 +216,7 @@ def manage_tables(request, bar_id):
                 elif new_quantity < current_quantity:
                     ids_to_delete = list(seating.table_set.values_list('id', flat=True)[:current_quantity - new_quantity])
                     Table.objects.filter(id__in=ids_to_delete).delete()
-            return redirect('reservations:manage-tables', bar_id=bar_id)
+            return redirect('bars:reservations:manage-tables', bar_id=bar_id)
 
     seating_forms = [
         (seating, SeatingForm(instance=seating, initial={'quantity': seating.table_set.count()}))

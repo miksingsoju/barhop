@@ -1,5 +1,6 @@
 asgiref==3.10.0
 Django==6.0.2
+django-browser-reload==1.21.0
 mysqlclient==2.2.8
 pillow==12.1.1
 psycopg==3.2.12
