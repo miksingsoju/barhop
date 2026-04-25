@@ -92,16 +92,21 @@ def get_avail_tables(request, bar_id):
         reservations = Reservation.objects.filter(
             date=booking_date,
             start_time__lt=end_time,
-            end_time__gte=start_time,
+            end_time__gt=start_time,
         )
 
         # get all tables not under reservation
         # where bar is this bar
 
         # get all table types of available tables
-        reserved_tables = Table.objects.filter(reservation__in=reservations).values_list("id", flat=True)
-        avail_tables = Table.objects.filter(table_type__bar__id=bar_id).exclude(id__in=reserved_tables)
-        avail_seating = Seating.objects.filter(bar__id=bar_id, table__id__in=avail_tables.values_list("id", flat=True)).distinct()
+        reserved_tables = Table.objects.none()
+        avail_tables = Table.objects.none()
+        avail_seating = Seating.objects.none()
+
+        if start_time != end_time:
+            reserved_tables = Table.objects.filter(reservation__in=reservations).values_list("id", flat=True)
+            avail_tables = Table.objects.filter(table_type__bar__id=bar_id).exclude(id__in=reserved_tables)
+            avail_seating = Seating.objects.filter(bar__id=bar_id, table__id__in=avail_tables.values_list("id", flat=True)).distinct()
 
         print(reservations)
         print(avail_tables)
