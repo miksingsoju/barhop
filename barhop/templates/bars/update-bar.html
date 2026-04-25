@@ -4,6 +4,62 @@
 
 {% block title %} Update Bar Details {% endblock %}
 
+{% block styles %}
+  <style>
+    .bar-image-preview-wrapper {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      flex: 0 0 auto;
+      overflow: visible;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,.08);
+      box-shadow: 0 1px 6px rgba(0,0,0,.06);
+      margin: 0.25rem;
+    }
+
+    #image-preview-container {
+      margin-bottom: 1rem;
+    }
+
+    #bar-dropzone {
+      margin-top: 1rem;
+    }
+
+    .bar-image-preview-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .bar-image-preview-wrapper .delete-image-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      z-index: 2;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 50%;
+      border: none;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .bar-image-preview-wrapper .delete-image-btn i {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    #bar-dropzone.d-none {
+      display: none !important;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
   <ol class="breadcrumb breadcrumb-dot text-muted fs-6 fw-semibold px-6 px-sm-12 mt-6">
     <li class="breadcrumb-item">
@@ -13,7 +69,18 @@
     <li class="breadcrumb-item"><a href="{% url 'bars:bar-details' bar.id %}" class="text-muted">{{ bar.bar_name }}</a></li>
     <li class="breadcrumb-item text-gray-600">Update {{ bar.bar_name }}</li>
   </ol>
-  {% include 'bars/create-bar.html#bar_form' %}  
+  {% include 'bars/create-bar.html#bar_form' %}
+  {% if bar.images.all %}
+    <div id="existing-image-data" class="d-none">
+      {% for bar_image in bar.images.all %}
+        <div
+          data-bar-image-id="{{ bar_image.id }}"
+          data-bar-image-url="{{ bar_image.image.url }}"
+          data-bar-image-alt="{{ bar.bar_name }} image {{ forloop.counter }}"
+        ></div>
+      {% endfor %}
+    </div>
+  {% endif %}
 {% comment %}
   <div class="bar-update-form-container">
     {% if bar and bar.images.all %}
@@ -64,94 +131,170 @@
   {{ block.super }}
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      var fileInput = document.querySelector('#bar-form input[type="file"][name="images"]');
-      var previewContainer = document.getElementById('image-preview-container');
+      var barForm = document.forms['bar-form'];
+      var imagePreviewContainer = document.getElementById('image-preview-container');
+      var barDropzone = document.getElementById('bar-dropzone');
 
-      if (!fileInput || !previewContainer) {
+      if (!barForm || !imagePreviewContainer || !barDropzone) {
         return;
       }
 
-      fileInput.addEventListener('change', function (event) {
-        var files = event.target.files;
-        previewContainer.innerHTML = '';
+      barDropzone.classList.remove('d-none');
+      barDropzone.classList.add('d-flex');
 
-        if (!files || !files.length) {
+      var fileInput = barForm.querySelector('input[type="file"][name="images"]');
+      if (!fileInput) {
+        fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.name = 'images';
+        fileInput.id = 'id_images';
+        fileInput.accept = 'image/*';
+        fileInput.multiple = true;
+        fileInput.className = 'd-none';
+        barDropzone.insertAdjacentElement('afterend', fileInput);
+      }
+
+      function hideExistingFormsetFields() {
+        var imageSection = imagePreviewContainer.closest('.fv-row.w-100');
+        if (!imageSection) {
+          return;
+        }
+        imageSection.querySelectorAll('p').forEach(function (paragraph) {
+          var hasFileInput = paragraph.querySelector('input[type="file"][name*="image"]');
+          var hasDeleteCheckbox = paragraph.querySelector('input[type="checkbox"][name$="-DELETE"]');
+          if (hasFileInput || hasDeleteCheckbox) {
+            paragraph.style.display = 'none';
+          }
+        });
+      }
+
+      function addDeleteInput(imageId) {
+        var deleteContainer = document.getElementById('delete-images-container');
+        if (!deleteContainer) {
+          deleteContainer = document.createElement('div');
+          deleteContainer.id = 'delete-images-container';
+          deleteContainer.style.display = 'none';
+          imagePreviewContainer.parentNode.appendChild(deleteContainer);
+        }
+
+        if (deleteContainer.querySelector('input[name="delete_images"][value="' + imageId + '"]')) {
           return;
         }
 
-        Array.from(files).forEach(function (file) {
-          if (!file.type.startsWith('image/')) {
-            return;
-          }
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'delete_images';
+        input.value = imageId;
+        deleteContainer.appendChild(input);
+      }
 
-          var reader = new FileReader();
-          reader.onload = function (e) {
-            var img = document.createElement('img');
-            img.src = e.target.result;
-            img.alt = file.name;
-            img.className = 'img-fluid rounded';
-            img.style.maxWidth = '200px';
-            img.style.maxHeight = '200px';
-            img.style.objectFit = 'cover';
+      var remainingExistingImages = [];
 
-            var wrapper = document.createElement('div');
-            wrapper.className = 'bar-image-preview-wrapper';
-            wrapper.appendChild(img);
+      function loadExistingImages() {
+        var existingImageData = document.getElementById('existing-image-data');
+        if (!existingImageData) {
+          return;
+        }
 
-            previewContainer.appendChild(wrapper);
-          };
-
-          reader.readAsDataURL(file);
+        existingImageData.querySelectorAll('[data-bar-image-id]').forEach(function (item) {
+          remainingExistingImages.push({
+            id: item.dataset.barImageId,
+            url: item.dataset.barImageUrl,
+            alt: item.dataset.barImageAlt,
+          });
         });
+      }
+
+      function renderExistingImages() {
+        if (!remainingExistingImages.length) {
+          return;
+        }
+
+        remainingExistingImages.forEach(function (image) {
+          var wrapper = document.createElement('div');
+          wrapper.className = 'bar-image-preview-wrapper preview-template symbol symbol-100px mt-2 mb-6';
+          wrapper.dataset.imageId = image.id;
+
+          var deleteButton = document.createElement('button');
+          deleteButton.type = 'button';
+          deleteButton.className = 'symbol-badge badge badge-circle bg-info start-100 cursor-pointer';
+          deleteButton.setAttribute('data-dz-remove', '');
+          deleteButton.title = 'Remove image';
+          deleteButton.innerHTML = '<i class="ki-solid ki-cross fs-2 text-gray-800"></i>';
+          deleteButton.addEventListener('click', function () {
+            wrapper.remove();
+            remainingExistingImages = remainingExistingImages.filter(function (item) {
+              return item.id !== image.id;
+            });
+            addDeleteInput(image.id);
+            rebuildPreviewCarousel();
+          });
+
+          var img = document.createElement('img');
+          img.src = image.url;
+          img.alt = image.alt;
+
+          wrapper.appendChild(deleteButton);
+          wrapper.appendChild(img);
+          imagePreviewContainer.appendChild(wrapper);
+        });
+      }
+
+      function rebuildPreviewCarousel() {
+        var carouselInner = document.querySelector('#bar-images .carousel-inner');
+        var indicators = document.querySelector('#bar-images ol.carousel-indicators');
+        if (!carouselInner || !indicators) {
+          return;
+        }
+
+        var slideImages = Array.from(imagePreviewContainer.querySelectorAll(':scope > div:not(.d-none) img'));
+        carouselInner.innerHTML = '';
+        indicators.innerHTML = '';
+
+        if (!slideImages.length) {
+          var emptySlide = document.createElement('div');
+          emptySlide.className = 'carousel-item h-300px bg-gray-300 active';
+          carouselInner.appendChild(emptySlide);
+
+          var li = document.createElement('li');
+          li.setAttribute('data-bs-target', '#bar-images');
+          li.setAttribute('data-bs-slide-to', '0');
+          li.className = 'ms-1 active';
+          indicators.appendChild(li);
+          return;
+        }
+
+        slideImages.forEach(function (imgEl, index) {
+          var slide = document.createElement('div');
+          slide.className = 'carousel-item h-300px' + (index === 0 ? ' active' : '');
+
+          var img = document.createElement('img');
+          img.src = imgEl.src;
+          img.alt = imgEl.alt || 'Preview image ' + (index + 1);
+          img.className = 'd-block w-100 h-100';
+          img.style.objectFit = 'cover';
+
+          slide.appendChild(img);
+          carouselInner.appendChild(slide);
+
+          var li = document.createElement('li');
+          li.setAttribute('data-bs-target', '#bar-images');
+          li.setAttribute('data-bs-slide-to', String(index));
+          li.className = 'ms-1' + (index === 0 ? ' active' : '');
+          indicators.appendChild(li);
+        });
+      }
+
+      loadExistingImages();
+      hideExistingFormsetFields();
+      renderExistingImages();
+      rebuildPreviewCarousel();
+
+      var previewObserver = new MutationObserver(function () {
+        rebuildPreviewCarousel();
       });
+      previewObserver.observe(imagePreviewContainer, { childList: true, subtree: false });
     });
   </script>
 {% endblock %}
 
-{% block scripts_2 %}
-  {{ block.super }}
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var fileInput = document.querySelector('#bar-form input[type="file"][name="images"]');
-      var previewContainer = document.getElementById('image-preview-container');
-
-      if (!fileInput || !previewContainer) {
-        return;
-      }
-
-      fileInput.addEventListener('change', function (event) {
-        var files = event.target.files;
-        previewContainer.innerHTML = '';
-
-        if (!files || !files.length) {
-          return;
-        }
-
-        Array.from(files).forEach(function (file) {
-          if (!file.type.startsWith('image/')) {
-            return;
-          }
-
-          var reader = new FileReader();
-          reader.onload = function (e) {
-            var img = document.createElement('img');
-            img.src = e.target.result;
-            img.alt = file.name;
-            img.className = 'img-fluid rounded';
-            img.style.maxWidth = '200px';
-            img.style.maxHeight = '200px';
-            img.style.objectFit = 'cover';
-
-            var wrapper = document.createElement('div');
-            wrapper.className = 'bar-image-preview-wrapper';
-            wrapper.appendChild(img);
-
-            previewContainer.appendChild(wrapper);
-          };
-
-          reader.readAsDataURL(file);
-        });
-      });
-    });
-  </script>
-{% endblock %}
