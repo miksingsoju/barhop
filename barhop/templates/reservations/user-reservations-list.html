@@ -73,7 +73,7 @@
     {% for reservation in reservations %}
       {% partialdef reservation_card inline %}
       {% with bar=reservation.tables.all.0.table_type.bar %}
-        <article class="d-flex gap-4 align-items-start">
+        <article class="d-flex gap-4 align-items-start position-relative">
           <div class="card w-100 d-flex flex-column border-gray-300">
             <header class="accordion-header collapsed d-flex flex-column mb-2" data-bs-toggle="collapse" data-bs-target="#my-reservations_item_{{ reservation.id }}">
               {% if bar.images.all %}
@@ -163,7 +163,8 @@
             </div>
           </div>
           {% if reservation.status == "PENDING" %}
-            <form action="{% url 'reservations:cancel-reservation' reservation.id %}" method="POST" class="m-0">
+            <form action="{% url 'reservations:cancel-reservation' reservation.id %}" method="POST" 
+              class="m-0 w-100 position-absolute text-end d-block ms-14">
               {% csrf_token %}
               <button class="btn btn-icon btn-light-danger btn-sm" type="submit"
                 data-bs-toggle="tooltip" data-bs-placement="right" title="Cancel this Reservation">
