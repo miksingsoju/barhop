@@ -58,7 +58,7 @@
       {% if bar_owner == request.user and not preview %}
         <div class="modal-footer gap-2">
           <a href="{% url 'bars:update-event' bar.id event.id %}" class="btn btn-primary">Edit</a>
-          <button type="button" onclick="deleteAlert({{event.id}})" class="btn btn-danger">Delete</button>
+          <button type="button" onclick="deleteAlert('{{ event.id }}')" class="btn btn-danger">Delete</button>
         </div>
           
         <form method="POST" class="d-none" id="delete_event_{{ event.id }}_form"

@@ -90,18 +90,12 @@ def create_bar(request):
             },
             {
                 "num": "2",
-                "title": "Add Events",
-                "desc": "What's happening at your bar? Let people know!",
-                "current": "",
-            },
-            {
-                "num": "3",
                 "title": "Add Tables",
                 "desc": "Set up your bar's reservation system.",
                 "current": "",
             },
             {
-                "num": "4",
+                "num": "3",
                 "title": "Publish Your Bar",
                 "desc": "Share your bar with the world!",
                 "current": "",
