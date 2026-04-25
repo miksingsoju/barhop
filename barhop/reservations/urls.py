@@ -9,6 +9,10 @@ urlpatterns = [
         path('', views.get_avail_tables, name='get-avail-tables'),
         path('manage', views.manage_tables, name='manage-tables'),
     ])),
+    path('<int:rsv_id>', include([
+        path('', views.reservation_details, name='reservation-details'),
+        path('cancel', views.cancel_reservation, name='cancel-reservation'),
+    ])),
 
     # temporary urls
     # path('bar/<int:bar_id>/', views.reservations_list, name='bar-tables'),

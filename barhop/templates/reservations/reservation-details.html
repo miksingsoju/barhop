@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Reservation {{ rsv.id }}
+{% endblock %}
+
+{% block content %}
+  <!-- THIS IS A MOBILE ONLY VIEW -->
+  <header class="mobile-header d-sm-none d-block w-100 top-0 position-absolute bg-gray-100 pt-12 pb-6 z-index-3 border border-bottom border-gray-200">
+    <h2 class="text-center text-poppins">Reservation Details</h2>
+  </header>
+  {% with bar=rsv.tables.all.0.table_type.bar %}
+    <div class="px-6 pt-8">
+      <article class="card w-100 d-flex flex-column pb-8 gap-6 border-gray-300">
+        <header class="">
+          {% if bar.images.all %}
+            <figure class="ticket-header w-100 h-75px rounded-top overflow-hidden m-0" style="background-image: linear-gradient(0deg,rgba(43, 43, 64, 1) 0%, rgba(43, 43, 64, 0.25) 100%),
+                  url('{{ bar.images.all.0.image.url }}');
+                  background-size: cover;
+                  background-position: center;">
+              <span class="d-block fs-8 text-gray-600 fw-semibold m-4">ID {{ rsv.id|stringformat:'06d' }}</span>
+            </figure>
+          {% else %}
+            <figure class="ticket-header w-100 h-75px rounded-top overflow-hidden m-0">
+              <span class="d-block fs-8 text-gray-600 fw-semibold m-4">ID {{ rsv.id|stringformat:'06d' }}</span>
+            </figure>
+          {% endif %}
+          <h2 class="mt-1 mx-6">{{ bar.bar_name }}</h2>
+          <span class="d-flex align-items-start text-gray-700 fs-semibold gap-2 mx-6">
+            <i class="ki-duotone ki-geolocation fs-2 text-gray-700 mt-1">
+              <span class="path1"></span>
+              <span class="path2"></span>
+            </i>
+            <span class="fs-6">{{ bar.bar_address }}</span>
+          </span>
+        </header>
+
+        <section class="d-flex justify-content-between align-items-center px-6">
+          <div class="">
+            <span class="d-block fw-semibold">{{ rsv.date }}</span>
+            <span class="d-block fs-7 text-gray-700">Reservation Date</span>
+          </div>
+          <div class="text-end">
+            {% if rsv.status == 'CONFIRMED' %}
+              <span class="badge badge-lg badge-light-success border border-success border-opacity-25 mb-1">{{ rsv.get_status_display }}</span>
+            {% elif rsv.status == 'PENDING' %}
+              <span class="badge badge-lg badge-light-warning border border-warning border-opacity-25 mb-1">{{ rsv.get_status_display }}</span>
+            {% elif rsv.status == 'REJECTED' or rsv.status == 'CANCELLED' %}
+              <span class="badge badge-lg badge-light-danger border border-danger border-opacity-25 mb-1">{{ rsv.get_status_display }}</span>
+            {% endif %}
+            <span class="d-block fs-7 text-gray-700">Reservation Status</span>
+          </div>
+        </section>
+
+        <section class="d-flex justify-content-between align-items-center px-6">
+          <div>
+            <span class="d-block fw-semibold">{{ rsv.start_time|time:'g:i A' }}</span>
+            <span class="d-block fs-7 text-gray-700">Start Time</span>
+          </div>
+          <div class="text-end">
+            <span class="d-block fw-semibold">{{ rsv.end_time|time:'g:i A' }}</span>
+            <span class="d-block fs-7 text-gray-700">End Time</span>
+          </div>
+        </section>
+
+        <section class="d-flex justify-content-between align-items-center px-6">
+          <div class="d-flex align-items-center">
+            <i class="ki-duotone ki-profile-user fs-3 text-gray-600 gap-1">
+              <span class="path1"></span>
+              <span class="path2"></span>
+              <span class="path3"></span>
+              <span class="path4"></span>
+            </i>
+            <span class="d-block fw-semibold text-gray-800">{{ rsv.guests }} pax</span>
+          </div>
+          <div class="text-end">
+            <div class="d-flex gap-2 mb-1">
+              {% for table in rsv.tables.all %}
+                <span class="badge badge-lg badge-secondary">{{ table.table_type }}</span>
+              {% endfor %}
+            </div>
+            <span class="fs-8 text-gray-600 ms-1">Booked Tables</span>
+          </div>
+        </section>
+        <hr class="ticket-divider border-4 border-gray-100 border-top-dashed opacity-100" />
+        <section class="d-flex flex-row gap-4 mx-6 align-items-center rounded bg-gray-300 border border-gray-400 border-opacity-50 py-5 px-6">
+          <div class="symbol symbol-50px symbol-circle">
+            {% if rsv.hopper.profile_image %}
+              <img src="{{ user.profile_image.url }}" alt="Profile" class="symbol-label w-50px h-50px object-fit-cover" />
+            {% else %}
+              <div class="symbol-label fs-2 fw-semibold bg-gray-600 text-gray-400">{{ rsv.hopper.username|slice:'0:1' }}</div>
+            {% endif %}
+          </div>
+          <div class="d-flex flex-column">
+            <span class="fs-5 fw-bold text-gray-800">{{ rsv.hopper.first_name }} {{ rsv.hopper.last_name }}</span>
+            <a href="#" class="fs-7 fw-semibold text-gray-600">@ {{ rsv.hopper.username }}</a>
+          </div>
+        </section>
+      </article>
+      {% if reservation.status == "PENDING" %}
+        <form action="{% url 'reservations:cancel-reservation' rsv.id %}" method="POST" class="m-0 d-block text-center mt-6">
+          {% csrf_token %}
+          <button class="text-center text-danger" type="submit">
+            Cancel this Reservation
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  {% endwith %}
+{% endblock %}
