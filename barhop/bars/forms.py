@@ -42,13 +42,14 @@ class CreateBarForm(forms.ModelForm):
 class CreateEventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['title', 'description', 'event_date', 'start_time', 'end_time']
+        fields = ['title', 'description', 'event_date', 'start_time', 'end_time', 'image']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
             'event_date': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
             'start_time': forms.TimeInput(format='%H:%M', attrs={'type': 'time', 'class': 'form-control'}),
             'end_time': forms.TimeInput(format='%H:%M', attrs={'type': 'time', 'class': 'form-control'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control form-control-solid'})
         }
         
 UpdateBarImageFormSet = forms.modelformset_factory(

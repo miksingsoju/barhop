@@ -4,7 +4,7 @@
 <article class="w-200px cursor-pointer hover-elevate-up" data-bs-toggle="modal" data-bs-target="#event_{{ event.id }}_detail">
   <figure class="bg-gray-300 rounded overflow-hidden w-100 h-150px d-flex align-items-center justify-content-center">
     {% if event.image %}
-      <img src="event.image.url" alt="{{ event.title }} promotional image" />
+      <img src="{{ event.image.url }}" alt="{{ event.title }} promotional image" />
     {% else %}
       <i class="ki-duotone ki-picture fs-4x">
         <span class="path1"></span>
@@ -23,7 +23,7 @@
       <div class="modal-header p-0 overflow-hidden">
         <figure class="bg-gray-300 w-100 min-h-300px h-fit d-flex align-items-center justify-content-center">
           {% if event.image %}
-            <img src="event.image.url" alt="{{ event.title }} promotional image" />
+            <img src="{{ event.image.url }}" alt="{{ event.title }} promotional image" />
           {% else %}
             <i class="ki-duotone ki-picture fs-4x">
               <span class="path1"></span>
