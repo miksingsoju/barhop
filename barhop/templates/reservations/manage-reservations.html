@@ -27,6 +27,8 @@
   const toastElement = document.querySelector('#update_status_toast');
   const updateForm = document.forms['manage-reservations'];
   const searchForm = document.forms['search-table'];
+  const searchInput = searchForm.querySelector("#search_table_input");
+  const clearBtn = document.querySelector("#search_table_input + button");
   const submitUpdateBtn = document.querySelector("#submit_update_btn");
   const statusChangesInput = document.querySelector("#id_status_changes");
   const statusChanges = {}
@@ -56,9 +58,36 @@
       else row.child.show();
   }
 
+  const clearSearch = () => {
+    clearBtn.classList.add("disabled");
+    clearBtn.querySelector("i").classList.add("d-none");
+    searchInput.value = "";
+    table.search(searchInput.value).draw();
+  }
+
+  const showClearBtn = debounce(async (e) => {
+    if (e.target.value == "") {
+      clearBtn.classList.add("disabled");
+      clearBtn.querySelector("i").classList.add("d-none");
+      return;
+    } else {
+      clearBtn.classList.remove("disabled");
+      clearBtn.querySelector("i").classList.remove("d-none");
+    }
+  }, 500);
+
+  searchInput.addEventListener("input", e => {
+    showClearBtn(e);
+  });
+
   searchForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    table.search(e.target.elements["search-table"].value).draw();
+    searchInput.blur();
+    if (searchInput.value) {
+      clearBtn.classList.remove("disabled");
+      clearBtn.querySelector("i").classList.remove("d-none");
+    }
+    table.search(searchInput.value).draw();
   });
 
   // Format options
@@ -148,14 +177,17 @@
         </h3>
         <div class="d-flex flex-row gap-4 align-items-center">
           <form id="search-table" class="m-0">
-            <div class="input-group input-group-solid m-0">
+            <div class="input-group input-group-solid m-0 w-250px">
               <span class="input-group-text">
                 <i class="ki-duotone ki-magnifier fs-2 pe-0">
                   <span class="path1"></span>
                   <span class="path2"></span>
                 </i>
               </span>
-              <input type="text" class="form-control" name="search-table" id="search_table" placeholder="Search Reservations" autocomplete="off"/>
+              <input type="text" class="form-control" name="search-table-input" id="search_table_input" placeholder="Search Reservations" autocomplete="off"/>
+              <button type="button" onclick="clearSearch()" class="input-group-text px-0 pe-2 opacity-100 btn disabled">
+                <i class="ki-solid ki-cross fs-2 d-none"></i>
+              </button>
             </div>
             <input type="submit" class="d-none">
           </form>
