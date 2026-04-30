@@ -117,11 +117,14 @@
     <!-- Right Column -->
     <div class="mw-600px flex-grow-1">
       <section class="settings-section" id="my-bars-section">
-        {% if my_bars %}
-          {% for bar in my_bars %}
-            {% include 'bars/bar-list.html#bar_card' %}
-          {% endfor %}
-        {% endif %}
+        <div class="d-flex flex-column gap-8">
+          <h2>My Bars</h2>
+          {% if my_bars %}
+            {% for bar in my_bars %}
+              {% include 'bars/bar-list.html#bar_card' %}
+            {% endfor %}
+          {% endif %}
+        </div>
       </section>
 
       <section class="settings-section card p-8" id="edit-profile-section">
