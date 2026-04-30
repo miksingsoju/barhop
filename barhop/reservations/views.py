@@ -36,12 +36,13 @@ def reservations_list(request, bar_id=None):
         
         if request.method == "POST":
             status_changes = json.loads(request.POST.get("status_changes"))
-            print(status_changes)
 
             with transaction.atomic():
                 for key, value in status_changes.items():
                     Reservation.objects.filter(id=key).update(status=value)
-
+        
+            return HttpResponse(status=204)
+    
         return render(request, "reservations/manage-reservations.html", {
             'reservations': reservations,
             'bar': bar
