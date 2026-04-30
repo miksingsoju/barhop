@@ -217,7 +217,10 @@
                 </select>
               </td>
               <td class="text-end">
-                <button type="button" onclick="showTables(this, {{ rsv.id }});" class="btn btn-icon btn-light-secondary toggle h-25px w-25px">
+                <button type="button" onclick="showTables(this, {{ rsv.id }});" 
+                  data-bs-toggle="tooltip" data-bs-placement="right" 
+                  title="Show Booked Tables" data-bs-custom-class="tooltip-inverse"
+                  class="btn btn-icon btn-light-secondary toggle h-25px w-25px">
                   <i class="ki-duotone ki-plus fs-3"></i>
                   <i class="ki-duotone ki-minus fs-3 d-none"></i>
                 </button>
