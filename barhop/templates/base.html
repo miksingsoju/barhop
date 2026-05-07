@@ -11,8 +11,8 @@
     <link href="{% static 'plugins/global/plugins.bundle.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'css/custom.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'plugins/custom/datatables/datatables.bundle.css' %}" rel="stylesheet" type="text/css"/>
     <link rel="icon" type="image/x-icon" href="{% static 'media/favicon.ico' %}" />
-    <script src="{% static 'js/custom.js' %}"></script>
 
     <!-- Additional Stylesheets -->
     {% block styles %}{% endblock %}
@@ -42,17 +42,13 @@
           <i class="ki-outline ki-home fs-2 d-sm-none"></i>
           <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Home</span>
         </a>
+        {% if request.user.is_authenticated and user.user_type != "OWNER" %}
         <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit{% if "/reservations" in request.path %} active{% endif %}" 
           href="{% url 'reservations:reservations-list' %}">
-          {% if request.user.is_authenticated and user.user_type == "OWNER" %}
-            <i class="ki-outline ki-cheque fs-2 d-sm-none"></i>
-            <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Reservations</span>
-          {% else %}
-            <i class="ki-outline ki-cheque fs-2 d-sm-none"></i>
             <span class="fs-sm-6 fs-8 pt-1 p-sm-0">My Bookings</span>
-          {% endif %}
         </a>
-        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit d-sm-none{% if "/profile" in request.path %} active{% endif %}" href="{% url 'auth:update_profile' %}">
+        {% endif %}
+        <a class="nav-link text-hover-info px-5 py-0 py-sm-3 d-flex flex-column align-items-center w-100px w-sm-fit d-sm-none{% if "/account" in request.path %} active{% endif %}" href="{% url 'auth:update_profile' %}">
           <i class="ki-outline ki-profile-circle fs-2"></i>
           <span class="fs-sm-6 fs-8 pt-1 p-sm-0">Profile</span>
         </a>
@@ -123,6 +119,8 @@
     <!-- Global Javascript Bundles -->
     <script src="{% static 'plugins/global/plugins.bundle.js' %}"></script>
     <script src="{% static 'js/scripts.bundle.js' %}"></script>
+    <script src="{% static 'plugins/custom/datatables/datatables.bundle.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
 
     <!-- Additional Javascript -->
     {% block scripts %}{% endblock %}

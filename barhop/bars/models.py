@@ -86,6 +86,7 @@ class BarLike(models.Model):
         return timezone.now() >= self.expires_at
 class Event(models.Model):
     bar = models.ForeignKey(Bar, on_delete=models.CASCADE, related_name='events')
+    image = models.ImageField(upload_to=upload_path_handler, blank=True, null=True)
     title = models.CharField(max_length=100)
     description = models.TextField()
     event_date = models.DateField()

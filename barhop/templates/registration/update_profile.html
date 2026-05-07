@@ -88,7 +88,7 @@
           </a>
           <hr class="m-0 d-sm-block d-none border-gray-600">
           
-          <form method="POST" action="{% url 'logout' %}" class="m-0">
+          <form method="POST" action="{% url 'logout' %}" class="m-0 d-sm-none d-block">
             {% csrf_token %}
             <button type="submit" class="d-flex w-100 justify-content-between align-items-center fw-semibold text-gray-700 px-2 py-4 border-0 bg-transparent">
               <span class="d-flex gap-3 align-items-center">
@@ -117,11 +117,14 @@
     <!-- Right Column -->
     <div class="mw-600px flex-grow-1">
       <section class="settings-section" id="my-bars-section">
-        {% if my_bars %}
-          {% for bar in my_bars %}
-            {% include 'bars/bar-list.html#bar_card' %}
-          {% endfor %}
-        {% endif %}
+        <div class="d-flex flex-column gap-8">
+          <h2>My Bars</h2>
+          {% if my_bars %}
+            {% for bar in my_bars %}
+              {% include 'bars/bar-list.html#bar_card' %}
+            {% endfor %}
+          {% endif %}
+        </div>
       </section>
 
       <section class="settings-section card p-8" id="edit-profile-section">

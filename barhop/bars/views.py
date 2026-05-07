@@ -226,7 +226,7 @@ def create_event(request, bar_id):
     if bar.bar_owner != request.user:
         return redirect('bars:bar-details', bar_id=bar_id)
 
-    form = CreateEventForm(request.POST or None)
+    form = CreateEventForm(request.POST or None, request.FILES or None)
 
     if request.method == "POST":
         if form.is_valid():
@@ -248,7 +248,7 @@ def update_event(request, bar_id, event_id):
     if bar.bar_owner != request.user:
         return redirect('bars:bar-details', bar_id=bar.id)
 
-    form = CreateEventForm(request.POST or None, instance=event)
+    form = CreateEventForm(request.POST or None, request.FILES or None, instance=event)
 
     if request.method == "POST":
         if form.is_valid():

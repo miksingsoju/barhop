@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -28,19 +29,23 @@ def reservation_details(request, rsv_id):
 @login_required
 def reservations_list(request, bar_id=None):
     if bar_id:
-        seatings = Seating.objects.filter(bar__id=bar_id).distinct()
+        bar = Bar.objects.get(id=bar_id)
+        seatings = Seating.objects.filter(bar=bar).distinct()
         tables = Table.objects.filter(table_type__in=seatings)
         reservations = Reservation.objects.filter(tables__in=tables).distinct()
+        
         if request.method == "POST":
-            status=request.POST.get("rsv_status")
-            rsv_id=request.POST.get("rsv_id")
-            if rsv_id and status:
-                reservation = Reservation.objects.get(id=rsv_id)
-                reservation.status = status
-                reservation.save()
+            status_changes = json.loads(request.POST.get("status_changes"))
 
+            with transaction.atomic():
+                for key, value in status_changes.items():
+                    Reservation.objects.filter(id=key).update(status=value)
+        
+            return HttpResponse(status=204)
+    
         return render(request, "reservations/manage-reservations.html", {
             'reservations': reservations,
+            'bar': bar
         })
     else:
         reservations = Reservation.objects.filter(hopper=request.user)
