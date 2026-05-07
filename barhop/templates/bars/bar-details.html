@@ -238,16 +238,18 @@
     </section>
     {% endpartialdef bar_details %}
 
+    <!-- BOOKINGS -->
+     {% if request.user == bar.bar_owner or request.user.user_type == 'HOPPER' %}
     <aside class="flex-shrink-0 w-sm-350px m-sm-0 mx-12 h-fit card d-flex">
       {% if not seating %}
         <div class="d-flex flex-column gap-4 p-8">
           <h4 class="m-0">Table Types</h4>
           <span class="text-gray-700">No tables to show.</span>
-          {% if request.user and request.user.user_type == 'OWNER' %}
+          {% if request.user == bar.bar_owner %}
             <a href="{% url 'bars:reservations:manage-tables' %}" class="btn btn-sm btn-info mt-4">Add Tables</a>
           {% endif %}
         </div>
-      {% elif seating and request.user and request.user.user_type == 'OWNER' %}
+      {% elif seating and request.user and request.user == bar.bar_owner %}
         <div class="d-flex flex-column gap-4 p-8">
           <h4 class="m-0">Table Types</h4>
           {% for s in seating %}
@@ -264,7 +266,7 @@
               </div>
               <div>
                 <span class="d-block fs-6 text-gray-800 fw-semibold">{{ s.seating }}</span>
-                <span class="d-block fw-semibold text-gray-500">Seats{% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
+                <span class="d-block fw-semibold text-gray-500">Seats {% if s.capacity > 1 %}up to{% endif %} {{ s.capacity }} pax.</span>
               </div>
             </article>
           {% endfor %}
@@ -276,5 +278,6 @@
         {% include 'reservations/create-booking.html#booking_form_datetime' %}
       {% endif %}
     </aside>
+    {% endif %}
   </div>
 {% endblock %}

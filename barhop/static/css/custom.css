@@ -6,7 +6,8 @@
   --bs-stepper-icon-bg-color-current: var(--bs-info);
   --bs-stepper-icon-bg-color: var(--bs-info-light);
   --bs-component-hover-color: var(--bs-info);
-  
+  --bs-secondary-light: var(--bs-gray-300);
+  --bs-secondary: var(--bs-gray-400);
 }
 
 /* overwrite */
@@ -103,7 +104,7 @@
 }
 
 @media (max-width: 575px) {
-  .mobile-header + div, .mobile-header + section {
+  .mobile-header + div, .mobile-header + section, .mobile-header + .mobile-main {
     margin-top: 82px;
   }
 }

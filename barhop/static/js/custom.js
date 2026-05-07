@@ -13,9 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const hideBorder = () => {
         switch (window.location.pathname.split("/")[1]) {
-            case "accounts":
+            case "user":
             case "profile":
             // case "":
+            case "bars":
                 linkHover.style.opacity = "0";
                 linkHover.style.width = "0";
                 linkHover.style.border = "none";
@@ -28,13 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
         }
 
-        // !document.querySelector("#owner-verified") && 
-        if (window.location.pathname.includes("bars") && window.location.pathname !== "/bars/") {
-            linkHover.style.opacity = "0";
-            linkHover.style.width = "0";
-            linkHover.style.border = "none";
-        }
-
+        if (window.location.pathname == "/bars/" || window.location.pathname.split("/").at(-2) == "reservations") {
+            linkHover.style.opacity = "100%";
+            linkHover.style.border = "solid 1px";
+            linkHover.style.width = activeLink ? `${activeLink.clientWidth}px` : "0";
+            linkHover.style.transform = activeLink ? `translateX(${activeLink.offsetLeft}px)` : "translate(0px)";
+        } 
     }
 
     hideBorder();
